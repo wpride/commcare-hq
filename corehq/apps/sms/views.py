@@ -216,7 +216,3 @@ def api_send_sms(request, domain):
             return HttpResponse("ERROR")
     else:
         return HttpResponseBadRequest("POST Expected.")
-
-
-
-

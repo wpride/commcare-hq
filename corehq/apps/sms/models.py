@@ -174,7 +174,6 @@ class EventLog(Document):
     couch_recipient             = StringProperty()
     event_type                  = StringProperty(choices=EVENT_TYPE_CHOICES)
 
-
 class MessageLogOld(models.Model):
     couch_recipient    = models.TextField()
     phone_number       = models.TextField()
