@@ -1,6 +1,6 @@
 from couchdbkit.ext.django.schema import *
 from django.conf import settings
-from datetime import datetime, timedelta
+import time
 
 # Create your models here.
 
@@ -11,8 +11,8 @@ class EnqueuedMessage(Document):
 
     @classmethod
     def recent_messages(cls):
-        return cls.view('sms/by_time', include_docs=True, startkey=(datetime.now() - timedelta(seconds=settings.ENVAYASMS_CONFIG.get('max_delay', 60))))
+        return cls.view('envayasms/by_time', descending=True, include_docs=True, startkey=(time.time() - settings.ENVAYASMS_CONFIG.get('max_delay', 60))*1000).all()
 
     @classmethod
-    def messages_for(cls, country_code):
-        return cls.view('sms/by_phone_number', startkey=country_code, endkey="%s%c" % (country_code, unichr(0xfff8)), include_docs=True)
+    def by_country_code(cls, country_code):
+        return cls.view('envayasms/by_phone_number', startkey=country_code, endkey="%s%c" % (country_code, unichr(0xfff8)), include_docs=True)

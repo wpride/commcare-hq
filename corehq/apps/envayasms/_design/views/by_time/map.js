@@ -1,5 +1,5 @@
 function (doc) {
 	if (doc.doc_type == 'EnqueuedMessage') {
-		emit(doc.sent_at, null);
+		emit((new Date(doc.sent_at)).getTime(), null);
 	}
 }

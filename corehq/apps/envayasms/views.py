@@ -2,9 +2,10 @@ import json
 from .api import API_ID as BACKEND_API_ID
 from corehq.apps.ivr.api import incoming as incoming_call
 from corehq.apps.sms.api import incoming as incoming_sms
-from django.http import HttpResponse, HttpResponseBadRequest
+from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 import json, time, sha, base64
+from models import EnqueuedMessage
 #import phonenumbers
 from django.conf import settings
 
@@ -31,8 +32,9 @@ def receive_action(request):
         if not phone_number.startswith('+'):
             phone_number = '+%s' % phone_number
         messages = EnqueuedMessage.recent_messages()#EnqueuedMessage.messages_for(phone_number.country_code)
-        events = [{'event': 'send', 'messages': [{'to': data.recipient, 'message': data.message} for data in messages]}]
-        messages.delete()
+        events = [{'event': 'send', 'messages': [{'to': data.phone_number, 'message': data.message} for data in messages]}]
+        for message in messages:
+            message.delete()
 
         return HttpResponse(json.dumps({'events': events}), content_type='application/json')
     elif action == 'send_status':
