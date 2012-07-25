@@ -165,6 +165,7 @@ HQ_APPS = (
     'corehq.apps.smsforms',
     'corehq.apps.ivr',
     'corehq.apps.tropo',
+    'corehq.apps.envayasms',
     'corehq.apps.yo',
     'corehq.apps.registration',
     'corehq.apps.unicel',
@@ -269,6 +270,11 @@ GET_URL_BASE  = 'dimagi.utils.web.get_url_base'
 
 SMS_GATEWAY_URL = "http://localhost:8001/"
 SMS_GATEWAY_PARAMS = "user=my_username&password=my_password&id=%(phone_number)s&text=%(message)s"
+
+ENVAYASMS_CONFIG = {
+    'password': None, # the password required to log in--None if no password required
+    'url': None, # the URL of this gateway, i.e. http://www.mycommcaredeployment.org/sms/gateway
+}
 
 # celery
 CARROT_BACKEND = "django"
@@ -411,7 +417,7 @@ COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'dca',
         'hsph',
         'pathindia',
-
+        'envayasms',
     ]
 ] + [("couchlog", "%s/%s" %(COUCH_SERVER, COUCHLOG_DATABASE_NAME))]
 
