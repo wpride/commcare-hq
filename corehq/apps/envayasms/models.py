@@ -15,4 +15,5 @@ class EnqueuedMessage(Document):
 
     @classmethod
     def by_country_code(cls, country_code):
-        return cls.view('envayasms/by_phone_number', startkey=country_code, endkey="%s%c" % (country_code, unichr(0xfff8)), include_docs=True)
+        country_code = '+%s' % country_code
+        return cls.view('envayasms/by_phone_number', startkey=country_code, endkey="%s%c" % (country_code, unichr(0xfff8)), include_docs=True).all()

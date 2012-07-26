@@ -4,7 +4,7 @@ from corehq.apps.ivr.api import incoming as incoming_call
 from corehq.apps.sms.api import incoming as incoming_sms
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
-import json, time, sha, base64
+import json, time, sha, base64, phonenumbers
 from models import EnqueuedMessage
 #import phonenumbers
 from django.conf import settings
@@ -22,16 +22,20 @@ def receive_action(request):
             
     action = data.get('action', '')
     if action == 'incoming':
+        # receive message
         if data.get('message_type') == 'call':
         	incoming_call(data.get('from', ''), BACKEND_API_ID)
         else:
             incoming_sms(data.get('from', ''), data.get('message', ''), BACKEND_API_ID)
+
     elif action == 'outgoing':
         # send back outgoing
         phone_number = request.POST.get('phone_number', '')
         if not phone_number.startswith('+'):
             phone_number = '+%s' % phone_number
-        messages = EnqueuedMessage.recent_messages()#EnqueuedMessage.messages_for(phone_number.country_code)
+        country_code = phonenumbers.parse(phone_number).country_code
+        messages = EnqueuedMessage.recent_messages()
+        messages += EnqueuedMessage.by_country_code(country_code)
         events = [{'event': 'send', 'messages': [{'to': data.phone_number, 'message': data.message} for data in messages]}]
         for message in messages:
             message.delete()
@@ -46,4 +50,3 @@ def receive_action(request):
     elif action == 'amqp_started':
         pass
     return HttpResponse('{"events": []}', content_type='application/json')
-
