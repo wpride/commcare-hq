@@ -13,51 +13,34 @@ from corehq.apps.app_manager.models import get_app, Form
 from casexml.apps.case.models import CommCareCase
 from touchforms.formplayer.api import current_question
 
+# For each EnvayaSMS gateway, add ("+##", envayasms_api) below
 ALTERNATIVE_BACKENDS = [("+91", unicel_api)] # TODO: move to setting?
-DEFAULT_BACKEND = envayasms_api #mach_api
+DEFAULT_BACKEND = mach_api
 
-def get_backend_api(msg):
-    """
-    Given a message, find which version of the api to return.
-    """
-    # this is currently a very dumb method that checks for 
-    # india and routes to unicel, otherwise returning mach
-    
-    # The caller assumes the returned module has a send() method 
-    # that takes in a message object.
-    phone = clean_phone_number(msg.phone_number)
-    for code, be_module in ALTERNATIVE_BACKENDS:
-        if phone.startswith(code):
-            return be_module
-    return DEFAULT_BACKEND
+BACKENDS = {
+    'mach': mach_api,
+    'unicel': unicel_api,
+    'envaya': envayasms_api
+}
 
 def send_sms(domain, id, phone_number, text):
     """
     Sends an outbound SMS. Returns false if it fails.
     """
+    # Very much a wrapper, despite all this compatibility stuff
     if phone_number is None:
         return False
     if isinstance(phone_number, int) or isinstance(phone_number, long):
         phone_number = str(phone_number)
     logging.debug('Sending message: %s' % text)
-    phone_number = clean_phone_number(phone_number)
-    msg = SMSLog(domain=domain,
-                     couch_recipient=id, 
-                     couch_recipient_doc_type="CouchUser",
-                     phone_number=phone_number,
-                     direction=OUTGOING,
-                     date = datetime.utcnow(),
-                     text = text)
-    try:
-        api = get_backend_api(msg)
-        try:
-            msg.backend_api = api.API_ID
-        except Exception:
-            pass
-        api.send(msg)
-        msg.save()
+    if send_sms_with_backend(domain,
+                                 phone_number,
+                                 text,
+                                 None,
+                                 "CouchUser",
+                                 id):
         return True
-    except Exception:
+    else:
         logging.exception("Problem sending SMS to %s" % phone_number)
         return False
 
@@ -70,81 +53,45 @@ def send_sms_to_verified_number(verified_number, text):
     
     return  True on success, False on failure
     """
-    try:
-        backend = verified_number.backend
-        module = __import__(backend.outbound_module, fromlist=["send"])
-        kwargs = backend.outbound_params
-        msg = SMSLog(
-            couch_recipient_doc_type    = verified_number.owner_doc_type,
-            couch_recipient             = verified_number.owner_id,
-            phone_number                = "+" + str(verified_number.phone_number),
-            direction                   = OUTGOING,
-            date                        = datetime.utcnow(),
-            domain                      = verified_number.domain,
-            text                        = text
-        )
+    # This is basically just a helper function now
+    if send_sms_with_backend(verified_number.domain,
+                             "+" + str(verified_number.phone_number),
+                             text,
+                             verified_number.backend,
+                             verified_number.owner_doc_type,
+                             verified_number.owner_id):
+        return True
+    else:
+        logging.exception("Exception while sending SMS to VerifiedNumber id " + verified_number._id)
+        return False
+
+def send_sms_with_backend(domain, phone_number, text, backend, recipient_doc_type=None, recipient_id=None):
+    msg = SMSLog(couch_recipient_doc_type = recipient_doc_type,
+                couch_recipient = recipient_id,
+                domain = domain,
+                 phone_number = clean_phone_number(phone_number),
+                 direction = OUTGOING,
+                 date = datetime.utcnow(),
+                 text = text)
+    if isinstance(backend, basestring):
         try:
-            msg.backend_api = module.API_ID
-        except Exception:
-            pass
+            backend = MobileBackend.get(backend_id)
+        except:
+            backend = None
+
+    if not isinstance(backend, MobileBackend):
+        backend = msg.get_backend_api()
+
+    try:
+        module = __import__(backend.outbound_module, fromlist=["send"])
+        msg.backend_api = module.API_ID
+        kwargs = backend.outbound_params
         module.send(msg, **kwargs)
         msg.save()
         return True
     except Exception as e:
-        logging.exception("Exception while sending SMS to VerifiedNumber id " + verified_number._id)
+        logging.exception("Exception while sending SMS to %s with backend %s" % (phone_number, backend_id))
         return False
-
-def send_sms_with_backend(domain, phone_number, text, backend_id):
-    msg = SMSLog(domain = domain,
-                 phone_number = phone_number,
-                 direction = OUTGOING,
-                 date = datetime.utcnow(),
-                 text = text)
-    if backend_id == "MOBILE_BACKEND_MACH":
-        try:
-            try:
-                msg.backend_api = mach_api.API_ID
-            except Exception:
-                pass
-            mach_api.send(msg)
-            msg.save()
-            return True
-        except Exception:
-            logging.exception("Exception while sending SMS to %s with backend %s" % (phone_number, backend_id))
-            return False
-    elif backend_id == "MOBILE_BACKEND_UNICEL":
-        try:
-            try:
-                msg.backend_api = unicel_api.API_ID
-            except Exception:
-                pass
-            unicel_api.send(msg)
-            msg.save()
-            return True
-        except Exception:
-            logging.exception("Exception while sending SMS to %s with backend %s" % (phone_number, backend_id))
-            return False
-    else:
-        try:
-            backend = MobileBackend.get(backend_id)
-        except Exception:
-            backend = None
-        if backend is None:
-            return False
-        
-        try:
-            module = __import__(backend.outbound_module, fromlist=["send"])
-            try:
-                msg.backend_api = module.API_ID
-            except Exception:
-                pass
-            kwargs = backend.outbound_params
-            module.send(msg, **kwargs)
-            msg.save()
-            return True
-        except Exception as e:
-            logging.exception("Exception while sending SMS to %s with backend %s" % (phone_number, backend_id))
-            return False
 
 
 def start_session_from_keyword(survey_keyword, verified_number):

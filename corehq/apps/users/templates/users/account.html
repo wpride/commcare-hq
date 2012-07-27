@@ -8,7 +8,7 @@
 {% block js-inline %} {{ block.super }}
     <script type="text/javascript">
         $(function () {
-            $('#id_add_phone_number').keydown(allowNumeric);
+            $('#id_phone_number').keydown(allowNumeric);
             var slide = false;
             $('#id_can_view_reports').change(function () {
                 var show = slide ? 'slideDown' : 'show';

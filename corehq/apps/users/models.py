@@ -381,7 +381,7 @@ class DjangoUserMixin(DocumentSchema):
         dummy.password = self.password
         return dummy.check_password(password)
 
-class CouchUser(Document, DjangoUserMixin, UnicodeMixIn):
+class CouchUser(Document, DjangoUserMixin, UnicodeMixIn, CommCareMobileContactMixin):
     """
     A user (for web and commcare)
     """
@@ -395,6 +395,7 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn):
 #        ('site_edited',     'Manually added or edited from the HQ website.'),
     status = StringProperty()
     language = StringProperty()
+    notes = StringProperty() # just miscellaneus notes about the user
     
     _user = None
     _user_checked = False
@@ -465,15 +466,22 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn):
     def get_django_user(self):
         return User.objects.get(username__iexact=self.username)
 
-    def add_phone_number(self, phone_number, default=False, **kwargs):
-        """ Don't add phone numbers if they already exist """
-        if not isinstance(phone_number, basestring):
-            phone_number = str(phone_number)
-        self.phone_numbers = _add_to_list(self.phone_numbers, phone_number, default)
+    def generate_verified_number(self):
+        """
+        Converts phone_numbers to a verified_number
+        """
+        if len(self.phone_numbers) > 0:
+            self.add_phone_number(self.phone_numbers[0])
+        if len(self.phone_numbers > 1):
+            self.notes = "Alternate Numbers: %s\n%s" % (', '.join(phone_numbers[1:]), self.notes)
+
+    def add_phone_number(self, phone_number, backend_id=None, **kwargs):
+        """ Changed behavior--now replaces phone numbers """
+        self.save_verified_number(self.domain, str(phone_number), True, backend_id)
 
     @property
     def default_phone_number(self):
-        return _get_default(self.phone_numbers)
+        return self.get_verified_number().phone_number
     phone_number = default_phone_number
 
     @property
@@ -593,11 +601,7 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn):
 
     @classmethod
     def get_by_default_phone(cls, phone_number):
-        result = get_db().view('users/by_default_phone', key=phone_number, include_docs=True).one()
-        if result:
-            return cls.wrap_correctly(result['doc'])
-        else:
-            return None
+        return cls.get_by_verified_number(phone_number)
 
     @classmethod
     def get_by_user_id(cls, userID, domain=None):
@@ -717,6 +721,15 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn):
                 return fn
         return super(CouchUser, self).__getattr__(item)
 
+    def get_time_zone(self):
+        for domain in self.get_domains():
+            time_zone = Domain.get_by_name(domain).default_timezone
+            if time_zone:
+                return time_zone
+        return None
+
+    def get_language_code(self):
+        return self.language
 
 class CommCareUser(CouchUser, CommCareMobileContactMixin):
 
@@ -996,7 +1009,7 @@ class CommCareUser(CouchUser, CommCareMobileContactMixin):
     def get_group_ids(self):
         from corehq.apps.groups.models import Group
         return Group.by_user(self, wrap=False)
-    
+
     def get_time_zone(self):
         try:
             time_zone = self.user_data["time_zone"]
@@ -1004,7 +1017,7 @@ class CommCareUser(CouchUser, CommCareMobileContactMixin):
             # Gracefully handle when user_data is None, or does not have a "time_zone" entry
             time_zone = None
         return time_zone
-    
+
     def get_language_code(self):
         try:
             lang = self.user_data["language_code"]

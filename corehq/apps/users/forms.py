@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import widgets
 from django.contrib.auth.forms import SetPasswordForm
 from django.core.validators import EmailValidator, email_re
 from django.forms.widgets import PasswordInput, HiddenInput
@@ -10,6 +11,7 @@ from dimagi.utils.timezones.forms import TimeZoneChoiceField
 from corehq.apps.users.models import CouchUser, WebUser, OldRoles, DomainMembership
 from corehq.apps.users.util import format_username
 from corehq.apps.app_manager.models import validate_lang
+from corehq.apps.sms.mixin import VerifiedNumber
 import re
 
 def wrapped_language_validation(value):
@@ -91,7 +93,8 @@ class UserForm(RoleForm):
     email = forms.EmailField(label=_("E-mail"), max_length=75, required=False)
     language = LanguageField(required=False)
     role = forms.ChoiceField(choices=(), required=False)
-    
+    phone_number = forms.CharField(required=False)
+    notes = forms.CharField(required=False, widget=widgets.Textarea())
     
 class Meta:
         app_label = 'users'
@@ -104,6 +107,7 @@ class CommCareAccountForm(forms.Form):
     password = forms.CharField(widget=PasswordInput(), required=True, min_length=1, help_text="Only numbers are allowed in passwords")
     password_2 = forms.CharField(label='Password (reenter)', widget=PasswordInput(), required=True, min_length=1)
     domain = forms.CharField(widget=HiddenInput())
+    phone_number = forms.CharField(required=False, help_text="Please enter number, including international code, in digits only.")
     
     class Meta:
         app_label = 'users'
@@ -120,6 +124,17 @@ class CommCareAccountForm(forms.Form):
             if self.password_format == 'n' and not password.isnumeric():
                 raise forms.ValidationError("Password is not numeric")
 
+        phone_number = self.cleaned_data['phone_number']
+        if not phone_number.isnumeric():
+            raise forms.ValidationError("Phone number is not numeric")
+
+        v = VerifiedNumber.view("sms/verified_number_by_number",
+            key=phone_number,
+            include_docs=True
+        ).one()
+        if v is not None and (v.owner_doc_type != self.doc_type or v.owner_id != self._id):
+            raise forms.ValidationError("Phone number is already in use.")
+        
         try:
             username = self.cleaned_data['username']
         except KeyError:

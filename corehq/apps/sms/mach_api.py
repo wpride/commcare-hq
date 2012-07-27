@@ -4,8 +4,9 @@ from django.conf import settings
 import urllib2
 
 API_ID = "MACH"
+API_ARGUMENTS = ['url', 'params']
 
-def send(msg):
+def send(msg, url='', params=''):
     """
     Sends a message via mach's API
     """
@@ -14,7 +15,7 @@ def send(msg):
         'message': outgoing_sms_text,
         'phone_number': urllib.quote(msg.phone_number),
     }
-    url = "%s?%s" % (settings.SMS_GATEWAY_URL, settings.SMS_GATEWAY_PARAMS % context)
+    url = "%s?%s" % (url, params % context)
     # just opening the url is enough to send the message
     # TODO, check response
     resp = urllib2.urlopen(url)

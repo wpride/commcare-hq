@@ -16,6 +16,8 @@ class VerifiedNumber(Document):
     """
     There should only be one VerifiedNumber entry per (owner_doc_type, owner_id), and
     each VerifiedNumber.phone_number should be unique across all entries.
+
+    Right now, no VerifiedNumbers are actually verified in any way--they must only be unique.
     """
     domain          = StringProperty()
     owner_doc_type  = StringProperty()
@@ -30,14 +32,11 @@ class VerifiedNumber(Document):
     
     @property
     def owner(self):
-        if self.owner_doc_type == "CommCareCase":
-            # Circular import
-            from corehq.apps.sms.models import CommConnectCase
-            return CommConnectCase.get(self.owner_id)
-        elif self.owner_doc_type == "CommCareUser":
-            # Circular import
-            from corehq.apps.users.models import CommCareUser
-            return CommCareUser.get(self.owner_id)
+        from corehq.apps.sms.models import CommConnectCase
+        from corehq.apps.users.models import CommCareUser
+        owner_classes = {'CommCareCase': CommConnectCase, 'CommCareUser': CommCareUser}
+        if self.owner_doc_type in owner_classes:
+            return owner_classes[self.owner_doc_type].get(self.owner_id)
         else:
             return None
 
@@ -142,3 +141,10 @@ class CommCareMobileContactMixin(object):
             v.doc_type += "-Deleted"
             v.save()
 
+    @classmethod
+    def get_by_verified_number(cls, phone_number):
+        vn = VerifiedNumber.view('sms/verified_number_by_default_phone', key=phone_number, include_docs=True).one()
+        if vn.owner_doc_type == cls.__name__:
+            return cls.get(vn.owner_id)
+        else:
+            return None

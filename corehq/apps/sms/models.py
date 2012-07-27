@@ -9,7 +9,9 @@ from casexml.apps.case.models import CommCareCase
 from dimagi.utils.mixins import UnicodeMixIn
 from dimagi.utils.parsing import json_format_datetime
 from casexml.apps.case.signals import case_post_save
-from .mixin import CommCareMobileContactMixin
+from .mixin import CommCareMobileContactMixin, MobileBackend
+from corehq.apps.domain.models import Domain
+import phonenumbers
 
 INCOMING = "I"
 OUTGOING = "O"
@@ -21,6 +23,15 @@ DIRECTION_CHOICES = (
 MISSED_EXPECTED_CALLBACK = "CALLBACK_MISSED"
 
 EVENT_TYPE_CHOICES = [MISSED_EXPECTED_CALLBACK]
+
+class Country(Document):
+    name = StringProperty()
+    country_code = IntegerProperty()
+    backend_id = StringProperty()
+
+    @classmethod
+    def get_by_country_code(cls, country_code):
+        return cls.view('sms/by_country_code', key=int(country_code), include_docs=True).one()
 
 class MessageLog(Document, UnicodeMixIn):
     base_doc                    = "MessageLog"
@@ -52,6 +63,40 @@ class MessageLog(Document, UnicodeMixIn):
             except Exception as e:
                 pass
         return name
+
+    @property
+    def recipient(self):
+        recipient_classes = {'CommCareCase': CommCareCase, 'CouchUser': CouchUser, 'CommCareUser': CommCareUser}
+        if self.couch_recipient and self.couch_recipient_doc_type and self.couch_recipient_doc_type in recipient_classes:
+            return recipient_classes[self.couch_recipient_doc_type].get(self.couch_recipient)
+        else:
+            return None
+
+    def get_backend_api(self):
+        """
+        Given a message, find which version of the api to return.
+        """
+        # try recipient
+#        recipient = self.recipient
+#        if recipient and recipient.backend_id:
+#            return MobileBackend.get(recipient.backend_id)
+
+        # try domain
+        domain = Domain.get_by_name(self.domain)
+        if domain.backend_id:
+            return MobileBackend.get(domain.backend_id)
+
+        # try country
+        phone_number = phonenumbers.parse(self.phone_number)
+        try:
+            backend_id = Country.get_by_country_code(phone_number.country_code).backend_id
+        except:
+            backend_id = None
+
+        if backend_id:
+            return MobileBackend.get(backend_id)
+        else:
+            return None
 
     @classmethod
     def by_domain_asc(cls, domain):

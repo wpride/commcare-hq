@@ -2,6 +2,7 @@ from urllib import urlencode
 from urllib2 import urlopen
 
 API_ID = "HTTP"
+API_ARGUMENTS = ['url', 'message_param', 'number_param', 'include_plus', 'method', 'additional_params']
 
 def send(msg, *args, **kwargs):
     """

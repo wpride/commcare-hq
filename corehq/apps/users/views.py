@@ -33,6 +33,7 @@ from corehq.apps.registration.user_registration_backend.forms import AdminRegist
     AdminInvitesUserForm
 from corehq.apps.prescriptions.models import Prescription
 from corehq.apps.sms.views import get_sms_autocomplete_context
+from corehq.apps.sms.mixin import InvalidFormatException, PhoneNumberInUseException
 from corehq.apps.domain.models import Domain
 from corehq.apps.users.decorators import require_permission
 from corehq.apps.users.forms import UserForm, CommCareAccountForm, ProjectSettingsForm
@@ -305,16 +306,6 @@ def account(request, domain, couch_user_id, template="users/account.html"):
         else:
             raise Http404
 
-    # phone-numbers tab
-    if request.method == "POST" and request.POST['form_type'] == "phone-numbers":
-        phone_number = request.POST['phone_number']
-        if re.match(r'\d+', phone_number):
-            couch_user.add_phone_number(phone_number)
-            couch_user.save()
-            #messages.success(request, 'Phone number added')
-        else:
-            messages.error(request, "Please enter digits only")
-
     # domain-accounts tab
     if not couch_user.is_commcare_user():
         all_domains = couch_user.get_domains()
@@ -326,13 +317,10 @@ def account(request, domain, couch_user_id, template="users/account.html"):
                         "domains": admin_domains
                         })
     # scheduled reports tab
-    context.update({
-        # for phone-number tab
-        'phone_numbers': couch_user.phone_numbers,
-
-        # for commcare-accounts tab
-#        "other_commcare_accounts": other_commcare_accounts,
-    })
+#    context.update({
+#        # for commcare-accounts tab
+##        "other_commcare_accounts": other_commcare_accounts,
+#    })
 
     #project settings tab
     if couch_user.user_id == request.couch_user.user_id and not couch_user.is_commcare_user():
@@ -510,6 +498,8 @@ def _handle_user_form(request, domain, couch_user=None):
             couch_user.last_name = form.cleaned_data['last_name']
             couch_user.email = form.cleaned_data['email']
             couch_user.language = form.cleaned_data['language']
+            if form.cleaned_data['phone_number']:
+                couch_user.save_verified_number(couch_user.domain, form.cleaned_data['phone_number'], True, None)
             if can_change_admin_status:
                 role = form.cleaned_data['role']
                 if role:
@@ -523,6 +513,8 @@ def _handle_user_form(request, domain, couch_user=None):
             form.initial['last_name'] = couch_user.last_name
             form.initial['email'] = couch_user.email
             form.initial['language'] = couch_user.language
+            form.initial['notes'] = couch_user.notes
+            form.initial['phone_number'] = couch_user.phone_number
             if can_change_admin_status:
                 if couch_user.is_commcare_user():
                     role = couch_user.get_role(domain)
@@ -692,6 +684,13 @@ def add_commcare_account(request, domain, template="users/add_commcare_account.h
 
             couch_user = CommCareUser.create(domain, username, password, device_id='Generated from HQ')
             couch_user.save()
+            if form.cleaned_data['phone_number']:
+                try:
+                    couch_user.add_phone_number(form.cleaned_data['phone_number'], default=True)
+                except InvalidFormatException:
+                    messages.error(request, "The phone number was not saved because it was an invalid format")
+                except PhoneNumberInUseException:
+                    messages.error(request, "The phone number was not saved because it was not unique")
             return HttpResponseRedirect(reverse("user_account", args=[domain, couch_user.userID]))
     else:
         form = CommCareAccountForm()

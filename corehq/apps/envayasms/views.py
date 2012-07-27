@@ -2,6 +2,7 @@ import json
 from .api import API_ID as BACKEND_API_ID
 from corehq.apps.ivr.api import incoming as incoming_call
 from corehq.apps.sms.api import incoming as incoming_sms
+from corehq.apps.sms import api
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 import json, time, sha, base64, phonenumbers

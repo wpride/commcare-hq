@@ -1,12 +1,12 @@
-from datetime import datetime, date, timedelta
+from datetime import datetime
 from corehq.apps.sms.models import SMSLog, INCOMING
 from corehq.apps.sms.util import domains_for_phone, users_for_phone,\
     clean_phone_number, clean_outgoing_sms_text
-from django.conf import settings
 from urllib2 import urlopen
 from urllib import urlencode
 
 API_ID = "UNICEL"
+API_ARGUMENTS = ['username', 'password', 'sender']
 
 OUTBOUND_URLBASE = "http://www.unicel.in/SendSMS/sendmsg.php"
 
@@ -35,19 +35,6 @@ UNICODE_PARAMS = [("udhi", 0),
                   ("dcs", 8)]
 
 DATE_FORMAT = "%m/%d/%Y %H:%M:%S %p"
-
-def _check_environ():
-    if not hasattr(settings, "UNICEL_CONFIG") \
-    or not settings.UNICEL_CONFIG.get("username", "") \
-    or not settings.UNICEL_CONFIG.get("password", "") \
-    or not settings.UNICEL_CONFIG.get("sender", ""):
-        raise Exception("Bad Unicel configuration. You must set a "
-                        "username and password in a settings variable "
-                        "called UNICEL_CONFIG to use this backend")
-
-def _config():
-    _check_environ() 
-    return settings.UNICEL_CONFIG
 
 def create_from_request(request):
     """
@@ -84,19 +71,18 @@ def create_from_request(request):
     return log
     
 
-def send(message):
+def send(message, username='', password='', sender=''):
     """
     Send an outbound message using the Unicel API
     """
-    config = _config()
     
     phone_number = clean_phone_number(message.phone_number).replace("+", "")
     # these are shared regardless of API
     params = [(OutboundParams.DESTINATION, phone_number),
-              (OutboundParams.USERNAME, config["username"]),
-              (OutboundParams.PASSWORD, config["password"]),
-              (OutboundParams.SENDER, config["sender"])]
-    try: 
+              (OutboundParams.USERNAME, username),
+              (OutboundParams.PASSWORD, password),
+              (OutboundParams.SENDER, sender)]
+    try:
         text = str(message.text)
         # it's ascii
         params.append((OutboundParams.MESSAGE, text))
