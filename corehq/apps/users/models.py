@@ -481,7 +481,11 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn, CommCareMobileContactMi
 
     @property
     def default_phone_number(self):
-        return self.get_verified_number().phone_number
+        try:
+            return self.get_verified_number().phone_number
+        except:
+            return ''
+    
     phone_number = default_phone_number
 
     @property
@@ -1077,6 +1081,10 @@ class WebUser(CouchUser):
             dm.domain = normalize_domain_name(dm.domain)
             self.domain_memberships.append(dm)
             self.domains.append(dm.domain)
+
+    @property
+    def domain(self):
+        return None
 
     @classmethod
     def create(cls, domain, username, password, email=None, uuid='', date='', **kwargs):

@@ -137,11 +137,8 @@
                     <td>{{ user.form_count }}</td>
                     <td>{{ user.case_count }}</td>
                     <td>
-                        {% if user.phone_numbers %}
-                            +{{ user.phone_numbers.0 }}
-                            {% if user.phone_numbers.1 %}
-                                (and more)
-                            {% endif %}
+                        {% if user.phone_number %}
+                            +{{ user.phone_number }}
                         {% endif %}
                     </td>
                     {% if show_case_sharing %}
