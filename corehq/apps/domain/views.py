@@ -23,6 +23,7 @@ from django.views.decorators.http import require_POST
 import json
 from dimagi.utils.post import simple_post
 from corehq.apps.registration.forms import DomainRegistrationForm
+from corehq.apps.sms.api import BACKENDS
 
 # Domain not required here - we could be selecting it for the first time. See notes domain.decorators
 # about why we need this custom login_required decorator
@@ -226,7 +227,8 @@ def project_settings(request, domain, template="domain/admin/project_settings.ht
                 'customer_type': domain.customer_type,
                 'is_test': json.dumps(domain.is_test),
                 'description': domain.description,
-                'is_shared': domain.is_shared
+                'is_shared': domain.is_shared,
+                'backends': BACKENDS
             })
         else:
             form = DomainGlobalSettingsForm(initial={

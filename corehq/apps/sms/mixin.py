@@ -49,6 +49,9 @@ class MobileBackend(Document):
     outbound_module = StringProperty()      # The fully-qualified name of the inbound module to be used (must implement send() method)
     outbound_params = DictProperty()        # The parameters which will be the keyword arguments sent to the outbound module's send() method
 
+    def applies_to(self, domain):
+        return len(self.domain) == 0 or domain in self.domain
+
 class CommCareMobileContactMixin(object):
     """
     Defines a mixin to manage a mobile contact's information. This mixin must be used with

@@ -35,12 +35,20 @@
                     <label class="control-label" for="id_gateway">SMS Gateway</label>
                     <div class="controls">
                         <select name="gateway" id="id_gateway">
-                            {% for gateway, options in gateways.items %}
+                            {% for gateway in gateways.keys %}
                                 <option>{{ gateway }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
+        <div id="gateway-options">
+                            {% for backend, backend_module in backends.items %}
+                                <div id="gateway_{{ gateway }}">
+                                    {% bootstrap_form_errors gateway_form %}
+                                    {% bootstrap_fieldset gateway_form %}
+                                </div>
+                            {% endfor %}
+                        </div>
         <div class="form-actions"><button type="submit" class="btn btn-primary">Update Project Settings</button></div>
         <fieldset>
             {% if languages|length > 0 %}
