@@ -1251,15 +1251,13 @@ class WebUser(CouchUser, AuthorizableMixin):
             self.domain_memberships.append(dm)
             self.domains.append(dm.domain)
 
-<<<<<<< HEAD
     @property
     def domain(self):
         return None
-=======
+
     def is_global_admin(self):
         # override this function to pass global admin rights off to django
         return self.is_superuser
->>>>>>> master
 
     @classmethod
     def create(cls, domain, username, password, email=None, uuid='', date='', **kwargs):
