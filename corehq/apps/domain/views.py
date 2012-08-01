@@ -229,7 +229,7 @@ def project_settings(request, domain, template="domain/admin/project_settings.ht
                 'is_test': json.dumps(domain.is_test),
                 'description': domain.description,
                 'is_shared': domain.is_shared,
-                'backends': BACKENDS
+                'gateways': BACKENDS
             })
         else:
             form = DomainGlobalSettingsForm(initial={

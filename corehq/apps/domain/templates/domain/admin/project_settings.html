@@ -58,17 +58,17 @@
                     <label class="control-label" for="id_gateway">SMS Gateway</label>
                     <div class="controls">
                         <select name="gateway" id="id_gateway">
-                            {% for gateway in gateways.keys %}
-                                <option>{{ gateway }}</option>
+                            {% for backend in backends %}
+                                <option value="{{ backend.API_ID }}">{{ backend.API_DESCRIPTION }}</option>
                             {% endfor %}
                         </select>
                     </div>
                 </div>
         <div id="gateway-options">
-                            {% for backend, backend_module in backends.items %}
-                                <div id="gateway_{{ gateway }}">
-                                    {% bootstrap_form_errors gateway_form %}
-                                    {% bootstrap_fieldset gateway_form %}
+                            {% for backend in backends %}
+                                <div id="gateway_{{ backend.API_ID }}">
+                                    {% bootstrap_form_errors backend.FORM %}
+                                    {% bootstrap_fieldset backend.FORM %}
                                 </div>
                             {% endfor %}
                         </div>
