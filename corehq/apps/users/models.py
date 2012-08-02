@@ -759,6 +759,8 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn, CommCareMobileContactMi
     def get_by_default_phone(cls, phone_number):
         return cls.get_by_verified_number(phone_number)
 
+    def is_global_admin(self):
+        return False
 
     def is_member_of(self, domain_qs):
         """
@@ -769,7 +771,6 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn, CommCareMobileContactMi
             return domain_qs.name in self.get_domains() or self.is_global_admin()
         except Exception:
             return domain_qs in self.get_domains() or self.is_global_admin()
-
 
     @classmethod
     def get_by_user_id(cls, userID, domain=None):
@@ -1363,7 +1364,7 @@ class WebUser(CouchUser, AuthorizableMixin):
                 total_permission |= permission
 
             #set up a user role
-            return UserRole(domain=domain, permissions=total_permission, name=', '.join([domain_membership.role.name + membership_source for domain_membership, membership_source in domain_memberships]))
+            return UserRole(domain=domain, permissions=total_permission, name=', '.join(["%s %s" % (domain_membership.role.name, membership_source) for domain_membership, membership_source in domain_memberships]))
             #set up a domain_membership
 
 
