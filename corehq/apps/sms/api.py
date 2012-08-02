@@ -220,6 +220,3 @@ def incoming(phone_number, text, backend_api):
     else:
         #TODO: Registration via SMS
         pass
-
-
-

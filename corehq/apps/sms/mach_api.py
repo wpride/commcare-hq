@@ -2,7 +2,7 @@ from corehq.apps.sms.util import clean_outgoing_sms_text
 import urllib
 from django.conf import settings
 import urllib2
-from django import forms
+import forms
 
 """
 To implement the API you must have:
@@ -40,8 +40,8 @@ def send(msg, url='', params=''):
     # just opening the url is enough to send the message
     # TODO, check response
     resp = urllib2.urlopen(url)
-    
-class MachSMSForm(forms.Form):
+
+class MachSMSForm(forms.SMSForm):
     url = forms.URLField(label="URL", required=True)
     params = forms.CharField(label="URL params", required=True)
 

@@ -24,7 +24,7 @@ import json
 from dimagi.utils.post import simple_post
 from corehq.apps.registration.forms import DomainRegistrationForm
 from corehq.apps.sms.api import BACKENDS
-from django.forms.widgets import Select
+from corehq.apps.sms.mixin import MobileBackend
 
 # Domain not required here - we could be selecting it for the first time. See notes domain.decorators
 # about why we need this custom login_required decorator
@@ -251,16 +251,43 @@ def autocomplete_fields(request, field):
     return HttpResponse(json.dumps(results))
 
 @domain_admin_required
-def sms_backends(request, domain):
-    if request.method == 'POST':
-        gateways = request.POST.getlist('gateway')
-        for gateway in gateways:
-            backend = BACKENDS[gateway].API_FORM(prefix=backend.API_ID)
-    return render_to_response(request, 'domain/admin/sms_backends.html',
-                {'domain': domain.name,
-                 'gateways': domain.gateways(),
-                 'backends': [(backend, backend.API_FORM(prefix=backend.API_ID)) for backend in BACKENDS.values()],
+def sms_gateways(request, domain, gateway_form = None):
+    backends = BACKENDS.values()
+    available_gateways = []
+    for backend in backends:
+        if gateway_form and request.POST.get('gateway') == backend.API_ID:
+            form = gateway_form # use form from add_sms_gateway
+        else:
+            form = backend.API_FORM(prefix=backend.API_ID)
+        available_gateways.append((backend, form))
+    return render_to_response(request, 'domain/admin/sms_gateways.html',
+                {'domain': domain,
+                 'gateways': request.project.gateways(),
+                 'available_gateways': available_gateways,
                  })
+
+@domain_admin_required
+def add_sms_gateway(request, domain):
+    if request.method == 'POST':
+        backend = BACKENDS[request.POST.get('gateway')]
+        parameters = {}
+        form = backend.API_FORM(request.POST, prefix=backend.API_ID)
+        form.domain = request.project
+        if form.is_valid():
+            for param in backend.API_PARAMETERS:
+                parameters[param] = form.cleaned_data[param]
+            gateway = MobileBackend(domain=[domain], description=backend.API_DESCRIPTION, outbound_module=backend.__name__, outbound_params=parameters, country_code=form.cleaned_data['country_code'])
+            gateway.save()
+            return redirect(reverse('domain_sms_gateways', args=[domain]))
+        else:
+            return sms_gateways(request, domain, form)
+
+@domain_admin_required
+def remove_sms_gateway(request, domain, gateway_id):
+    if request.method == 'POST':
+        gateway = MobileBackend.get(gateway_id)
+        gateway.delete()
+        return redirect(reverse('domain_sms_gateways', args=[domain]))
 
 @require_previewer # remove for production
 @domain_admin_required

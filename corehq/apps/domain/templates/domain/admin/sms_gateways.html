@@ -1,0 +1,70 @@
+{% extends "users/users_base.html" %}
+{% load hq_bootstrap_tags %}
+{% load hq_shared_tags %}
+{% load i18n %}
+
+{% block js %}{{ block.super }}
+<script type="text/javascript" src="{% static 'hqwebapp/javascripts/jquery-ui-datepicker/jquery-ui-1.8.17.custom.datepicker.min.js' %}"/>
+{% endblock %}
+
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'hqwebapp/javascripts/jquery-ui-datepicker/datepicker-theme/jquery-ui-1.8.17.custom.css' %}" />
+{% endblock %}
+
+{% block js-inline %}
+{{ block.super }}
+<script type="text/javascript">
+    $(function(){
+        var changeGateway = function() {
+            var gw = $("#id_gateway");
+            var options = $("#gateway_" + gw.val());
+            options.show();
+            options.siblings().hide();
+        };
+        $("#id_gateway").change(changeGateway);
+        changeGateway();
+    });
+</script>
+{% endblock %}
+
+{% block subsection-title %}
+    <li class="active">
+        <a href="#">SMS Gateways</a>
+    </li>
+{% endblock %}
+
+{% block user-view %}
+    <ul>
+    {% for gateway in gateways %}
+        <li>{% if gateway.country_code %}+{{ gateway.country_code }}: {% endif %}{{ gateway.description }}{% if gateway.default %} (default){% endif %}</li>
+    {% endfor %}
+    </ul>
+    <form class="form-horizontal" method="post" action="{% url domain_add_sms_gateway domain %}">
+    <fieldset>
+        <legend>Add SMS
+            <Gateway></Gateway></legend>
+        <div class="control-group">
+                    <label class="control-label" for="id_gateway">SMS Gateway</label>
+                    <div class="controls">
+                        <select name="gateway" id="id_gateway">
+                            {% for gateway, form in available_gateways %}
+                                <option value="{{ gateway.API_ID }}">{{ gateway.API_DESCRIPTION }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        </div>
+        <div id="gateway_forms">
+        {% for gateway, form in available_gateways %}
+                            <div id="gateway_{{ gateway.API_ID }}" class="hide">
+                                {% bootstrap_form_errors form %}
+                                {% bootstrap_fieldset form %}
+                            </div>
+                        {% endfor %}
+        </div>
+                        <button id="add_gateway" class="btn primary">Add gateway</button>
+    </fieldset>
+
+
+    </form>
+{% endblock %}>

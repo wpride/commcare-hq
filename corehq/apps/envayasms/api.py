@@ -1,5 +1,5 @@
 from models import EnqueuedMessage
-from django import forms
+from corehq.apps.sms import forms
 
 API_ID = "ANDROID"
 API_DESCRIPTION = "EnvayaSMS Android Gateway"
@@ -12,7 +12,7 @@ def send(msg, gateway_number):
     m = EnqueuedMessage(phone_number=phone_number, message=msg.text, gateway_number=gateway_number)
     m.save()
 
-class EnvayaSMSForm(forms.Form):
+class EnvayaSMSForm(forms.SMSForm):
     password = forms.CharField(widget=forms.PasswordInput, label='Password')
     gateway_number = forms.CharField('Gateway phone number')
 

@@ -62,6 +62,25 @@
     <form class="form-horizontal" method="post">
         {% bootstrap_form_errors form %}
         {% bootstrap_fieldset form "Project Settings" %}
+        <div class="control-group">
+                    <label class="control-label" for="id_gateway">SMS Gateway</label>
+                    <div class="controls">
+                        <select name="gateway" id="id_gateway">
+                            {% for backend, form in backends %}
+                                <option value="{{ backend.API_ID }}">{{ backend.API_DESCRIPTION }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+        <div id="gateway-options">
+            <h3>Backend configuration</h3>
+                            {% for backend, form in backends %}
+                                <div id="gateway_{{ backend.API_ID }}" class="hide">
+                                    {% bootstrap_form_errors form %}
+                                    {% bootstrap_fieldset form %}
+                                </div>
+                            {% endfor %}
+                        </div>
         <div class="form-actions"><button type="submit" class="btn btn-primary">Update Project Settings</button></div>
         <fieldset>
             {% if languages|length > 0 %}

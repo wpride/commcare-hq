@@ -1,5 +1,6 @@
 import re
 from couchdbkit.ext.django.schema import *
+import importlib
 
 phone_number_re = re.compile("^\d+$")
 
@@ -48,14 +49,37 @@ class MobileBackend(Document):
     description = StringProperty()          # (optional) A description of this backend
     outbound_module = StringProperty()      # The fully-qualified name of the inbound module to be used (must implement send() method)
     outbound_params = DictProperty()        # The parameters which will be the keyword arguments sent to the outbound module's send() method
-    country = StringProperty()              # ID of a country document
+    country_code = StringProperty()              # ID of a country document
 
     def applies_to(self, domain):
         return len(self.domain) == 0 or domain in self.domain
 
     @classmethod
     def by_domain(cls, domain):
-        return cls.view('sms/backend_by_domain', key=domain, include_docs=True).all()
+        return cls.view('sms/backend_by_domain_and_country', startkey=[domain], endkey=[domain, {}], include_docs=True).all()
+
+    @classmethod
+    def find(cls, domain=None, country=None):
+        backends = cls.view('sms/backend_by_domain_and_country', key=[domain, country], include_docs=True).all()
+        if len(backends) > 0:
+            return backends[0]
+        backends = cls.view('sms/backend_by_domain_and_country', key=[domain, None], include_docs=True).all()
+        if len(backends) > 0:
+            return backends[0]
+        backends = cls.view('sms/backend_by_domain_and_country', key=[None, country], include_docs=True).all()
+        if len(backends) > 0:
+            return backends[0]
+        backends = cls.view('sms/backend_by_domain_and_country', key=[None, None], include_docs=True).all()
+        if len(backends) > 0:
+            return backends[0]
+        return None
+
+    def module(self):
+        return importlib.import_module(self.outbound_module)
+
+    @property
+    def default(self):
+        return self.country_code is None
 
 class CommCareMobileContactMixin(object):
     """

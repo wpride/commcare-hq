@@ -1,6 +1,6 @@
 from urllib import urlencode
 from urllib2 import urlopen
-from django import forms
+from corehq.apps.sms import forms
 
 API_ID = "HTTP"
 API_DESCRIPTION = "Generic HTTP Gateway"
@@ -41,7 +41,7 @@ def send(msg, *args, **kwargs):
     else:
         response = urlopen(url, url_params).read()
 
-class HTTPSMSForm(forms.Form):
+class HTTPSMSForm(forms.SMSForm):
     url = forms.URLField(label="URL", required=True)
     message_param = forms.CharField(label="Message parameter", required=True, help_text="The parameter which the gateway expects to represent the sms message")
     number_param = forms.CharField(label="Number parameter", required=True, help_text="The parameter which the gateway expects to represent the phone number to send to")

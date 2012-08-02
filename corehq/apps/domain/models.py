@@ -306,10 +306,11 @@ class Domain(Document):
     def case_sharing_included(self):
         return self.case_sharing or reduce(lambda x, y: x or y, [getattr(app, 'case_sharing', False) for app in self.applications()], False)
 
-    def gateway(self):
+    def gateways(self):
         return MobileBackend.by_domain(self.name)
 
-
+    def default_gateway(self):
+        return MobileBackend.find(self.name)
 
     def save_copy(self, new_domain_name=None, user=None):
         from corehq.apps.app_manager.models import get_app
