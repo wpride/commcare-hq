@@ -48,9 +48,14 @@ class MobileBackend(Document):
     description = StringProperty()          # (optional) A description of this backend
     outbound_module = StringProperty()      # The fully-qualified name of the inbound module to be used (must implement send() method)
     outbound_params = DictProperty()        # The parameters which will be the keyword arguments sent to the outbound module's send() method
+    country = StringProperty()              # ID of a country document
 
     def applies_to(self, domain):
         return len(self.domain) == 0 or domain in self.domain
+
+    @classmethod
+    def by_domain(cls, domain):
+        return cls.view('sms/backend_by_domain', key=domain, include_docs=True).all()
 
 class CommCareMobileContactMixin(object):
     """

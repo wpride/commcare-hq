@@ -1,7 +1,9 @@
 from urllib import urlencode
 from urllib2 import urlopen
+from django import forms
 
 API_ID = "HTTP"
+API_DESCRIPTION = "Generic HTTP Gateway"
 API_ARGUMENTS = ['url', 'message_param', 'number_param', 'include_plus', 'method', 'additional_params']
 
 def send(msg, *args, **kwargs):
@@ -44,7 +46,7 @@ class HTTPSMSForm(forms.Form):
     message_param = forms.CharField(label="Message parameter", required=True, help_text="The parameter which the gateway expects to represent the sms message")
     number_param = forms.CharField(label="Number parameter", required=True, help_text="The parameter which the gateway expects to represent the phone number to send to")
     include_plus = forms.BooleanField(label="Include plus?", help_text="Include plus sign in front of number when sending to gateway")
-    method = forms.ChoiceField(label="HTTP method", default="GET", choices=("GET", "POST"))
-    additional_params = forms.CharField(label="Additional params", required=False, default="", help_text="URL-encoded params for the gateway")
+    method = forms.ChoiceField(label="HTTP method", choices=(("GET", "GET"), ("POST", "POST")))
+    additional_params = forms.CharField(label="Additional params", required=False, help_text="URL-encoded params for the gateway")
 
-FORM = HTTPSMSForm
+API_FORM = HTTPSMSForm

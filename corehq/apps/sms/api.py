@@ -12,16 +12,15 @@ from corehq.apps.smsforms.app import get_responses, start_session
 from corehq.apps.app_manager.models import get_app, Form
 from casexml.apps.case.models import CommCareCase
 from touchforms.formplayer.api import current_question
+from corehq.apps.sms.backend import http_api
 
 # For each EnvayaSMS gateway, add ("+##", envayasms_api) below
 ALTERNATIVE_BACKENDS = [("+91", unicel_api)] # TODO: move to setting?
 DEFAULT_BACKEND = mach_api
 
-BACKENDS = {
-    'mach': mach_api,
-    'unicel': unicel_api,
-    'envaya': envayasms_api
-}
+BACKENDS = {}
+for backend in [mach_api, envayasms_api, unicel_api, http_api]:
+    BACKENDS[backend.API_ID] = backend
 
 def send_sms(domain, id, phone_number, text):
     """

@@ -8,6 +8,7 @@ class EnqueuedMessage(Document):
     sent_at = DateTimeProperty(auto_now=True)
     message = StringProperty()
     phone_number = StringProperty() # not using contacts so we can query the field
+    gateway_number = StringProperty()
 
     @classmethod
     def recent_messages(cls):

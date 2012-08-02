@@ -228,8 +228,7 @@ def project_settings(request, domain, template="domain/admin/project_settings.ht
                 'customer_type': domain.customer_type,
                 'is_test': json.dumps(domain.is_test),
                 'description': domain.description,
-                'is_shared': domain.is_shared,
-                'gateways': BACKENDS
+                'is_shared': domain.is_shared
             })
         else:
             form = DomainGlobalSettingsForm(initial={
@@ -250,6 +249,18 @@ def autocomplete_fields(request, field):
     prefix = request.GET.get('prefix', '')
     results = Domain.field_by_prefix(field, prefix)
     return HttpResponse(json.dumps(results))
+
+@domain_admin_required
+def sms_backends(request, domain):
+    if request.method == 'POST':
+        gateways = request.POST.getlist('gateway')
+        for gateway in gateways:
+            backend = BACKENDS[gateway].API_FORM(prefix=backend.API_ID)
+    return render_to_response(request, 'domain/admin/sms_backends.html',
+                {'domain': domain.name,
+                 'gateways': domain.gateways(),
+                 'backends': [(backend, backend.API_FORM(prefix=backend.API_ID)) for backend in BACKENDS.values()],
+                 })
 
 @require_previewer # remove for production
 @domain_admin_required

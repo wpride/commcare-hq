@@ -4,9 +4,11 @@ from corehq.apps.sms.util import domains_for_phone, users_for_phone,\
     clean_phone_number, clean_outgoing_sms_text
 from urllib2 import urlopen
 from urllib import urlencode
+from django import forms
 
 API_ID = "UNICEL"
-API_ARGUMENTS = ['username', 'password', 'sender']
+API_DESCRIPTION = "Unicel"
+API_PARAMETERS = ['username', 'password', 'sender']
 
 OUTBOUND_URLBASE = "http://www.unicel.in/SendSMS/sendmsg.php"
 
@@ -92,4 +94,9 @@ def send(message, username='', password='', sender=''):
         params.append((OutboundParams.MESSAGE, encoded))
     data = urlopen('%s?%s' % (OUTBOUND_URLBASE, urlencode(params))).read()
     
-    
+class EnvayaSMSForm(forms.Form):
+    username = forms.CharField(label='Username')
+    password = forms.CharField(widget=forms.PasswordInput, label='Password')
+    sender = forms.CharField('Phone number')
+
+API_FORM = EnvayaSMSForm

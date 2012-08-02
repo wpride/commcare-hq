@@ -13,13 +13,13 @@ send(msg, url='', params=''): a function that sends a message by that API
 API_FORM(): a function or class that returns a Django form instance to take parameters for
 
 {
-   "_id": "MOBILE_BACKEND_TROPO_US",
-   "description": "Tropo - US Number",
-   "outbound_module": "corehq.apps.tropo.api",
-   "outbound_params": {
-       "messaging_token": "xxx"
-   },
-   "doc_type": "MobileBackend"
+   "_id": "MOBILE_BACKEND_TROPO_US",
+   "description": "Tropo - US Number",
+   "outbound_module": "corehq.apps.tropo.api",
+   "outbound_params": {
+       "messaging_token": "xxx"
+   },
+   "doc_type": "MobileBackend"
 }
 """
 

@@ -11,6 +11,7 @@ from dimagi.utils.couch.database import get_db
 from itertools import chain
 from langcodes import langs as all_langs
 from collections import defaultdict
+from corehq.apps.sms.mixin import MobileBackend
 
 lang_lookup = defaultdict(str)
 
@@ -304,6 +305,11 @@ class Domain(Document):
 
     def case_sharing_included(self):
         return self.case_sharing or reduce(lambda x, y: x or y, [getattr(app, 'case_sharing', False) for app in self.applications()], False)
+
+    def gateway(self):
+        return MobileBackend.by_domain(self.name)
+
+
 
     def save_copy(self, new_domain_name=None, user=None):
         from corehq.apps.app_manager.models import get_app
