@@ -81,6 +81,9 @@ class MobileBackend(Document):
     def default(self):
         return self.country_code is None
 
+    def id(self):
+        return self._id
+
 class CommCareMobileContactMixin(object):
     """
     Defines a mixin to manage a mobile contact's information. This mixin must be used with

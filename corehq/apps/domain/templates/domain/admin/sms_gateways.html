@@ -37,7 +37,14 @@
 {% block user-view %}
     <ul>
     {% for gateway in gateways %}
-        <li>{% if gateway.country_code %}+{{ gateway.country_code }}: {% endif %}{{ gateway.description }}{% if gateway.default %} (default){% endif %}</li>
+        <li>
+            <form class="form-inline" method="post" action="{% url domain_remove_sms_gateway domain gateway.id %}">
+                {% if gateway.country_code %}+{{ gateway.country_code }}:{% endif %}
+                {{ gateway.description }}
+                {% if gateway.default %}(default){% endif %}
+                <button type="submit" class="btn">Remove app</button>
+            </form>
+        </li>
     {% endfor %}
     </ul>
     <form class="form-horizontal" method="post" action="{% url domain_add_sms_gateway domain %}">

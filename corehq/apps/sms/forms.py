@@ -10,6 +10,6 @@ class SMSForm(Form):
             self.cleaned_data['country_code'] = self.cleaned_data['country_code'][1:]
         if self.cleaned_data['country_code'] == '':
             self.cleaned_data['country_code'] = None
-        if self.cleaned_data['country_code'] is None and not self.cleaned_data['country_code'].isnumeric():
+        if self.cleaned_data['country_code'] is not None and not self.cleaned_data['country_code'].isnumeric():
             raise ValidationError("The country code must be numeric")
         return super(SMSForm, self).clean()
