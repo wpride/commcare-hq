@@ -135,6 +135,7 @@ HQ_APPS = (
     'casexml.apps.phone',
     'corehq.apps.cleanup',
     'corehq.apps.cloudcare',
+    'corehq.apps.appstore',
     'corehq.apps.domain',
     'corehq.apps.domainsync',
     'corehq.apps.hqadmin',
@@ -195,7 +196,7 @@ REFLEXIVE_URL_BASE = "localhost:8000"
 INSTALLED_APPS = DEFAULT_APPS + HQ_APPS
 
 TABS = [
-    ("corehq.apps.domain.views.snapshot_info", "Info", lambda request: request.project.is_snapshot),
+    ("corehq.apps.appstore.views.project_info", "Info", lambda request: request.project.is_snapshot),
     ("corehq.apps.reports.views.default", "Reports", lambda request: not request.project.is_snapshot),
     ("corehq.apps.data_interfaces.views.default", "Manage Data", lambda request: request.couch_user.can_edit_data()),
     ("corehq.apps.app_manager.views.default", "Applications"),
@@ -216,13 +217,13 @@ DOMAIN_SELECT_URL="/domain/select/"
 LOGIN_URL="/accounts/login/"
 # For the registration app
 # One week to confirm a registered user account
-ACCOUNT_ACTIVATION_DAYS=7 
-# If a user tries to access domain admin pages but isn't a domain 
+ACCOUNT_ACTIVATION_DAYS=7
+# If a user tries to access domain admin pages but isn't a domain
 # administrator, here's where he/she is redirected
 DOMAIN_NOT_ADMIN_REDIRECT_PAGE_NAME="homepage"
 
 # domain syncs
-# e.g. 
+# e.g.
 #               { sourcedomain1: { "domain": targetdomain1,
 #                                  "transform": path.to.transformfunction1 },
 #                 sourcedomain2: {...} }
@@ -287,7 +288,7 @@ HQ_ACCOUNT_ROOT = "commcarehq.org" # this is what gets appended to @domain after
 
 XFORMS_PLAYER_URL = "http://localhost:4444/"  # touchform's setting
 
-####### Couchlog config ###### 
+####### Couchlog config ######
 
 SUPPORT_EMAIL = "commcarehq-support@dimagi.com"
 COUCHLOG_BLUEPRINT_HOME = "%s%s" % (STATIC_URL, "hqwebapp/stylesheets/blueprint/")
@@ -301,7 +302,7 @@ COUCHLOG_TABLE_CONFIG = {"id_column":       0,
                          "actions_column":  8,
                          "email_column":    9,
                          "no_cols":         10}
-COUCHLOG_DISPLAY_COLS = ["id", "archived?", "date", "exception type", 
+COUCHLOG_DISPLAY_COLS = ["id", "archived?", "date", "exception type",
                          "message", "domain", "user", "url", "actions", "report"]
 COUCHLOG_RECORD_WRAPPER = "corehq.apps.hqcouchlog.wrapper"
 COUCHLOG_DATABASE_NAME = "commcarehq-couchlog"
@@ -310,7 +311,7 @@ COUCHLOG_DATABASE_NAME = "commcarehq-couchlog"
 LUCENE_ENABLED = False
 
 # sofabed
-FORMDATA_MODEL = 'hqsofabed.HQFormData'  
+FORMDATA_MODEL = 'hqsofabed.HQFormData'
 
 
 
@@ -347,7 +348,7 @@ GOOGLE_ANALYTICS_ID = ''
 # for touchforms maps
 GMAPS_API_KEY = "changeme"
 
-# for touchforms authentication 
+# for touchforms authentication
 TOUCHFORMS_API_USER = "changeme"
 TOUCHFORMS_API_PASSWORD = "changeme"
 
@@ -377,12 +378,13 @@ _dynamic_db_settings = get_dynamic_db_settings(COUCH_SERVER_ROOT, COUCH_USERNAME
 COUCH_SERVER = _dynamic_db_settings["COUCH_SERVER"]
 COUCH_DATABASE = _dynamic_db_settings["COUCH_DATABASE"]
 
-# other urls that depend on the server 
+# other urls that depend on the server
 XFORMS_POST_URL = _dynamic_db_settings["XFORMS_POST_URL"]
 
 COUCHDB_DATABASES = [(app_label, COUCH_DATABASE) for app_label in [
         'api',
         'app_manager',
+        'appstore',
         'orgs',
         'auditcare',
         'builds',
@@ -483,30 +485,37 @@ EMAIL_USE_TLS = True
 DATA_INTERFACE_MAP = {
     'Case Management' : [
         'corehq.apps.data_interfaces.interfaces.CaseReassignmentInterface'
+
+    ]
+}
+APPSTORE_INTERFACE_MAP = {
+    'App Store' : [
+        'corehq.apps.appstore.interfaces.AppStoreInterface'
     ]
 }
 
 STANDARD_REPORT_MAP = {
     "Monitor Workers" : [
-        'corehq.apps.reports.standard.CaseActivityReport',
-        'corehq.apps.reports.standard.SubmissionsByFormReport',
-        'corehq.apps.reports.standard.DailySubmissionsReport',
-        'corehq.apps.reports.standard.DailyFormCompletionsReport',
-        'corehq.apps.reports.standard.FormCompletionTrendsReport',
-        'corehq.apps.reports.standard.SubmissionTimesReport',
-        'corehq.apps.reports.standard.SubmitDistributionReport',
+        'corehq.apps.reports._global.monitoring.CaseActivityReport',
+        'corehq.apps.reports._global.monitoring.SubmissionsByFormReport',
+        'corehq.apps.reports._global.monitoring.DailySubmissionsReport',
+        'corehq.apps.reports._global.monitoring.DailyFormCompletionsReport',
+        'corehq.apps.reports._global.monitoring.FormCompletionTrendsReport',
+        'corehq.apps.reports._global.monitoring.FormCompletionVsSubmissionTrendsReport',
+        'corehq.apps.reports._global.monitoring.SubmissionTimesReport',
+        'corehq.apps.reports._global.monitoring.SubmitDistributionReport',
     ],
     "Inspect Data" : [
-        'corehq.apps.reports.standard.SubmitHistory',
-        'corehq.apps.reports.standard.CaseListReport',
-        'corehq.apps.reports.standard.MapReport',
+        'corehq.apps.reports._global.inspect.SubmitHistory',
+        'corehq.apps.reports._global.inspect.CaseListReport',
+        'corehq.apps.reports._global.inspect.MapReport',
     ],
     "Raw Data" : [
-        'corehq.apps.reports.standard.ExcelExportReport',
-        'corehq.apps.reports.standard.CaseExportReport',
+        'corehq.apps.reports._global.export.ExcelExportReport',
+        'corehq.apps.reports._global.export.CaseExportReport',
     ],
     "Manage Deployments" : [
-        'corehq.apps.reports.standard.ApplicationStatusReport',
+        'corehq.apps.reports._global.deployments.ApplicationStatusReport',
         'corehq.apps.receiverwrapper.reports.SubmissionErrorReport',
         'phonelog.reports.FormErrorReport',
         'phonelog.reports.DeviceLogDetailsReport'
