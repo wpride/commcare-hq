@@ -512,7 +512,10 @@ def _handle_user_form(request, domain, couch_user=None):
             couch_user.email = form.cleaned_data['email']
             couch_user.language = form.cleaned_data['language']
             if form.cleaned_data['phone_number']:
-                couch_user.save_verified_number(couch_user.domain, form.cleaned_data['phone_number'], True, None)
+                try:
+                    couch_user.save_verified_number(couch_user.domain, form.cleaned_data['phone_number'], True, None)
+                except PhoneNumberInUseException:
+                    messages.error(request, "Failed to save phone number: This phone number is already in use.")
             if can_change_admin_status:
                 role = form.cleaned_data['role']
                 if role:

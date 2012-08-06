@@ -10,6 +10,7 @@ from models import EnqueuedMessage
 from django.conf import settings
 import phonenumbers
 from corehq.apps.sms.mixin import MobileBackend
+from django.core.urlresolvers import reverse
 
 @csrf_exempt
 def receive_action(request, domain=None):
@@ -39,9 +40,9 @@ def receive_action(request, domain=None):
     if action == 'incoming':
         # receive message
         if data.get('message_type') == 'call':
-            incoming_call(data.get('from', ''), BACKEND_API_ID)
+            incoming_call(data.get('from', ''), backend._id)
         else:
-            incoming_sms(data.get('from', ''), data.get('message', ''), BACKEND_API_ID)
+            incoming_sms(data.get('from', ''), data.get('message', ''), backend._id)
 
     elif action == 'outgoing':
         # send back outgoing
