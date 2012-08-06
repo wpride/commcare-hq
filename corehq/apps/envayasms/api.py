@@ -1,6 +1,8 @@
 from models import EnqueuedMessage
 from corehq.apps.sms import forms
 from django.core.urlresolvers import reverse
+from corehq.apps.sms.mixin import MobileBackend
+import phonenumbers
 
 API_ID = "ANDROID"
 API_DESCRIPTION = "EnvayaSMS Android Gateway"
@@ -17,7 +19,9 @@ def send(msg, password, gateway_number):
     phone_number = msg.phone_number
     if phone_number[0] != "+":
         phone_number = "+" + phone_number
-    m = EnqueuedMessage(phone_number=phone_number, message=msg.text, password=password, gateway_number=gateway_number)
+    pn = phonenumbers.parse(phone_number)
+    backend = MobileBackend.find(msg.domain, pn.country_code)
+    m = EnqueuedMessage(phone_number=phone_number, message=msg.text, backend_id=backend._id)
     m.save()
 
 class EnvayaSMSForm(forms.SMSForm):

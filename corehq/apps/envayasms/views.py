@@ -24,6 +24,10 @@ def receive_action(request, domain=None):
     phone_number = phonenumbers.parse(number_raw)
     country_code = phone_number.country_code
     backend = MobileBackend.find(domain, country_code)
+    if backend.outbound_params['gateway_number'] != number_raw[1:]:
+        backend = MobileBackend.find(domain, None)
+    if backend.outbound_params['gateway_number'] != number_raw[1:]:
+        return HttpResponseForbidden(json.dumps({'error': {'message': 'Bad password'}}))
 
     if backend.outbound_params.get('password', '') is not '':
         params = ','.join('%s=%s' % (k, request.POST[k]) for k in sorted(request.POST.keys()))
@@ -31,7 +35,6 @@ def receive_action(request, domain=None):
         if domain[0] is None:
             domain = []
         server_url = request.build_absolute_uri(reverse('receive_envayasms_action', args=domain))
-        print server_url, params, backend.outbound_params['password']
         secure_key = sha.new(','.join((server_url, params, backend.outbound_params['password']))).digest()
         if base64.b64decode(request.META.get('HTTP_X_REQUEST_SIGNATURE', '')) != secure_key:
             return HttpResponseForbidden(json.dumps({'error': {'message': 'Bad password'}}))
@@ -40,13 +43,13 @@ def receive_action(request, domain=None):
     if action == 'incoming':
         # receive message
         if data.get('message_type') == 'call':
-            incoming_call(data.get('from', ''), backend._id)
+            incoming_call(data.get('from', ''), BACKEND_API_ID)
         else:
-            incoming_sms(data.get('from', ''), data.get('message', ''), backend._id)
+            incoming_sms(data.get('from', ''), data.get('message', ''), BACKEND_API_ID)
 
     elif action == 'outgoing':
         # send back outgoing
-        messages = EnqueuedMessage.by_country_code(country_code)
+        messages = EnqueuedMessage.by_backend(backend)
         events = [{'event': 'send', 'messages': [{'to': data.phone_number, 'message': data.message} for data in messages]}]
         for message in messages:
             message.delete()
