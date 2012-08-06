@@ -272,11 +272,6 @@ GET_URL_BASE  = 'dimagi.utils.web.get_url_base'
 SMS_GATEWAY_URL = "http://localhost:8001/"
 SMS_GATEWAY_PARAMS = "user=my_username&password=my_password&id=%(phone_number)s&text=%(message)s"
 
-ENVAYASMS_CONFIG = {
-    'password': 'abc', # the password required to log in--None if no password required
-    'url': 'http://localhost:8000/envayasms/', # the URL of this gateway, i.e. http://www.mycommcaredeployment.org/sms/gateway
-}
-
 # celery
 CARROT_BACKEND = "django"
 

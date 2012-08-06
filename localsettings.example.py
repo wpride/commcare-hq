@@ -84,6 +84,11 @@ UNICEL_CONFIG = {"username": "Dimagi",
                  "password": "******",
                  "sender": "Promo" }
 
+# EnvayaSMS gateway
+ENVAYASMS_CONFIG = {
+    'root': 'http://localhost:8000/', # the URL of this gateway, i.e. http://www.mycommcaredeployment.org/
+}
+
 ####### Custom reports ########
 
 CUSTOM_REPORT_MAP = {
