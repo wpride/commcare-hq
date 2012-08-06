@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
-import json
-
 import logging
 from datetime import datetime
 import re
@@ -14,11 +12,14 @@ from corehq.apps.users import models as user_models
 from corehq.apps.sms.models import SMSLog, INCOMING
 from corehq.apps.groups.models import Group
 from dimagi.utils.web import render_to_response
-from corehq.apps.domain.decorators import login_and_domain_required, login_or_digest
+from corehq.apps.domain.decorators import login_and_domain_required, login_or_digest, require_superuser
 from dimagi.utils.couch.database import get_db
 from django.contrib import messages
 from corehq.apps.reports import util as report_utils
 from django.views.decorators.csrf import csrf_exempt
+from corehq.apps.sms.api import BACKENDS
+from corehq.apps.sms.mixin import MobileBackend
+from django.shortcuts import redirect
 
 @login_and_domain_required
 def messaging(request, domain, template="sms/default.html"):
@@ -216,3 +217,47 @@ def api_send_sms(request, domain):
             return HttpResponse("ERROR")
     else:
         return HttpResponseBadRequest("POST Expected.")
+
+@require_superuser
+def sms_backends(request, gateway_form=None):
+    backends = BACKENDS.values()
+    gateways = MobileBackend.by_domain(None)
+    available_gateways = []
+    for backend in backends:
+        if gateway_form and request.POST.get('gateway') == backend.API_ID:
+            form = gateway_form # use form from add_sms_gateway
+        else:
+            form = backend.API_FORM(prefix=backend.API_ID)
+        available_gateways.append((backend, form))
+    for gateway in gateways:
+        gateway._request = request # ugly hack to get the request object to a particular method
+    return render_to_response(request, 'backends/backends.html',
+                {
+                 'gateways': gateways,
+                 'available_gateways': available_gateways,
+                 'selected_gateway': request.POST.get('gateway', ''),
+                 })
+
+@require_superuser
+def add_backend(request):
+    if request.method == 'POST':
+        backend = BACKENDS[request.POST.get('gateway')]
+        parameters = {}
+        form = backend.API_FORM(request.POST, prefix=backend.API_ID)
+        form.domain = MobileBackend.find(None, None)
+        if form.is_valid():
+            for param in backend.API_PARAMETERS:
+                parameters[param] = form.cleaned_data[param]
+            gateway = MobileBackend(domain=[None], description=backend.API_DESCRIPTION, outbound_module=backend.__name__, outbound_params=parameters, country_code=form.cleaned_data['country_code'])
+            gateway.save()
+            return redirect(reverse('sms_backends'))
+        else:
+            return sms_backends(request, form)
+
+@require_superuser
+def remove_backend(request, gateway_id):
+    if request.method == 'POST':
+        gateway = MobileBackend.get(gateway_id)
+        if gateway.domain == [None]:
+            gateway.delete()
+            return redirect(reverse('sms_backends'))

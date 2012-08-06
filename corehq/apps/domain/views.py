@@ -260,10 +260,14 @@ def sms_gateways(request, domain, gateway_form = None):
         else:
             form = backend.API_FORM(prefix=backend.API_ID)
         available_gateways.append((backend, form))
+    gateways = request.project.gateways()
+    for gateway in gateways:
+        gateway._request = request # ugly hack to get the request object to a particular method
     return render_to_response(request, 'domain/admin/sms_gateways.html',
                 {'domain': domain,
-                 'gateways': request.project.gateways(),
+                 'gateways': gateways,
                  'available_gateways': available_gateways,
+                 'selected_gateway': request.POST.get('gateway'),
                  })
 
 @domain_admin_required
@@ -286,8 +290,9 @@ def add_sms_gateway(request, domain):
 def remove_sms_gateway(request, domain, gateway_id):
     if request.method == 'POST':
         gateway = MobileBackend.get(gateway_id)
-        gateway.delete()
-        return redirect(reverse('domain_sms_gateways', args=[domain]))
+        if domain in gateway.domain:
+            gateway.delete()
+            return redirect(reverse('domain_sms_gateways', args=[domain]))
 
 @require_previewer # remove for production
 @domain_admin_required
@@ -330,6 +335,7 @@ def create_snapshot(request, domain):
             app = app.get_latest_saved() or app
             app_forms.append((app, SnapshotApplicationForm(request.POST, prefix=app.id)))
             publishing_apps = publishing_apps or request.POST.get("%s-publish" % app.id, False)
+
         if not publishing_apps:
             messages.error(request, "Cannot publish a project without applications to CommCare Exchange")
             return render_to_response(request, 'domain/create_snapshot.html',

@@ -10,6 +10,11 @@ API_ID = "UNICEL"
 API_DESCRIPTION = "Unicel"
 API_PARAMETERS = ['username', 'password', 'sender']
 
+API_DIRTY_PARAMS = ['password']
+
+def API_HELP_MESSAGE(request, backend):
+    return ""
+
 OUTBOUND_URLBASE = "http://www.unicel.in/SendSMS/sendmsg.php"
 
 class InboundParams(object):

@@ -60,6 +60,7 @@ class MobileBackend(Document):
 
     @classmethod
     def find(cls, domain=None, country=None):
+        country = str(country)
         backends = cls.view('sms/backend_by_domain_and_country', key=[domain, country], include_docs=True).all()
         if len(backends) > 0:
             return backends[0]
@@ -76,6 +77,19 @@ class MobileBackend(Document):
 
     def module(self):
         return importlib.import_module(self.outbound_module)
+
+    def clean_outbound_params(self):
+        outbound = self.outbound_params.copy()
+        for param in self.module().API_DIRTY_PARAMS:
+            del outbound[param]
+        return outbound
+
+    def form(self):
+        return self.module().API_FORM(initial=self.clean_outbound_params())
+
+    def help_message(self):
+        # request may not exist so it's getattr'd rather than .'d
+        return self.module().API_HELP_MESSAGE(self._request, self) # getattr(self, 'request', None)
 
     @property
     def default(self):

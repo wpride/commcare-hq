@@ -8,15 +8,30 @@ from django.views.decorators.csrf import csrf_exempt
 import json, time, sha, base64
 from models import EnqueuedMessage
 from django.conf import settings
+import phonenumbers
+from corehq.apps.sms.mixin import MobileBackend
 
 @csrf_exempt
-def receive_action(request):
+def receive_action(request, domain=None):
     data = request.POST
 
-    params = ','.join('%s=%s' % (k, request.POST[k]) for k in sorted(request.POST.keys()))
+    number_raw = request.POST.get('phone_number', '')
+    if number_raw == '':
+        return HttpResponseBadRequest(json.dumps({'error': {'message': 'Missing arguments'}}))
+    if not number_raw.startswith('+'):
+        number_raw = "+%s" % number_raw
+    phone_number = phonenumbers.parse(number_raw)
+    country_code = phone_number.country_code
+    backend = MobileBackend.find(domain, country_code)
 
-    if settings.ENVAYASMS_CONFIG.get('password', None) is not None:
-        secure_key = sha.new(','.join((settings.ENVAYASMS_CONFIG.get('url', ''), params, settings.ENVAYASMS_CONFIG.get('password')))).digest()
+    if backend.outbound_params.get('password', '') is not '':
+        params = ','.join('%s=%s' % (k, request.POST[k]) for k in sorted(request.POST.keys()))
+        domain = backend.domain
+        if domain[0] is None:
+            domain = []
+        server_url = request.build_absolute_uri(reverse('receive_envayasms_action', args=domain))
+        print server_url, params, backend.outbound_params['password']
+        secure_key = sha.new(','.join((server_url, params, backend.outbound_params['password']))).digest()
         if base64.b64decode(request.META.get('HTTP_X_REQUEST_SIGNATURE', '')) != secure_key:
             return HttpResponseForbidden(json.dumps({'error': {'message': 'Bad password'}}))
             
@@ -30,7 +45,7 @@ def receive_action(request):
 
     elif action == 'outgoing':
         # send back outgoing
-        messages = EnqueuedMessage.by_gateway_number(request.POST.get('phone_number'))
+        messages = EnqueuedMessage.by_country_code(country_code)
         events = [{'event': 'send', 'messages': [{'to': data.phone_number, 'message': data.message} for data in messages]}]
         for message in messages:
             message.delete()

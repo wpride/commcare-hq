@@ -81,16 +81,17 @@ def send_sms_with_backend(domain, phone_number, text, backend, recipient_doc_typ
     if not isinstance(backend, MobileBackend):
         backend = msg.get_backend_api()
 
-    try:
+    #try:
+    if True:
         module = __import__(backend.outbound_module, fromlist=["send"])
         msg.backend_api = module.API_ID
         kwargs = backend.outbound_params
         module.send(msg, **kwargs)
         msg.save()
         return True
-    except Exception as e:
-        logging.exception("Exception while sending SMS to %s with backend %s" % (phone_number, backend_id))
-        return False
+#    except Exception as e:
+#        logging.exception("Exception while sending SMS to %s with backend %s" % (phone_number, backend_id))
+#        return False
 
 
 def start_session_from_keyword(survey_keyword, verified_number):

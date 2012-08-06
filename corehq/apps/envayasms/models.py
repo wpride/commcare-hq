@@ -9,6 +9,7 @@ class EnqueuedMessage(Document):
     message = StringProperty()
     phone_number = StringProperty() # not using contacts so we can query the field
     gateway_number = StringProperty()
+    password = StringProperty()
 
     @classmethod
     def recent_messages(cls):

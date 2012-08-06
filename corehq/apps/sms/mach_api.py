@@ -26,6 +26,10 @@ API_FORM(): a function or class that returns a Django form instance to take para
 API_ID = "MACH"
 API_DESCRIPTION = "MACH"
 API_PARAMETERS = ['url', 'params'] # must match both send
+API_DIRTY_PARAMS = []
+
+def API_HELP_MESSAGE(request, backend):
+    return ""
 
 def send(msg, url='', params=''):
     """

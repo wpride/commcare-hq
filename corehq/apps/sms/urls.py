@@ -9,3 +9,9 @@ urlpatterns = patterns('corehq.apps.sms.views',
     url(r'^api/send_sms/$', 'api_send_sms', name='api_send_sms'),
     url(r'^$', 'messaging', name='messaging'),
 )
+
+global_urls = patterns('corehq.apps.sms.views',
+    url(r'^add/?$', 'add_backend', name='add_sms_backend'),
+    url(r'^(?P<backend_id>[\w-]+)/remove?$', 'remove_backend', name='remove_sms_backend'),
+    url(r'^$', 'sms_backends', name='sms_backends'),
+)

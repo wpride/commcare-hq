@@ -1,10 +1,17 @@
-{% extends "users/users_base.html" %}
+{% extends base_template %}
+
+{# stuff to override old styles -- remove when everything is migrated over #}
+{% block oldstyle_tag %}{% endblock %}
+{% block oldstyle_imports %}{% endblock %}
+{% block oldstyle_hack_start %}{% endblock %}
+{% block oldstyle_hack_end %}{% endblock %}
+
+
 {% load hq_bootstrap_tags %}
 {% load hq_shared_tags %}
 {% load i18n %}
 
-{% block js-inline %}
-{{ block.super }}
+{% block js %}{{ block.super }}
 <script type="text/javascript">
     $(function(){
         var changeGateway = function() {
@@ -19,20 +26,21 @@
 </script>
 {% endblock %}
 
-{% block subsection-title %}
-    <li class="active">
-        <a href="#">SMS Gateways</a>
-    </li>
+{% block page-title %}
+    <a href="#">SMS Gateways</a>
 {% endblock %}
 
-{% block user-view %}
+{% block content %}
+    <div class="container">
     <ul>
     {% for gateway in gateways %}
         <li>
-            <form class="form-inline" method="post" action="{% url domain_remove_sms_gateway domain gateway.id %}">
-                {% if gateway.country_code %}+{{ gateway.country_code }}{% else %}Default{% endif %}:
+            <form class="form-inline" method="post" action="{% url remove_sms_backend gateway.id %}">
+                <div>{% if gateway.country_code %}+{{ gateway.country_code }}:{% endif %}
                 {{ gateway.description }}
+                {% if gateway.default %}(default){% endif %}
                 <button type="submit" class="btn">Remove gateway</button>
+                </div>
                 <div>{{ gateway.help_message }}</div>
                 <ul>
                     {% for field in gateway.form %}
@@ -48,9 +56,10 @@
         </li>
     {% endfor %}
     </ul>
-    <form class="form-horizontal" method="post" action="{% url domain_add_sms_gateway domain %}">
+    <form class="form-horizontal" method="post" action="{% url add_sms_backend %}">
     <fieldset>
-        <legend>Add SMS Gateway</legend>
+        <legend>Add SMS
+            <Gateway></Gateway></legend>
         <div class="control-group">
                     <label class="control-label" for="id_gateway">SMS Gateway</label>
                     <div class="controls">
@@ -74,4 +83,5 @@
 
 
     </form>
+    </div>
 {% endblock %}>

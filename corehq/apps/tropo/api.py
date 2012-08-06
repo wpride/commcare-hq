@@ -1,7 +1,14 @@
 from urllib import urlencode
 from urllib2 import urlopen
+from corehq.apps.sms import forms
 
 API_ID = "TROPO"
+API_DESCRIPTION = "Tropo"
+API_PARAMETERS = ['username', 'password', 'sender']
+API_DIRTY_PARAMS = ['password']
+
+def API_HELP_MESSAGE(request, backend):
+    return ""
 
 def send(msg, *args, **kwargs):
     """
@@ -22,3 +29,9 @@ def send(msg, *args, **kwargs):
     response = urlopen(url).read()
     print response
 
+class TropoForm(forms.SMSForm):
+    username = forms.CharField(label='Username')
+    password = forms.CharField(widget=forms.PasswordInput, label='Password')
+    sender = forms.CharField('Phone number')
+
+API_FORM = TropoForm

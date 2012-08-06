@@ -76,27 +76,9 @@ class MessageLog(Document, UnicodeMixIn):
         """
         Given a message, find which version of the api to return.
         """
-        # try recipient
-#        recipient = self.recipient
-#        if recipient and recipient.backend_id:
-#            return MobileBackend.get(recipient.backend_id)
-
-        # try domain
-        domain = Domain.get_by_name(self.domain)
-        if domain.backend_id:
-            return MobileBackend.get(domain.backend_id)
-
-        # try country
         phone_number = phonenumbers.parse(self.phone_number)
-        try:
-            backend_id = Country.get_by_country_code(phone_number.country_code).backend_id
-        except:
-            backend_id = None
-
-        if backend_id:
-            return MobileBackend.get(backend_id)
-        else:
-            return None
+        country_code = phone_number.country_code
+        return MobileBackend.find(self.domain, country_code)
 
     @classmethod
     def by_domain_asc(cls, domain):
