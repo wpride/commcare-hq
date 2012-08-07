@@ -24,15 +24,6 @@ MISSED_EXPECTED_CALLBACK = "CALLBACK_MISSED"
 
 EVENT_TYPE_CHOICES = [MISSED_EXPECTED_CALLBACK]
 
-class Country(Document):
-    name = StringProperty()
-    country_code = IntegerProperty()
-    backend_id = StringProperty()
-
-    @classmethod
-    def get_by_country_code(cls, country_code):
-        return cls.view('sms/by_country_code', key=int(country_code), include_docs=True).one()
-
 class MessageLog(Document, UnicodeMixIn):
     base_doc                    = "MessageLog"
     couch_recipient_doc_type    = StringProperty() # "CommCareCase" or "CouchUser"

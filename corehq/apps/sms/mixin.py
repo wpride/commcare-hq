@@ -49,7 +49,7 @@ class MobileBackend(Document):
     description = StringProperty()          # (optional) A description of this backend
     outbound_module = StringProperty()      # The fully-qualified name of the inbound module to be used (must implement send() method)
     outbound_params = DictProperty()        # The parameters which will be the keyword arguments sent to the outbound module's send() method
-    country_code = StringProperty()              # ID of a country document
+    country_code = StringProperty()         # phone number country code
 
     def applies_to(self, domain):
         return len(self.domain) == 0 or domain in self.domain
