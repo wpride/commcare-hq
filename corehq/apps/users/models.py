@@ -632,6 +632,7 @@ class CouchUser(Document, DjangoUserMixin, UnicodeMixIn, CommCareMobileContactMi
             self.add_phone_number(self.phone_numbers[0])
         if len(self.phone_numbers > 1):
             self.notes = "Alternate Numbers: %s\n%s" % (', '.join(phone_numbers[1:]), self.notes)
+        self.phone_numbers = []
 
     def add_phone_number(self, phone_number, backend_id=None, **kwargs):
         """ Changed behavior--now replaces phone numbers """
