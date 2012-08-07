@@ -4,7 +4,7 @@ from corehq.apps.sms import forms
 
 API_ID = "TROPO"
 API_DESCRIPTION = "Tropo"
-API_PARAMETERS = ['username', 'password', 'sender']
+API_PARAMETERS = ['messaging_token']
 API_DIRTY_PARAMS = ['password']
 
 def API_HELP_MESSAGE(request, backend):
@@ -30,8 +30,6 @@ def send(msg, *args, **kwargs):
     print response
 
 class TropoForm(forms.SMSForm):
-    username = forms.CharField(label='Username')
-    password = forms.CharField(widget=forms.PasswordInput, label='Password')
-    sender = forms.CharField('Phone number')
+    messaging_token = forms.CharField(label='Messaging Token')
 
 API_FORM = TropoForm
