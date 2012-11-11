@@ -46,3 +46,18 @@ def make_couchdb_tuple(app_label, couch_database_url):
     else:
         return app_label, couch_database_url
 
+def set_path():
+    """
+    Sets up the python path importing all the submodules
+    """
+    import sys, os
+    filedir = os.path.dirname(__file__)
+    sys.path.append(os.path.join(filedir))
+    sys.path.append(os.path.join(filedir,'submodules'))
+    submodules_list = os.listdir(os.path.join(filedir, 'submodules'))
+    for d in submodules_list:
+        if d == "__init__.py" or d == '.' or d == '..':
+            continue
+        sys.path.append(os.path.join(filedir,'submodules',d))
+    sys.path.append(os.path.join(filedir,'submodules','core-hq-src','lib'))
+    
