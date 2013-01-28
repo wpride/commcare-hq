@@ -151,7 +151,7 @@ def india():
 def worldbank():
     env.home = '/home/cchq/'
     env.environment = 'worldbank'
-    env.code_branch = 'master'
+    env.code_branch = 'worldbank'
     env.sudo_user = 'cchq'
     env.hosts = ['localhost']
     env.user = prompt("Username: ", default=env.user)
