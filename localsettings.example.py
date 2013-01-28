@@ -6,7 +6,9 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'commcarehq',
         'USER': 'postgres',
-        'PASSWORD': '******'
+        'PASSWORD': '******',
+        'HOST': 'localhost',
+        'PORT': '5432'
     }
 }
 
@@ -91,6 +93,8 @@ DOMAIN_SYNC_APP_NAME_MAP = { "app_name": "new_app_name" }
 
 XFORMS_PLAYER_URL = 'http://127.0.0.1:4444'
 
+# email and password for an admin django user, such as one created with
+# ./manage.py bootstrap <project-name> <email> <password>
 TOUCHFORMS_API_USER = 'admin@example.com'
 TOUCHFORMS_API_PASSWORD = 'password'
 
