@@ -148,6 +148,41 @@ def india():
     env.roles = ['django_monolith']
 
 @task
+def worldbank():
+    env.home = '/home/cchq/'
+    env.environment = 'worldbank'
+    env.code_branch = 'master'
+    env.sudo_user = 'cchq'
+    env.hosts = ['localhost']
+    env.user = prompt("Username: ", default=env.user)
+    env.server_port = '8000'
+
+    env.host_os_map = None
+
+    _setup_path()
+
+    env.roledefs = {
+        'couch': [],
+        'pg': [],
+        'rabbitmq': [],
+        'sofabed': [],
+        'django_celery': [],
+        'django_app': [],
+        'django_public': [],
+        'django_pillowtop': [],
+        'formsplayer': [],
+        'remote_es': [],
+        'staticfiles': [],
+        'lb': [],
+        'deploy': [],
+
+        'django_monolith': ['localhost'],
+    }
+    env.db = '%s_%s' % (env.project, env.environment)
+    env.jython_home = '/usr/local/lib/jython'
+    env.roles = ['django_monolith']
+
+@task
 def production():
     """ use production environment on remote host"""
     env.code_branch = 'master'
