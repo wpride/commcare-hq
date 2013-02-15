@@ -101,13 +101,12 @@ from corehq.apps.hqwebapp.models import *
 MENU_ITEMS = (
     ProjectInfoMenuItem,
     ReportsMenuItem,
-    ManageDataMenuItem,
     ApplicationsMenuItem,
+    UsersMenuItem,
     CloudcareMenuItem,
     MessagesMenuItem,
-    ProjectSettingsMenuItem,
-    AdminReportsMenuItem,
     ExchangeMenuItem,
     ManageSurveysMenuItem,
+    AdminReportsMenuItem,
 )
 

@@ -107,18 +107,21 @@ def domains_for_user(request, selected_domain=None):
                 notify_exception(request)
 
         if len(domain_list) > 0:
-            lst.append('<li class="nav-header">My Projects</li>')
-            for domain in domain_list:
-                default_url = reverse("domain_homepage", args=[domain.name])
-                lst.append('<li><a href="%s">%s</a></li>' % (default_url, domain.long_display_name()))
-            lst.append('<li class="divider"></li>')
-            lst.append('<li><a href="/a/public/">View Demo Project</a></li>')
-        else:
-            lst.append('<li class="nav-header">Example Projects</li>')
-            lst.append('<li><a href="/a/public/">CommCare Demo Project</a></li>')
-            lst.append('<li class="divider"></li>')
-    lst.append('<li><a href="%s">New Project...</a></li>' % new_domain_url)
-    lst.append('<li><a href="%s">CommCare Exchange...</a></li>' % reverse("appstore"))
+            if request.couch_user and request.couch_user.is_domain_admin(selected_domain):
+                lst.append('<li class="nav-header">Manage This Project</li>')
+                lst.append('<li><a href="%s"><i class="icon-cogs"></i> Project Settings</a></li>'
+                           % reverse("domain_homepage", args=[selected_domain]))
+            if len(domain_list) > 1:
+                lst.append('<li class="nav-header">Go to Project...</li>')
+                for domain in domain_list:
+                    if domain.name != selected_domain:
+                        default_url = reverse("domain_homepage", args=[domain.name])
+                        lst.append('<li><a href="%s">%s</a></li>' % (default_url, domain.long_display_name()))
+    if len(lst) > 1:
+        lst.append('<li class="divider"></li>')
+    lst.append('<li class="nav-header">Create Projects</li>')
+    lst.append('<li><a href="%s"><i class="icon-plus"></i> New Project...</a></li>' % new_domain_url)
+    lst.append('<li><a href="%s"><i class="icon-exchange"></i> CommCare Exchange...</a></li>' % reverse("appstore"))
     lst.append("</ul>")
 
     return "".join(lst)

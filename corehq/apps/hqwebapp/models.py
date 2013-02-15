@@ -1,6 +1,7 @@
 from functools import wraps
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe, mark_for_escaping
+from corehq.apps.dashboard.views import HQDomainDashboardView
 from dimagi.utils.couch.database import get_db
 from dimagi.utils.decorators.memoized import memoized
 from django.core.urlresolvers import reverse
@@ -93,8 +94,19 @@ class ReportsMenuItem(DropdownMenuItem):
     @require_couch_user
     def is_viewable(cls, request, domain):
         return domain and \
-            (hasattr(request, 'project') and not request.project.is_snapshot) and \
-            (request.couch_user.can_view_reports() or request.couch_user.get_viewable_reports())
+               (hasattr(request, 'project') and not request.project.is_snapshot) and \
+               (request.couch_user.can_view_reports() or request.couch_user.get_viewable_reports())
+
+
+class ReportsMenuItem(DropdownMenuItem):
+    title = ugettext_noop("Dashboard")
+    view = "domain_dashboard"
+    css_id = "project_dashboard"
+
+    @classmethod
+    @require_couch_user
+    def is_viewable(cls, request, domain):
+        return domain and (hasattr(request, 'project') and not request.project.is_snapshot)
 
 
 class ProjectInfoMenuItem(DropdownMenuItem):
@@ -109,16 +121,16 @@ class ProjectInfoMenuItem(DropdownMenuItem):
         else:
             return False
 
-
-class ManageDataMenuItem(DropdownMenuItem):
-    title = ugettext_noop("Manage Data")
-    view = "corehq.apps.data_interfaces.views.default"
-    css_id = "manage_data"
-
-    @classmethod
-    @require_couch_user
-    def is_viewable(cls, request, domain):
-        return domain and request.couch_user.can_edit_data()
+# todo don't forget about manage data
+# class ManageDataMenuItem(DropdownMenuItem):
+#     title = ugettext_noop("Manage Data")
+#     view = "corehq.apps.data_interfaces.views.default"
+#     css_id = "manage_data"
+#
+#     @classmethod
+#     @require_couch_user
+#     def is_viewable(cls, request, domain):
+#         return domain and request.couch_user.can_edit_data()
 
 
 class ApplicationsMenuItem(DropdownMenuItem):
@@ -205,9 +217,10 @@ class MessagesMenuItem(DropdownMenuItem):
             not request.couch_user.is_commcare_user()
 
 
-class ProjectSettingsMenuItem(DropdownMenuItem):
+class UsersMenuItem(DropdownMenuItem):
+    title = ugettext_noop("Users")
     view = "corehq.apps.users.views.users"
-    css_id = "project_settings"
+    css_id = "manage_users"
 
     @property
     @memoized
@@ -215,21 +228,15 @@ class ProjectSettingsMenuItem(DropdownMenuItem):
         from corehq.apps.users.views import redirect_users_to
         return redirect_users_to(self.request, self.domain) or reverse("homepage")
 
-    @property
-    @memoized
-    def submenu_items(self):
-        return []
-
-    @property
-    def title(self):
-        if not (self.request.couch_user.can_edit_commcare_users() or self.request.couch_user.can_edit_web_users()):
-            return _("Settings")
-        return _("Settings & Users")
+    # @property
+    # @memoized
+    # def submenu_items(self):
+    #     return []
 
     @classmethod
     @require_couch_user
     def is_viewable(cls, request, domain):
-        return domain is not None and request.couch_user
+        return request.couch_user.can_edit_commcare_users() or request.couch_user.can_edit_web_users()
 
 
 
@@ -279,7 +286,7 @@ class ExchangeMenuItem(DropdownMenuItem):
         submenu_context = None
         if self.domain and self.request.couch_user.is_domain_admin(self.domain):
             submenu_context = [
-                self._format_submenu_context(_("CommCare Exchange"), url=reverse("appstore")),
+                self._format_submenu_context(_("Visit CommCare Exchange"), url=reverse("appstore")),
                 self._format_submenu_context(_("Publish this project"),
                     url=reverse("domain_snapshot_settings", args=[self.domain]))
             ]

@@ -20,6 +20,8 @@ $(function() {
             clearAnnouncement(announcement_id);
         }
     });
+
+    $('#project-button-no-admin').popover();
 });
 
 $.fn.hqHelp = function () {
