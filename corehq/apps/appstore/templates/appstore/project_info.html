@@ -32,6 +32,21 @@
             $('#agree-button').click(function() {
                 var form = $("#" + $(this).attr('data-form'));
                 form.submit();
+                $(this).prop('disabled', true).addClass('disabled')
+            });
+
+            // show downloads info div
+            $('#downloads-btn').click(function() {
+                var open =  $(this).attr('data-open') == 'true';
+                if (open) {
+                    $('#downloads-info').hide(500);
+                    $(this).attr('data-open', 'false');
+                    $("#downloads-btn-append").text('>>');
+                } else {
+                    $('#downloads-info').show(500);
+                    $(this).attr('data-open', 'true');
+                    $("#downloads-btn-append").text('<<');
+                }
             });
         });
     </script>
@@ -52,18 +67,20 @@
         {% if project.image_path %}
             <img class="app-pic" src="{% url appstore_project_image project.name %}" />
         {% else %}
-            <img class="app-pic opacity65" src="{% static 'hqstyle/img/no-image-available.png' %}" />
+            <img class="app-pic opacity65" src="{% static 'hqstyle/img/commcarehq-icon-large.png' %}" />
         {% endif %}
     </div>
     <div class="span7">
         <h1>
             {{ project.title }}
             <small>{% trans "by" %}
-                {% if project.organization %}
-                <a href="{% url orgs_landing project.organization %}">{{ project.organization_doc.title }}</a>
+                {% ifequal project.publisher 'organization' %}
+{#                <a href="{% url orgs_public project.organization %}">#}
+                    {{ project.get_organization.title }}
+{#                </a>#}
                 {% else %}
-                    {{ project.author }}
-                {% endif %}
+                    {{ project.author|default:published_by.full_name }}
+                {% endifequal %}
             </small>
         </h1>
         <h4 style="color: #808080;">{{ project.short_description }}</h4>
@@ -84,7 +101,7 @@
     <dt>{% trans 'Description' %}</dt>
     <dd>
         {% if project.description %}
-            {{ project.description }}
+            {{ project.description|linebreaks }}
         {% else %}
             <h6>{% trans "None" %}</h6>
         {% endif %}
@@ -123,8 +140,39 @@
     <dd>{{ project.get_license_display }}</dd>
     <dt>{% trans 'Downloads' %}</dt>
     <dd>
-{#        This version: {{ project.copies|length }};#}
-        <!-- All versions: -->{{ project.downloads }}
+        <!-- This version: -->
+        {% if project.copies and request.couch_user.is_superuser %}
+            <button class="btn btn-mini btn-info" data-open='false' id="downloads-btn">
+                {{ project.downloads }} {% trans "Downloads" %} <span id="downloads-btn-append">>></span>
+            </button>
+            <div style="margin-top: 1em;" class="well well-small hide" id="downloads-info">
+                <div class="alert">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <strong>Note:</strong> <p>This a beta feature displayed to super users only</p>
+                    <p>Currently this list only shows new projects that were copied directly from this publication.
+                    It does not yet show projects who downloaded apps from this publication.</p>
+                    <p>We also don't have 'Downloaded By' data for many existing domains.</p>
+                </div>
+
+                {% if copies %}
+                <table class="table">
+                    <tr><th style="border-top: 0;">{% trans "Project" %}</th>
+                        <th style="border-top: 0;">{% trans "Downloaded by" %}</th></tr>
+                    {% for copy in copies %}
+                        <tr>
+                            <td>{{ copy.display_name }}</td>
+                            <td>{{ copy.creating_user|default:"No data" }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                {% else %}
+                    {% trans "No Downloads Information" %}
+                {% endif %}
+            </div>
+        {% else %}
+            {{ project.downloads }}
+        {% endif %}
+{#        <!-- All versions: -->{{ project.downloads }}#}
     </dd>
     {% if project.multimedia_included and project.has_media %}
         <dd>
@@ -162,7 +210,7 @@
                     {% if app.description %}
                         <dt>{% trans 'Description' %}</dt>
                         <dd>
-                            {{ app.description }}
+                            {{ app.description|linebreaks }}
                         </dd>
                     {% endif %}
                     {% if app.attribution_notes %}
@@ -196,7 +244,7 @@
                     </div>
                     {% endif %}
                 {% else %}
-                    {% trans "Please" %} <a href="{% url login %}">{% trans "sign in" %}</a> {% trans "or" %} <a href="{% url registration_new_user %}">{% trans "register" %}</a> {% trans "to download an app from Exchange" %}
+                    {% trans "Please" %} <a href="{% url login %}">{% trans "sign in" %}</a> {% trans "or" %} <a href="{% url register_user %}">{% trans "register" %}</a> {% trans "to download an app from Exchange" %}
                 {% endif %}
             </fieldset>
         </form>
@@ -293,7 +341,7 @@
         </div>
         <div class="modal-footer">
             <a href="#" data-dismiss="modal" class="btn">{% trans "Cancel" %}</a>
-            <button type="submit" class="btn btn-primary">{% trans "Post" %}</button>
+            <button type="submit" class="btn btn-primary disable-on-submit">{% trans "Post" %}</button>
         </div>
     </form>
 </div>

@@ -9,7 +9,7 @@ from corehq.apps.reports.standard import inspect, export, ProjectReport
 from corehq.apps.reports.standard.export import DeidExportReport
 from corehq.apps.reports.export import ApplicationBulkExportHelper, CustomBulkExportHelper
 from corehq.apps.reports.models import (ReportConfig, ReportNotification,
-    FormExportSchema, HQGroupExportConfiguration, UnsupportedScheduledReportError)
+    FormExportSchema, HQGroupExportConfiguration)
 from corehq.apps.users.decorators import require_permission
 from corehq.apps.users.export import export_users
 from corehq.apps.users.models import Permissions
@@ -17,6 +17,7 @@ import couchexport
 from couchexport.export import UnsupportedExportFormat, export_raw
 from couchexport.util import SerializableFunction
 from couchforms.models import XFormInstance
+from dimagi.utils.couch.bulk import wrapped_docs
 from dimagi.utils.couch.loosechange import parse_date
 from dimagi.utils.decorators import inline
 from dimagi.utils.export import WorkBook
@@ -49,7 +50,6 @@ from util import get_all_users_by_domain, stream_qs
 from corehq.apps.hqsofabed.models import HQFormData
 from corehq.apps.app_manager.util import get_app_id
 from corehq.apps.groups.models import Group
-from corehq.apps.adm import utils as adm_utils
 from soil import DownloadBase
 from soil.tasks import prepare_download
 from django.utils.translation import ugettext as _
@@ -73,7 +73,11 @@ require_case_view_permission = require_permission(Permissions.view_report, 'core
 require_can_view_all_reports = require_permission(Permissions.view_reports)
 
 @login_and_domain_required
-def default(request, domain, template="reports/reports_home.html"):
+def default(request, domain):
+    return HttpResponseRedirect(reverse(saved_reports, args=[domain]))
+
+@login_and_domain_required
+def saved_reports(request, domain, template="reports/reports_home.html"):
     user = request.couch_user
     if not (request.couch_user.can_view_reports() or request.couch_user.get_viewable_reports()):
         raise Http404
@@ -92,9 +96,7 @@ def default(request, domain, template="reports/reports_home.html"):
             show=user.can_view_reports() or user.get_viewable_reports(),
             slug=None,
             is_async=True,
-            app_slug="reports",
             section_name=ProjectReport.section_name,
-            show_subsection_navigation=adm_utils.show_adm_nav(domain, request)
         ),
     )
 
@@ -395,8 +397,7 @@ def custom_export(req, domain):
     if req.method == "POST":
         helper.update_custom_export()
         messages.success(req, "Custom export created! You can continue editing here.")
-        return HttpResponseRedirect("%s?type=%s" % (reverse("edit_custom_export",
-                                            args=[domain, helper.custom_export.get_id]), helper.export_type))
+        return _redirect_to_export_home(helper.export_type, domain)
 
     schema = build_latest_schema(export_tag)
 
@@ -432,7 +433,10 @@ def edit_custom_export(req, domain, export_id):
         raise Http404()
     if req.method == "POST":
         helper.update_custom_export()
-    return helper.get_response()
+        messages.success(req, "Custom export saved!")
+        return _redirect_to_export_home(helper.export_type, domain)
+    else:
+        return helper.get_response()
 
 @login_or_digest
 @require_form_export_permission
@@ -486,9 +490,11 @@ def delete_custom_export(req, domain, export_id):
         saved_export = SavedExportSchema.get(export_id)
     except ResourceNotFound:
         return HttpResponseRedirect(req.META['HTTP_REFERER'])
-    type = saved_export.type
     saved_export.delete()
     messages.success(req, "Custom export was deleted.")
+    return _redirect_to_export_home(saved_export.type, domain)
+
+def _redirect_to_export_home(type, domain):
     if type == "form":
         return HttpResponseRedirect(export.ExcelExportReport.get_url(domain=domain))
     else:
@@ -573,7 +579,6 @@ def edit_scheduled_report(request, domain, scheduled_report_id=None,
             'default_url': reverse('reports_home', args=(domain,)),
             'is_async': False,
             'section_name': ProjectReport.section_name,
-            'show_subsection_navigation': adm_utils.show_adm_nav(domain, request)
         }
     }
     
@@ -772,9 +777,10 @@ def generate_case_export_payload(domain, include_closed, format, group, user_fil
         include_docs=False,
         wrapper=lambda r: r['id']
     )
+
     def stream_cases(all_case_ids):
         for case_ids in chunked(all_case_ids, 500):
-            for case in CommCareCase.view('_all_docs', keys=case_ids, include_docs=True):
+            for case in wrapped_docs(CommCareCase, case_ids):
                 yield case
 
     # todo deal with cached user dict here

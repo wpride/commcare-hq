@@ -6,7 +6,6 @@ from corehq.apps.hqcase.utils import submit_case_blocks
 from corehq.apps.importer import base
 from corehq.apps.importer.util import ExcelFile, get_case_properties
 from couchdbkit.exceptions import MultipleResultsFound, NoResultFound
-from tempfile import mkstemp
 from django.views.decorators.http import require_POST
 from datetime import datetime, date
 from xlrd import xldate_as_tuple
@@ -55,6 +54,8 @@ def excel_config(request, domain):
                     messages.error(request, _('Sorry, your spreadsheet is too big. '
                                               'Please reduce the number of '
                                               'rows to less than %s and try again') % MAX_ALLOWED_ROWS)
+                elif row_count == 0:
+                    messages.error(request, 'Your spreadsheet is empty. Please try again with a different spreadsheet.')
                 else:
                     # get case types in this domain
                     case_types = []

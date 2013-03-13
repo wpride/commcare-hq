@@ -330,7 +330,12 @@ class FormBase(DocumentSchema):
 
     @classmethod
     def get_form(cls, form_unique_id, and_app=False):
-        d = get_db().view('app_manager/xforms_index', key=form_unique_id).one()['value']
+
+        d = get_db().view('app_manager/xforms_index', key=form_unique_id).one()
+        if d:
+            d = d['value']
+        else:
+            raise ResourceNotFound()
         # unpack the dict into variables app_id, module_id, form_id
         app_id, unique_id = [d[key] for key in ('app_id', 'unique_id')]
 
@@ -1991,13 +1996,8 @@ def get_app(domain, app_id, wrap_cls=None, latest=False):
             app = get_db().get(app_id)
         except Exception:
             raise Http404
-
-    if domain:
-        try:    Domain.get_by_name(domain)
-        except: raise Http404
-
-        if app['domain'] != domain:
-            raise Http404
+    if domain and app['domain'] != domain:
+        raise Http404
     cls = wrap_cls or {
         'Application': Application,
         'Application-Deleted': Application,

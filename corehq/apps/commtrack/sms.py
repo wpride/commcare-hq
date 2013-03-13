@@ -1,9 +1,7 @@
 from corehq.apps.domain.models import Domain
-from corehq.apps.commtrack.models import *
 from casexml.apps.case.models import CommCareCase
 from corehq.apps.locations.models import Location
-from corehq.apps.commtrack import stockreport
-from dimagi.utils.couch.database import get_db
+from corehq.apps.commtrack import stockreport, const
 from corehq.apps.sms.api import send_sms_to_verified_number
 from lxml import etree
 import logging
@@ -12,6 +10,7 @@ from dimagi.utils.parsing import json_format_datetime
 from datetime import datetime
 from helpers import make_supply_point_product
 from corehq.apps.commtrack.util import get_supply_point
+from corehq.apps.commtrack.models import Product, CommtrackConfig
 
 logger = logging.getLogger('commtrack.sms')
 
@@ -205,7 +204,7 @@ def product_subcases(supply_point):
     actually returns a mapping: product doc id => sub-case id
     ACTUALLY returns a dict that will create non-existent product sub-cases on demand
     """
-    product_subcase_uuids = [ix.referenced_id for ix in supply_point.reverse_indices if ix.identifier == 'parent']
+    product_subcase_uuids = [ix.referenced_id for ix in supply_point.reverse_indices if ix.identifier == const.PARENT_CASE_REF]
     product_subcases = CommCareCase.view('_all_docs', keys=product_subcase_uuids, include_docs=True)
     product_subcase_mapping = dict((subcase.dynamic_properties().get('product'), subcase._id) for subcase in product_subcases)
 

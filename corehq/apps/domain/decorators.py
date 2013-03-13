@@ -28,7 +28,7 @@ def _redirect_for_login_or_domain(request, redirect_field_name, where):
 
 ########################################################################################################
 #
-# Decorator that checks to see if user is loggd in and a domain is set.
+# Decorator that checks to see if user is logged in and a domain is set.
 #
 # Unfortunately, there's no good way to combine this with the login_required decorator,
 # because what we want to do is to test for domains just after authentication, but
@@ -53,7 +53,7 @@ def _redirect_for_login_or_domain(request, redirect_field_name, where):
 # Can't put reverse() in any code that executes upon file import, which means it can't go
 # in default parms of functions that are called at import (such as the call to login_and_domain_required()
 # below. This is because the files are imported during initialization of the urlconfs, and
-# the call to reverse happens before intialization is finished, so it fails. Need to delay 
+# the call to reverse happens before initialization is finished, so it fails. Need to delay
 # the call to reverse until post-initialization, which means until during the first actual call
 # into _inner().
 
@@ -71,7 +71,7 @@ def login_and_domain_required_ex(redirect_field_name=REDIRECT_FIELD_NAME, login_
                 else: 
                     # some views might not have this set
                     couch_user = CouchUser.from_django_user(user)
-                if couch_user.is_member_of(domain):
+                if couch_user.is_member_of(domain) or domain.is_public:
                     return view_func(req, domain_name, *args, **kwargs)
                 elif user.is_superuser:
                     # superusers can circumvent domain permissions.
@@ -146,10 +146,6 @@ def cls_to_view(additional_decorator=None):
         return __outer__
     return decorator
 
-# when requiring a specific domain
-def require_domain(domain):
-    return login_and_domain_required_ex(require_domain=domain)
-
 
 ########################################################################################################
 #
@@ -207,7 +203,8 @@ login_required_late_eval_of_LOGIN_URL = login_required_ex()
 def domain_admin_required_ex( redirect_page_name = None ):
     if redirect_page_name is None:
         redirect_page_name = getattr(settings, 'DOMAIN_NOT_ADMIN_REDIRECT_PAGE_NAME', 'homepage')                                                                                                 
-    def _outer( view_func ): 
+    def _outer(view_func):
+        @wraps(view_func)
         def _inner(request, domain, *args, **kwargs):
             if not hasattr(request, 'couch_user'):
                 raise Http404
@@ -217,11 +214,6 @@ def domain_admin_required_ex( redirect_page_name = None ):
             if not request.couch_user.is_domain_admin(domain_name):
                 return HttpResponseRedirect(reverse(redirect_page_name))
             return view_func(request, domain_name, *args, **kwargs)
-
-        _inner.__name__ = view_func.__name__
-        _inner.__doc__ = view_func.__doc__
-        _inner.__module__ = view_func.__module__
-        _inner.__dict__.update(view_func.__dict__)
         
         return _inner
     return _outer
