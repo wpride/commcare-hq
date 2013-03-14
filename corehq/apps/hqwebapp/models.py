@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe, mark_for_escaping
+from corehq import CaseReassignmentInterface
 from corehq.apps.dashboard.views import HQDomainDashboardView #todo yes?
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
@@ -328,19 +329,6 @@ class MessagesTab(UITab):
         ])]
 
 
-# class UsersMenuItem(UITab):
-#     title = ugettext_noop("Users")
-#     view = "corehq.apps.users.views.users"
-#
-#     @property
-#     def dropdown_items(self):
-#         return []
-#
-#     @property
-#     def is_viewable(self):
-#         return self.couch_user and (self.couch_user.can_edit_commcare_users() or self.couch_user.can_edit_web_users())
-
-
 class RemindersTab(UITab):
     title = ugettext_noop("Reminders")
     view = "corehq.apps.reminders.views.default"
@@ -351,22 +339,28 @@ class RemindersTab(UITab):
 
 
 class ProjectUsersTab(UITab):
-    view = "corehq.apps.settings.views.default"
+    title = ugettext_noop("Users")
+    view = "corehq.apps.users.views.users"
 
     @property
     def dropdown_items(self):
         return []
 
     @property
-    def title(self):
-        if not (self.couch_user.can_edit_commcare_users() or
-                self.couch_user.can_edit_web_users()):
-            return _("Settings")
-        return _("Settings & Users")
+    def is_viewable(self):
+        return (self.couch_user.can_edit_commcare_users() or
+                self.couch_user.can_edit_web_users() or
+                self.couch_user.can_edit_data())
 
     @property
-    def is_viewable(self):
-        return self.domain and self.couch_user
+    @memoized
+    def is_active(self):
+        cloudcare_settings_url = reverse('cloudcare_app_settings', args=[self.domain])
+        manage_data_url = reverse('data_interfaces_default', args=[self.domain])
+        full_path = self._request.get_full_path()
+        return (super(ProjectUsersTab, self).is_active
+                or full_path.startswith(cloudcare_settings_url)
+                or full_path.startswith(manage_data_url))
 
     @property
     def sidebar_items(self):
@@ -383,9 +377,10 @@ class ProjectUsersTab(UITab):
                 else:
                     return None
 
-            items.append((_('Mobile Users'), [
+            mobile_users_menu = [
                 {'title': _('Mobile Workers'),
                  'url': reverse('commcare_users', args=[self.domain]),
+                 'description': _("Create and manage users for CommCare and CloudCare."),
                  'children': [
                      {'title': commcare_username,
                       'urlname': 'commcare_user_account'},
@@ -395,10 +390,11 @@ class ProjectUsersTab(UITab):
                       'urlname': 'upload_commcare_users'},
                      {'title': _('Transfer Mobile Workers'),
                       'urlname': 'user_domain_transfer'},
-                 ]},
+                     ]},
 
                 {'title': _('Groups'),
                  'url': reverse('all_groups', args=[self.domain]),
+                 'description': _("Create and manage reporting and case sharing groups for Mobile Workers."),
                  'children': [
                      {'title': lambda **context: (
                          "%s %s" % (_("Editing"), context['group'].name)),
@@ -406,7 +402,16 @@ class ProjectUsersTab(UITab):
                      {'title': _('Membership Info'),
                       'urlname': 'group_membership'}
                  ]}
-            ]))
+            ]
+
+            if self.couch_user.is_domain_admin():
+                mobile_users_menu.append({
+                    'title': _('CloudCare Permissions'),
+                    'url': reverse('cloudcare_app_settings',
+                                    args=[self.domain])
+                })
+
+            items.append((_('Application Users'), mobile_users_menu))
 
         if self.couch_user.can_edit_web_users():
             def web_username(request=None, couch_user=None, **context):
@@ -419,9 +424,10 @@ class ProjectUsersTab(UITab):
                 else:
                     return None
 
-            items.append((_('CommCare HQ Users'), [
-                {'title': _('Web Users'),
+            items.append((_('Project Users'), [
+                {'title': _('Web Users & Roles'),
                  'url': reverse('web_users', args=[self.domain]),
+                 'description': _("Grant other CommCare HQ users access to your project and manage user roles."),
                  'children': [
                      {'title': _("Invite Web User"),
                       'urlname': 'invite_web_user'},
@@ -430,19 +436,30 @@ class ProjectUsersTab(UITab):
                  ]}
             ]))
 
-        items.append((_('My Account'), [
-            {'title': _('My Account Settings'),
-             'url': reverse('my_account', args=[self.domain])},
-            {'title': _('Change My Password'),
-             'url': reverse('change_my_password', args=[self.domain])}
-        ]))
+        if self.couch_user.can_edit_data():
+            from corehq.apps.data_interfaces.dispatcher import DataInterfaceDispatcher
+            items.extend(DataInterfaceDispatcher.navigation_sections({
+                "request": self._request,
+                "domain": self.domain,
+            }))
 
-        if self.couch_user.is_domain_admin():
-            items.append((_('CloudCare Settings'), [
-                {'title': _('App Access'),
-                 'url': reverse('cloudcare_app_settings',
-                             args=[self.domain])}
-            ]))
+        return items
+
+
+class ProjectSettingsTab(UITab):
+    title = ugettext_noop("Project Settings")
+    view = "corehq.apps.domain.views.project_settings"
+
+    @property
+    def sidebar_items(self):
+        items = []
+
+        # items.append((_('My Account'), [
+        #     {'title': _('My Account Settings'),
+        #      'url': reverse('my_account', args=[self.domain])},
+        #     {'title': _('Change My Password'),
+        #      'url': reverse('change_my_password', args=[self.domain])}
+        # ]))
 
         if self.couch_user.can_edit_web_users():
             def forward_name(repeater_type=None, **context):
@@ -495,6 +512,7 @@ class ProjectUsersTab(UITab):
             ]))
 
         return items
+
 
 
 class AdminReportsTab(UITab):

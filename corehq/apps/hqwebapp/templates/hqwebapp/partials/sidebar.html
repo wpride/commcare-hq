@@ -5,7 +5,7 @@
             {% for nav in navs %}
 
                 <li {% if nav.is_active and not nav.child %}class="active"{% endif %}>
-                    <a href="{{ nav.url }}" {% if nav.description %}class="report-description-popover" data-title="{{ nav.title }}" data-content="{{ nav.description }}"{% endif %}>
+                    <a href="{{ nav.url }}" {% if nav.description %}class="sidebar-help-popover" data-title="{{ nav.title }}" data-content="{{ nav.description }}"{% endif %}>
                         {% if nav.icon %}
                         <i class="icon{% if nav.is_active %}-white{% endif %} {{ nav.icon }}"></i>
                         {% endif %}

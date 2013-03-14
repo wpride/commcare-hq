@@ -22,6 +22,10 @@ $(function() {
     });
 
     $('#project-button-no-admin').popover();
+    $('.sidebar-help-popover').popover({
+        placement: 'right',
+        trigger: 'hover',
+    });
 
     // disable-on-submit is a class for form submit buttons so they're automatically disabled when the form is submitted
     $(document).on('submit', 'form', function(ev) {
