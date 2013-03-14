@@ -110,11 +110,13 @@
                                             {% else %}
                                                 {{ user.username }}
                                             {% endif %}
+                                            <div class="user-role">
                                             {% with request.couch_user.role_label.strip as role %}
                                                 {% if role %}
-                                                    ({{ role }})
+                                                    {{ role }}
                                                 {% endif %}
                                             {% endwith %}
+                                            </div>
                                         </li>
                                         <li><a href="#"><i class="icon-cog"></i> My Account Settings</a></li>
                                         {% if domain %}
