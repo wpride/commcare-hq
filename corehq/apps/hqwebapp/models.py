@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.utils.translation import ugettext_noop
 from corehq.apps.indicators.dispatcher import IndicatorAdminInterfaceDispatcher
+from corehq.apps.users.views import DefaultProjectUserSettingsView
 
 from dimagi.utils.couch.database import get_db
 from dimagi.utils.decorators.memoized import memoized
@@ -340,7 +341,7 @@ class RemindersTab(UITab):
 
 class ProjectUsersTab(UITab):
     title = ugettext_noop("Users")
-    view = "corehq.apps.users.views.users"
+    view = DefaultProjectUserSettingsView.name
 
     @property
     def dropdown_items(self):

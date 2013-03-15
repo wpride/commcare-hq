@@ -91,6 +91,20 @@ class UserForm(RoleForm):
     email = forms.EmailField(label=_("E-mail"), max_length=75, required=False)
     language = LanguageField(required=False, help_text=_("CloudCare only: write in the language code to set the language this user sees in CloudCare applications. This does not affect the default language of mobile applications."))
     role = forms.ChoiceField(choices=(), required=False)
+
+    @property
+    def direct_props(self):
+        return ['first_name', 'last_name', 'email', 'language']
+
+    def update_user(self, existing_user=None):
+        if not existing_user:
+            from django.contrib.auth.models import User
+            django_user = User()
+            django_user.username = self.cleaned_data['email']
+            django_user.save()
+            existing_user = CouchUser.from_django_user(django_user)
+        direct_props = ['']
+
     
     
 class Meta:
