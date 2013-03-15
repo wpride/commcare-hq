@@ -309,7 +309,7 @@ class UploadCommCareUsers(BaseMobileWorkersView):
 
         try:
             self.group_specs = self.workbook.get_worksheet(title='groups')
-        except KeyError:
+        except WorksheetNotFound:
             self.group_specs = []
 
         try:
@@ -372,7 +372,7 @@ def download_commcare_users(request, domain):
 
         def make_link(url, i):
             return format_html(
-                '<a href="{}">{}</a>',
+                '<a href="{}" target="_blank">{}</a>',
                 url,
                 _('Blank Group %s') % i
             )
