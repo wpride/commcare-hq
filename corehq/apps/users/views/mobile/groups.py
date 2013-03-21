@@ -4,6 +4,8 @@ from django.shortcuts import render
 from corehq.apps.groups.models import Group
 from corehq.apps.users.models import CouchUser, CommCareUser
 from corehq.apps.users.views import _users_context, require_can_edit_commcare_users
+from corehq.apps.users.views.mobile import BaseMobileWorkersView
+from dimagi.utils.decorators.memoized import memoized
 from dimagi.utils.excel import alphanumeric_sort_key
 from dimagi.utils.web import json_response, get_url_base, get_ip
 
@@ -12,6 +14,32 @@ def _get_sorted_groups(domain):
         Group.by_domain(domain),
         key=lambda group: alphanumeric_sort_key(group.name)
     )
+
+
+class MobileGroupsView(BaseMobileWorkersView):
+    page_name = "Manage Groups"
+    name = "all_groups"
+    template_name = "groups/all_groups.html"
+
+    @property
+    @memoized
+    def groups(self):
+        return Group.by_domain(self.domain)
+
+    @property
+    @memoized
+    def sorted_groups(self):
+        return sorted(
+            self.groups,
+            key=lambda group: alphanumeric_sort_key(group.name)
+        )
+
+    @property
+    def page_context(self):
+        return {
+            'all_groups': self.sorted_groups
+        }
+
 
 @require_can_edit_commcare_users
 def all_groups(request, domain, template="groups/all_groups.html"):

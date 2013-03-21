@@ -1,9 +1,10 @@
 from django import forms
-from django.contrib.auth.forms import SetPasswordForm
+from django.contrib import messages
 from django.core.validators import EmailValidator, email_re
 from django.forms.widgets import PasswordInput, HiddenInput
 from django.utils.encoding import smart_str
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _, ugettext_noop
+from dimagi.utils.decorators.memoized import memoized
 from hqstyle.forms.widgets import BootstrapCheckboxInput, BootstrapDisabledInput
 from dimagi.utils.timezones.fields import TimeZoneField
 from dimagi.utils.timezones.forms import TimeZoneChoiceField
@@ -70,6 +71,7 @@ class ProjectSettingsForm(forms.Form):
         except Exception:
             return False
 
+
 class RoleForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
@@ -80,17 +82,34 @@ class RoleForm(forms.Form):
         super(RoleForm, self).__init__(*args, **kwargs)
         self.fields['role'].choices = role_choices
 
+
 class UserForm(RoleForm):
     """
-    Form for Users
+        Form for updating Mobile Workers and Web Users and creating Web Users
     """
 
     #username = forms.CharField(max_length=15)
-    first_name = forms.CharField(max_length=50, required=False)
-    last_name = forms.CharField(max_length=50, required=False)
-    email = forms.EmailField(label=_("E-mail"), max_length=75, required=False)
-    language = LanguageField(required=False, help_text=_("CloudCare only: write in the language code to set the language this user sees in CloudCare applications. This does not affect the default language of mobile applications."))
-    role = forms.ChoiceField(choices=(), required=False)
+    first_name = forms.CharField(max_length=50, required=False, label=ugettext_noop("First Name"))
+    last_name = forms.CharField(max_length=50, required=False, label=ugettext_noop("Last Name"))
+    email = forms.EmailField(label=ugettext_noop("Email"), max_length=75, required=False)
+    language = LanguageField(required=False,
+                             label=ugettext_noop("Language"),
+                             help_text=ugettext_noop("CloudCare only: write in the language code to set the "
+                                                     "language this user sees in CloudCare applications. This does "
+                                                     "not affect the default language of mobile applications."))
+    role = forms.ChoiceField(choices=(), required=False, label=ugettext_noop("Role"))
+
+    def __init__(self, request=None, domain=None, *args, **kwargs):
+        self.request = request
+        self.domain = domain
+        super(UserForm, self).__init__(*args, **kwargs)
+        if not self.can_change_roles:
+            del self.fields['role']
+
+    @property
+    @memoized
+    def can_change_roles(self):
+        return self.request.user.is_superuser or self.request.couch_user.can_edit_web_users(domain=self.domain)
 
     @property
     def direct_props(self):
@@ -103,20 +122,50 @@ class UserForm(RoleForm):
             django_user.username = self.cleaned_data['email']
             django_user.save()
             existing_user = CouchUser.from_django_user(django_user)
-        direct_props = ['']
+            existing_user.save()
+        for prop in self.direct_props:
+            setattr(existing_user, prop, self.cleaned_data[prop])
+
+        if self.can_change_roles and self.request.couch_user.user_id != existing_user.user_id:
+            role = self.cleaned_data['role']
+            if role:
+                existing_user.set_role(self.domain, role)
+        messages.success(self.request, _('Changes saved for user "%s"') % existing_user.username)
+        existing_user.save()
+
+    def initialize_form(self, existing_user=None):
+        if not existing_user:
+            return
+        for prop in self.direct_props:
+            self.initial[prop] = getattr(existing_user, prop, "")
+        if self.can_change_roles:
+            if existing_user.is_commcare_user():
+                role = existing_user.get_role(self.domain)
+                if role is None:
+                    initial = "none"
+                else:
+                    initial = role.get_qualified_id()
+                self.initial['role'] = initial
+            else:
+                self.initial['role'] = existing_user.get_role(self.domain, include_teams=False).get_qualified_id() or ''
+
 
     
     
 class Meta:
         app_label = 'users'
 
+
 class CommCareAccountForm(forms.Form):
     """
     Form for CommCareAccounts
     """
-    username = forms.CharField(max_length=15, required=True)
-    password = forms.CharField(widget=PasswordInput(), required=True, min_length=1, help_text="Only numbers are allowed in passwords")
-    password_2 = forms.CharField(label='Password (reenter)', widget=PasswordInput(), required=True, min_length=1)
+    username = forms.CharField(max_length=15, required=True, label=ugettext_noop("Username"))
+    password = forms.CharField(widget=PasswordInput(), required=True, min_length=1,
+                               label=ugettext_noop("Password"),
+                               help_text=ugettext_noop("Only numbers are allowed in passwords"))
+    password_2 = forms.CharField(label=ugettext_noop('Confirm Password'), widget=PasswordInput(),
+                                 required=True, min_length=1)
     domain = forms.CharField(widget=HiddenInput())
     
     class Meta:
@@ -125,7 +174,7 @@ class CommCareAccountForm(forms.Form):
     def clean_username(self):
         username = self.cleaned_data['username']
         if username == 'admin' or username == 'demo_user':
-            raise forms.ValidationError("The username %s is reserved for CommCare." % username)
+            raise forms.ValidationError(_("The username %s is reserved for CommCare.") % username)
         return username
     
     def clean(self):
@@ -136,9 +185,9 @@ class CommCareAccountForm(forms.Form):
             pass
         else:
             if password != password_2:
-                raise forms.ValidationError("Passwords do not match")
+                raise forms.ValidationError(_("Passwords do not match"))
             if self.password_format == 'n' and not password.isnumeric():
-                raise forms.ValidationError("Password is not numeric")
+                raise forms.ValidationError(_("Password is not numeric"))
 
         try:
             username = self.cleaned_data['username']
@@ -151,7 +200,7 @@ class CommCareAccountForm(forms.Form):
             num_couch_users = len(CouchUser.view("users/by_username",
                                                  key=username))
             if num_couch_users > 0:
-                raise forms.ValidationError("CommCare user already exists")
+                raise forms.ValidationError(_("CommCare user already exists"))
 
             # set the cleaned username to user@domain.commcarehq.org
             self.cleaned_data['username'] = username

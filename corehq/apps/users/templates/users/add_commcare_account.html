@@ -19,13 +19,6 @@
     </script>
 {% endblock %}
 
-{% block subsection-title %}
-    <li>
-        <a href="{% url commcare_users domain %}">{% commcare_user %}s</a> <span class="divider">&gt;</span>
-    </li>
-    {{ block.super }}
-{% endblock %}
-
 {% block main_column %}
 	<form class="form form-horizontal" method="post" id="add_commcare_account_form">
         {% bootstrap_form_errors form %}

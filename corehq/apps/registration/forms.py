@@ -149,8 +149,7 @@ class _BaseForm(object):
 class AdminInvitesUserForm(RoleForm, _BaseForm, forms.Form):
     # As above. Need email now; still don't need domain. Don't need TOS. Do need the is_active flag,
     # and do need to relabel some things.
-    email       =  forms.EmailField(label="Email Address",
-                                    max_length=User._meta.get_field('email').max_length)
+    email = forms.EmailField(label="Email Address", max_length=User._meta.get_field('email').max_length)
 #    is_domain_admin = forms.BooleanField(label='User is a domain administrator', initial=False, required=False)
     role = forms.ChoiceField(choices=(), label="Project Role")
 

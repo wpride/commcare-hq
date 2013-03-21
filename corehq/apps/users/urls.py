@@ -1,16 +1,17 @@
 #from django.conf.urls.defaults import patterns, url
 from django.conf.urls.defaults import *
 from corehq.apps.domain.utils import grandfathered_domain_re
-from corehq.apps.users.views import DefaultProjectUserSettingsView
+from corehq.apps.users.views import DefaultProjectUserSettingsView, EditUserAccountView
+from corehq.apps.users.views.mobile import MobileGroupsView
 from corehq.apps.users.views.mobile.users import (UploadCommCareUsers, DefaultMobileWorkersView, UserListJSONView,
-                                                  AddCommCareAccountView)
+                                                  AddCommCareAccountView, EditMobileWorkerAccountView)
 
 urlpatterns = patterns('corehq.apps.users.views',
     url(r'^$', DefaultProjectUserSettingsView.as_view(), name=DefaultProjectUserSettingsView.name),
 
     #todo separate this from domain-bound
     #url(r'my_domains/$', 'my_domains', name='my_domains'),
-    url(r'^my_account/$', 'my_account', name='my_account'),
+    #url(r'^my_account/$', 'my_account', name='my_account'),
     url(r'^change_my_password/$', 'change_my_password', name="change_my_password"),
 
 
@@ -28,7 +29,7 @@ urlpatterns = patterns('corehq.apps.users.views',
     url(r'^delete_domain_membership/(?P<couch_user_id>[\w-]+)/(?P<domain_name>%s)/$' % grandfathered_domain_re,
         'delete_domain_membership',
         name='delete_domain_membership'),
-    url(r'^web/account/(?P<couch_user_id>[\w-]+)/$', 'account', name='user_account'),
+    url(r'^web/account/(?P<couch_user_id>[\w-]+)/$', EditUserAccountView.as_view(), name=EditUserAccountView.name),
     url(r'^web/remove/(?P<couch_user_id>[\w-]+)/$', 'remove_web_user', name='remove_web_user'),
     url(r'^web/undo_remove/(?P<record_id>[\w-]+)/$', 'undo_remove_web_user', name='undo_remove_web_user'),
     url(r'^web/invite/$', 'invite_web_user', name='invite_web_user'),
@@ -43,7 +44,8 @@ urlpatterns = patterns('corehq.apps.users.views',
 ) + \
 patterns("corehq.apps.users.views.mobile.users",
     url(r'^commcare/$', DefaultMobileWorkersView.as_view(), name=DefaultMobileWorkersView.name),
-    url(r'^commcare/account/(?P<couch_user_id>[\w-]+)/$', 'account', name='commcare_user_account'),
+    url(r'^commcare/account/(?P<couch_user_id>[\w-]+)/$', EditMobileWorkerAccountView.as_view(),
+        name=EditMobileWorkerAccountView.name),
     url(r'^commcare/account/(?P<couch_user_id>[\w-]+)/user_data/$', 'update_user_data', name='update_user_data'),
     url(r'^commcare/list/$', UserListJSONView.as_view(), name=UserListJSONView.name),
     url(r'^commcare/archive/(?P<user_id>[\w-]+)/$', 'archive_commcare_user', name='archive_commcare_user'),
@@ -57,6 +59,6 @@ patterns("corehq.apps.users.views.mobile.users",
 ) +\
 patterns("corehq.apps.users.views.mobile.groups",
     url(r'^group_memberships/(?P<couch_user_id>[\w-]+)/$', 'group_membership', name='group_membership'),
-    url(r'^groups/$', 'all_groups', name='all_groups'),
+    url(r'^groups/$', MobileGroupsView.as_view(), name=MobileGroupsView.name),
     url(r'^groups/(?P<group_id>[ \w-]+)/$', 'group_members', name='group_members'),
 )

@@ -9,15 +9,8 @@
     </script>
 {% endblock %}
 
-{% block subsection-title %}
-    <li>
-        <a href="{% url commcare_users domain %}">{% commcare_user %}s</a> <span class="divider">&gt;</span>
-    </li>
-    {{ block.super }}
-{% endblock %}
-
 {% block main_column %}
-    <h2>Steps to Upload {% commcare_user %}s in Bulk</h2>
+    <h2>{% trans 'Steps to upload Mobile Workers in bulk' %}</h2>
     <p>
         <ol>
             <li>
@@ -38,14 +31,14 @@
         <input type="hidden" name="async" value="true"/>
         {% endif %}
         <fieldset>
-            <legend>Choose a file for upload</legend>
+            <legend>{% trans 'Choose a file for upload' %}</legend>
             <div class="control-group">
-                <label for="bulk_upload_file" class="control-label">Users File</label>
+                <label for="bulk_upload_file" class="control-label">{% trans 'Users File' %}</label>
                 <div class="controls">
                     <input id="bulk_upload_file" type="file" name="file" data-bind="value: file"/>
                 </div>
             </div>
         </fieldset>
-        <div class="form-actions"><button type="submit" class="btn btn-primary" data-bind="visible: file()">Create {% commcare_user %}s</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary" data-bind="visible: file()">{% trans 'Create Mobile Workers' %}</button></div>
     </form>
 {% endblock %}

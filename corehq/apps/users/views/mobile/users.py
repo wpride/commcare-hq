@@ -2,12 +2,14 @@ import json
 import csv
 import io
 import uuid
+from django.contrib.auth.forms import SetPasswordForm
+from django.shortcuts import render
 from django.utils.safestring import mark_safe
 
 from openpyxl.shared.exc import InvalidFileException
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse,\
-    HttpResponseForbidden, HttpResponseBadRequest
+    HttpResponseForbidden, HttpResponseBadRequest, Http404
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.http import require_POST
@@ -15,12 +17,12 @@ from django.contrib import messages
 
 from couchexport.models import Format
 from corehq.apps.users.forms import CommCareAccountForm
-from corehq.apps.users.models import CommCareUser
+from corehq.apps.users.models import CommCareUser, UserRole
 from corehq.apps.groups.models import Group
 from corehq.apps.users.bulkupload import create_or_update_users_and_groups,\
     check_headers, dump_users_and_groups, GroupNameError
 from corehq.apps.users.tasks import bulk_upload_async
-from corehq.apps.users.views import (require_can_edit_commcare_users, account as users_account, BaseUserSettingsView)
+from corehq.apps.users.views import (require_can_edit_commcare_users, account as users_account, BaseUserSettingsView, EditUserAccountView)
 from dimagi.utils.decorators.memoized import memoized
 from dimagi.utils.html import format_html
 from dimagi.utils.decorators.view import get_file
@@ -30,15 +32,21 @@ from dimagi.utils.excel import WorkbookJSONReader, WorksheetNotFound
 DEFAULT_USER_LIST_LIMIT = 10
 
 
-def account(*args, **kwargs):
-    return users_account(*args, **kwargs)
-
-
 class BaseMobileWorkersView(BaseUserSettingsView):
 
     @method_decorator(require_can_edit_commcare_users)
     def dispatch(self, request, *args, **kwargs):
         return super(BaseMobileWorkersView, self).dispatch(request, *args, **kwargs)
+
+
+class MobileWorkersParentMixin(object):
+
+    @property
+    def parent_pages(self):
+        return [{
+            'name': DefaultMobileWorkersView.page_name,
+            'url': reverse(DefaultMobileWorkersView.name, args=[self.domain]),
+        }]
 
 
 class DefaultMobileWorkersView(BaseMobileWorkersView):
@@ -123,7 +131,7 @@ class UserListJSONView(DefaultMobileWorkersView):
             user_data = {
                 'user_id': user.user_id,
                 'status': "" if user.is_active else "Archived",
-                'edit_url': reverse('commcare_user_account', args=[self.domain, user.user_id]),
+                'edit_url': reverse(EditMobileWorkerAccountView.name, args=[self.domain, user.user_id]),
                 'username': user.raw_username,
                 'full_name': user.full_name,
                 'joined_on': user.date_joined.strftime("%d %b %Y"),
@@ -218,7 +226,7 @@ def restore_commcare_user(request, domain, user_id):
     user = CommCareUser.get_by_user_id(user_id, domain)
     user.unretire()
     messages.success(request, "User %s and all their submissions have been restored" % user.username)
-    return HttpResponseRedirect(reverse('user_account', args=[domain, user_id]))
+    return HttpResponseRedirect(reverse(EditMobileWorkerAccountView.name, args=[domain, user.user_id]))
 
 
 @require_can_edit_commcare_users
@@ -231,7 +239,7 @@ def update_user_data(request, domain, couch_user_id):
     user.user_data = updated_data
     user.save()
     messages.success(request, "User data updated!")
-    return HttpResponseRedirect(reverse('user_account', args=[domain, couch_user_id]))
+    return HttpResponseRedirect(reverse(EditMobileWorkerAccountView.name, args=[domain, user.user_id]))
 
 
 class AddCommCareAccountView(BaseMobileWorkersView):
@@ -262,7 +270,8 @@ class AddCommCareAccountView(BaseMobileWorkersView):
 
             couch_user = CommCareUser.create(self.domain, username, password, device_id='Generated from HQ')
             couch_user.save()
-            return HttpResponseRedirect(reverse("commcare_user_account", args=[self.domain, couch_user.userID]))
+            return HttpResponseRedirect(reverse(EditMobileWorkerAccountView.name,
+                                                args=[self.domain, couch_user.user_id]))
         return self.get(request, *args, **kwargs)
 
 
@@ -394,3 +403,43 @@ def download_commcare_users(request, domain):
         )
 
     return response
+
+
+class EditMobileWorkerAccountView(EditUserAccountView):
+    name = "commcare_user_account"
+    template_name = "users/mobile/edit_user.html"
+    user_type = "Mobile Worker"
+
+    @property
+    def parent_pages(self):
+        return [{
+            'name': DefaultMobileWorkersView.page_name,
+            'url': reverse(DefaultMobileWorkersView.name, args=[self.domain]),
+        }]
+
+    @property
+    def page_context(self):
+        context = super(EditMobileWorkerAccountView, self).page_context
+        context.update({
+            'reset_password_form': SetPasswordForm(user=""),
+            'only_numeric': (self.request.project.password_format() == 'n'),
+        })
+        return context
+
+    @property
+    @memoized
+    def role_choices(self):
+        return UserRole.commcareuser_role_choices(self.domain)
+
+    @property
+    @memoized
+    def editable_user(self):
+        editable_user = super(EditMobileWorkerAccountView, self).editable_user
+        if not editable_user.is_commcare_user():
+            raise Http404
+        return editable_user
+
+    def render_to_response(self, context, **response_kwargs):
+        if self.editable_user.is_deleted():
+            return render(self.request, 'users/deleted_account.html', context)
+        return super(EditMobileWorkerAccountView, self).render_to_response(context, **response_kwargs)

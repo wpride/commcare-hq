@@ -40,9 +40,9 @@
         <input type="hidden" name="form_type" value="basic-info" />
         {% bootstrap_form_errors form %}
         <fieldset>
-            <legend>User Information</legend>
+            <legend>{% trans 'User Information' %}</legend>
             <div class="control-group">
-                <label class="control-label">Username:</label>
+                <label class="control-label">{% trans 'Username' %}</label>
                 <div class="controls">
                     <span class="input-xlarge uneditable-input">{{ couch_user.html_username|safe }}</span>
                 </div>
@@ -64,26 +64,26 @@
                 </div>
             {% endfor %}
         </fieldset>
-        <div class="form-actions"><button type="submit" class="btn btn-primary">Update Information</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary">{% trans 'Update Information' %}</button></div>
     </form>
 
     <div class="form form-horizontal">
         <fieldset>
             {% for phone in phone_numbers_extended %}
-                {% if forloop.first %}<legend>Registered Phone Numbers</legend>{% endif %}
+                {% if forloop.first %}<legend>{% trans 'Registered Phone Numbers' %}</legend>{% endif %}
                 <div class="control-group">
                     <label class="control-label">+{{ phone.number }}
                         {% ifequal phone.status "verified" %}
-                            <div><span class="label label-success"><small>VERIFIED</small></span></div>
+                            <div><span class="label label-success"><small>{% trans 'VERIFIED' %}</small></span></div>
                         {% endifequal %}
                         {% ifequal phone.status "pending" %}
-                            <div><span class="label"><small>VERIFICATION PENDING</small></span></div>
+                            <div><span class="label"><small>{% trans 'VERIFICATION PENDING' %}</small></span></div>
                         {% endifequal %}
                         {% ifequal phone.status "duplicate" %}
-                            <div>{% if phone.dup_url %}<a href="{{ phone.dup_url }}">{% endif %}<span class="label label-warning"><small>ALREADY IN USE</small></span>{% if phone.dup_url %}</a>{% endif %}</div>
+                            <div>{% if phone.dup_url %}<a href="{{ phone.dup_url }}">{% endif %}<span class="label label-warning"><small>{% trans 'ALREADY IN USE' %}</small></span>{% if phone.dup_url %}</a>{% endif %}</div>
                         {% endifequal %}
                         {% ifequal phone.status "invalid" %}
-                            <div><span class="label"><small>INVALID FORMAT</small></span></div>
+                            <div><span class="label"><small>{% trans 'INVALID FORMAT' %}</small></span></div>
                         {% endifequal %}
                     </label>
 
@@ -92,21 +92,21 @@
 
                             {% ifequal phone.status "unverified" %}
                                 <form method="post" action="{% url verify_phone_number domain couch_user.couch_id %}?phone_number={{phone.number|urlencode}}" style="display: inline;">
-                                    <button type="submit" title="Send a verification SMS to this phone. When the user replies to this SMS, the phone number will be verified." class="btn btn-primary"><i class="icon icon-signal icon-white"></i> Verify</button>
+                                    <button type="submit" title="{% trans 'Send a verification SMS to this phone. When the user replies to this SMS, the phone number will be verified.' %}" class="btn btn-primary"><i class="icon icon-signal icon-white"></i> {% trans 'Verify' %}</button>
                                 </form>
                             {% endifequal %}
 
                             {% ifequal phone.status "duplicate" %}
-                                <a title="You cannot verify this phone because it is already being used elsewhere" class="btn btn-primary disabled"><i class="icon icon-signal icon-white"></i> Verify</a>
+                                <a title="{% trans 'You cannot verify this phone because it is already being used elsewhere' %}" class="btn btn-primary disabled"><i class="icon icon-signal icon-white"></i> Verify</a>
                             {% endifequal %}
 
                             {% ifequal phone.status "pending" %}
-                                <a title="Re-send the verification SMS to this phone" class="btn btn-primary" data-toggle="modal" href="#reverify_{{phone.number|urlencode}}"><i class="icon icon-signal icon-white"></i> Verify (retry)</a>
+                                <a title="{% trans 'Re-send the verification SMS to this phone' %}" class="btn btn-primary" data-toggle="modal" href="#reverify_{{phone.number|urlencode}}"><i class="icon icon-signal icon-white"></i> {% trans 'Verify (retry)' %}</a>
                             {% endifequal %}
 
                         {% endifnotequal %}
 
-                        <a class="btn btn-danger" data-toggle="modal" href="#delete_phonenumber_{{ forloop.counter }}"><i class="icon icon-remove icon-white"></i> Delete</a>
+                        <a class="btn btn-danger" data-toggle="modal" href="#delete_phonenumber_{{ forloop.counter }}"><i class="icon icon-remove icon-white"></i> {% trans 'Delete' %}</a>
                     </div>
                 </div>
             {% endfor %}
@@ -115,21 +115,21 @@
     <form class="form form-horizontal" name="add_phone_number" method="post">
         <input type="hidden" name="form_type" value="phone-numbers" />
         <fieldset>
-            <legend>Add a New Number</legend>
+            <legend>{% trans 'Add a New Number' %}</legend>
             <div class="control-group">
-                <label class="control-label" for="id_add_phone_number">Phone Number:</label>
+                <label class="control-label" for="id_add_phone_number">{% trans 'Phone Number' %}</label>
                 <div class="controls">
                     <div class="input-prepend">
                         <span class="add-on">+</span>
                         <input id="id_add_phone_number" type="text" name="phone_number" value="" maxlength="50" />
                     </div>
                     <p class="help-block">
-                        Please enter number, including international code, in digits only.
+                        {% trans 'Please enter number, including international code, in digits only.' %}
                     </p>
                 </div>
             </div>
         </fieldset>
-        <div class="form-actions"><button type="submit" class="btn btn-primary">Add Number</button></div>
+        <div class="form-actions"><button type="submit" class="btn btn-primary">{% trans 'Add Number' %}</button></div>
     </form>
 {% endblock %}
 
@@ -142,11 +142,11 @@
             </div>
             <form class="form form-horizontal hq-form" name="delete_phone_number" action="{% url delete_phone_number domain couch_user.couch_id %}?phone_number={{phone_number|urlencode}}" method="post">
                 <div class="modal-body">
-                    <p>Are you sure you want to delete the phone number: "+{{ phone_number }}"?</p>
+                    <p>{% trans 'Are you sure you want to delete the phone number' %}: "+{{ phone_number }}"?</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="#" data-dismiss="modal" class="btn">Cancel</a>
-                    <button type="submit" class="btn btn-danger"><i class="icon icon-remove icon-white"></i> Delete</button>
+                    <a href="#" data-dismiss="modal" class="btn">{% trans 'Cancel' %}</a>
+                    <button type="submit" class="btn btn-danger"><i class="icon icon-remove icon-white"></i> {% trans 'Delete' %}</button>
                 </div>
             </form>
         </div>
@@ -158,13 +158,15 @@
                     <a class="close" data-dismiss="modal">&times;</a>
                     <h3>Verify +{{ phone.number }}?</h3>
                 </div>
-                <form class="form form-horizontal hq-form" name="reverify_phone_number" action="{% url verify_phone_number domain couch_user.couch_id %}?phone_number={{phone.number|urlencode}}" method="post">
+                <form class="form form-horizontal hq-form" name="reverify_phone_number"
+                      action="{% url verify_phone_number domain couch_user.couch_id %}?phone_number={{phone.number|urlencode}}"
+                      method="post">
                     <div class="modal-body">
-                        <p>A verification message has already been sent to this phone. The phone has not replied yet. Send again?</p>
+                        <p>{% trans 'A verification message has already been sent to this phone. The phone has not replied yet. Send again?' %}</p>
                     </div>
                     <div class="modal-footer">
-                        <a href="#" data-dismiss="modal" class="btn">Cancel</a>
-                        <button type="submit" class="btn btn-primary"><i class="icon icon-signal icon-white"></i> Verify</button>
+                        <a href="#" data-dismiss="modal" class="btn">{% trans 'Cancel' %}</a>
+                        <button type="submit" class="btn btn-primary"><i class="icon icon-signal icon-white"></i> {% trans 'Verify' %}</button>
                     </div>
                 </form>
             </div>
