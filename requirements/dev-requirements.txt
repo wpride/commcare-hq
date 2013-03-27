@@ -6,4 +6,7 @@ line_profiler
 git+git://github.com/dimagi/couchdbkit-debugpanel.git
 Fabric==1.4.3
 
+pep8
+pyflakes
+
 -e git+git://github.com/dimagi/luna.git@1.0.0#egg=luna

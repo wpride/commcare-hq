@@ -6,8 +6,7 @@ import os
 from django.contrib import messages
 
 # odd celery fix
-import djcelery;
-
+import djcelery
 djcelery.setup_loader()
 
 CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
@@ -124,6 +123,7 @@ DEFAULT_APPS = (
     'django.contrib.sites',
     #'django.contrib.messages', # don't need this for messages and it's causing some error
     'django.contrib.staticfiles',
+    'django_jenkins',
     'south',
     'djcelery', # pip install django-celery
     'djtables', # pip install djtables
@@ -138,9 +138,10 @@ DEFAULT_APPS = (
 
 CRISPY_TEMPLATE_PACK = 'bootstrap'
 
-HQ_APPS = (
-    'django_digest',
+# django-jenkins will run the tests for these apps
+PROJECT_APPS = (
     'rosetta',
+    'django_digest',
     'auditcare',
     'djangocouch',
     'djangocouchuser',
@@ -225,8 +226,20 @@ HQ_APPS = (
 
 TEST_APPS = ()
 
-INSTALLED_APPS = DEFAULT_APPS + HQ_APPS
+INSTALLED_APPS = DEFAULT_APPS + PROJECT_APPS
 
+JENKINS_TASKS = (
+    'django_jenkins.tasks.django_tests',
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+    'django_jenkins.tasks.run_jshint',
+    'django_jenkins.tasks.run_sloccount',
+)
+
+TEST_RUNNER = 'testrunner.HqTestSuiteRunner'
+JENKINS_TEST_RUNNER = 'testrunner.HqJenkinsTestSuiteRunner'
+SKIP_SOUTH_TESTS = True
+#AUTH_PROFILE_MODULE = 'users.HqUserProfile'
 
 # after login, django redirects to this URL
 # rather than the default 'accounts/profile'
@@ -289,17 +302,12 @@ FIXTURE_GENERATORS = [
     "corehq.apps.fixtures.fixturegenerators.item_lists",
 ]
 
-GET_URL_BASE = 'dimagi.utils.web.get_url_base'
-
 SMS_GATEWAY_URL = "http://localhost:8001/"
 SMS_GATEWAY_PARAMS = "user=my_username&password=my_password&id=%(phone_number)s&text=%(message)s"
 
 # celery
 BROKER_URL = 'django://' #default django db based
 
-SKIP_SOUTH_TESTS = True
-#AUTH_PROFILE_MODULE = 'users.HqUserProfile'
-TEST_RUNNER = 'testrunner.HqTestSuiteRunner'
 HQ_ACCOUNT_ROOT = "commcarehq.org" # this is what gets appended to @domain after your accounts
 
 XFORMS_PLAYER_URL = "http://localhost:4444/"  # touchform's setting
