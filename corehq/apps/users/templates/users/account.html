@@ -1,0 +1,190 @@
+{% extends "users/users_base.html" %}
+{% load hq_shared_tags %}
+{% load hq_bootstrap_tags %}
+{% block js %}{{ block.super }}
+    <script src="{% static 'hqwebapp/javascripts/jquery.textchange.min.js' %}"></script>
+    <script src="{% static 'users/js/key_filters.js' %}"></script>
+{% endblock %}
+{% block js-inline %} {{ block.super }}
+    <script type="text/javascript">
+        $(function () {
+            $('#id_phone_number').keydown(allowNumeric);
+            var slide = false;
+            $('#id_can_view_reports').change(function () {
+                var show = slide ? 'slideDown' : 'show';
+                var hide = slide ? 'slideUp' : 'hide';
+                if ($(this).val() == 'some') {
+                    $('#id_viewable_reports').parent().parent()[show]();
+                } else {
+                    $('#id_viewable_reports').parent().parent()[hide]();
+                }
+                slide = true;
+            }).trigger('change');
+            $('#id_role').change(function () {
+                if ($(this).val() == 'admin') {
+                    $('#id_can_view_reports').val('yes').attr({disabled: true}).trigger('change');
+                } else {
+                    $('#id_can_view_reports').attr({disabled: false});
+                }
+            }).trigger('change');
+        });
+    </script>
+    <script>
+        $(function () {
+            if ($('#delete_user_{{ couch_user.user_id }}').get(0))
+                ko.applyBindings({signOff: ko.observable('')}, $('#delete_user_{{ couch_user.user_id }}').get(0));
+        });
+    </script>
+{% endblock %}
+
+{% block web_users_indicator %}
+    {% if couch_user.user_id != request.couch_user.user_id and not couch_user.is_commcare_user %}
+        <ul class="nav nav-list">
+            <li class="active"><a href="#">{{ couch_user.html_username|safe }}</a></li>
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block commcare_users_indicator %}
+    {% if couch_user.user_id != request.couch_user.user_id and couch_user.is_commcare_user %}
+        <ul class="nav nav-list">
+            <li class="active"><a href="#">{{ couch_user.username_in_report|safe }}</a></li>
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block subsection-title %}
+    {% if couch_user.user_id != request.couch_user.user_id %}
+        <li>
+            {% if not couch_user.is_commcare_user %}
+                <a href="{% url web_users domain %}">{% hq_web_user %}s</a>
+            {% else %}
+                <a href="{% url commcare_users domain %}">{% commcare_user %}s</a>
+            {% endif %}
+            <span class="divider">&gt;</span>
+        </li>
+        <li class="active">
+            <a href="#">User Settings <small>{{ couch_user.username }}</small></a>
+        </li>
+    {% else %}
+        <li class="active">
+            <a href="#">My Account Settings</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
+{% block user-view %}
+    <ul class="nav nav-tabs" id="project-settings-tabs">
+        <li><a href="#basic-info" data-toggle="tab">Basic</a></li>
+    {% if couch_user.is_commcare_user and couch_user.user_data %}
+        <li><a href="#user-data" data-toggle="tab">Custom Registration Data</a></li>
+    {% endif %}
+    {% if couch_user.user_id == request.couch_user.user_id and couch_user.is_commcare_user %}
+        {% if request.couch_user.can_view_reports or request.couch_user.get_viewable_reports %}
+            <li><a href="#scheduled-reports" data-toggle="tab">My Scheduled Reports</a></li>
+        {% endif %}
+    {% endif %}
+    {% if couch_user.user_id == request.couch_user.user_id and not couch_user.is_commcare_user %}
+        <li><a href="#scheduled-reports" data-toggle="tab">My Scheduled Reports</a></li>
+        {% if proj_settings_form %}
+        <li><a href="#project-settings" data-toggle="tab">Project "{{ request.project.display_name }}" Settings</a></li>
+        {% endif %}
+        <li><a href="#domains" data-toggle="tab">My Projects</a></li>
+    {% endif %}
+    </ul>
+    <div class="tab-content" id="settings">
+        <div class="tab-pane" id="basic-info">
+            <form class="form form-horizontal" name="user_details" method="post">
+                <input type="hidden" name="form_type" value="basic-info" />
+                {% bootstrap_form_errors form %}
+                <fieldset>
+                    <legend>User Information</legend>
+                    <div class="control-group">
+                        <label class="control-label">Username:</label>
+                        <div class="controls">
+                            <span class="input-xlarge uneditable-input">{{ couch_user.html_username|safe }}</span>
+                        </div>
+                    </div>
+                    {% for field in form.visible_fields %}
+                        <div class="control-group{% if field.errors %} error{% endif %}">
+                            <label class="control-label" for="{{ field.id }}">{{ field.label }}</label>
+                            <div class="controls">
+                                {{ field }}
+                                {% for error in field.errors %}
+                                    <span class="help-inline">{{ error }}</span>
+                                {% endfor %}
+                                {% if field.help_text %}
+                                    <p class="help-block">
+                                        {{ field.help_text }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </fieldset>
+                <div class="form-actions"><button type="submit" class="btn btn-primary">Update Information</button></div>
+            </form>
+        </div>
+        {% if couch_user.is_commcare_user and couch_user.user_data %}
+        <div class="tab-pane" id="user-data">
+            {% include "users/partial/user_data.html" %}
+        </div>
+        {% endif %}
+        {% if couch_user.user_id == request.couch_user.user_id and couch_user.is_commcare_user %}
+            {% if request.couch_user.can_view_reports or request.couch_user.get_viewable_reports %}
+                <div class="tab-pane" id="scheduled-reports">
+                    {% include "users/partial/scheduled_reports.html" %}
+                </div>
+            {% endif %}
+        {% endif %}
+        {% if couch_user.user_id == request.couch_user.user_id and not couch_user.is_commcare_user %}
+        <div class="tab-pane" id="scheduled-reports">
+            {% include "users/partial/scheduled_reports.html" %}
+        </div>
+        {% if proj_settings_form %}
+        <div class="tab-pane" id="project-settings">
+            {% include "users/partial/project_settings.html" %}
+        </div>
+        {% endif %}
+        <div class="tab-pane" id="domains">
+            {% include "users/partial/domain_accounts.html" %}
+        </div>
+        {% endif %}
+    </div>
+    {% if couch_user.is_commcare_user and couch_user.user_id != request.couch_user.user_id %}
+        <a class="btn btn-danger" href="#delete_user_{{ couch_user.user_id }}" data-toggle="modal"><i class="icon-white icon-trash"></i> Delete {% commcare_user %}</a>
+        <div id="delete_user_{{ couch_user.user_id }}" class="modal hide fade">
+            <div class="modal-header">
+                <a class="close" data-dismiss="modal">&times;</a>
+                <h3>Delete {% commcare_user %} {{ couch_user.raw_username }}? <small>Permanent Action</small></h3>
+            </div>
+            <form class="form form-horizontal" style="margin: 0; padding: 0" action="{% url delete_commcare_user domain couch_user.user_id %}" method="post">
+                <div class="modal-body">
+                    <p><span class="label label-warning">
+                            <i class="icon-white icon-warning-sign"></i>
+                            Bad things will happen if you don't read this
+                        </span></p>
+                    <p>Are you sure you want to permanently delete <strong>{{ couch_user.raw_username }}</strong>?</p>
+                    <p>This action:</p>
+                    <ul>
+                        <li>Will delete {{ couch_user.raw_username }}.</li>
+                        <li>Will delete <strong>all</strong> of {{ couch_user.raw_username }}'s form submissions.</li>
+                        <li>Is permanent.</li>
+                    </ul>
+                    <p>If you ever want to use {{ couch_user.raw_username }}'s data in the future, we suggest that you use the <strong>Archive User</strong> option
+                        <a href="{% url commcare_users domain %}">here</a>.</p>
+                    <p>If even after reading this you decide that you really want to delete this user and all of their data, type "I understand" into the box below.</p>
+
+                    <input data-bind="value: signOff, valueUpdate: 'textchange'"/>
+                </div>
+                <div class="modal-footer">
+                    <a href="#" data-dismiss="modal" class="btn">Cancel</a>
+                    <button type="submit" class="btn btn-danger" data-bind="visible: signOff().toLowerCase() === 'i understand'"><i class="icon icon-white icon-trash"></i> Delete {% commcare_user %}</button>
+                    <button class="btn btn-danger disabled" disabled="true" data-bind="visible: signOff().toLowerCase() !== 'i understand'"><i class="icon icon-white icon-trash"></i> Delete {% commcare_user %}</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
+
+

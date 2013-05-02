@@ -1,0 +1,7 @@
+{% load report_tags %}
+<nav>
+    <ul class="nav nav-list" id="report-list">
+        {% standard_report_list request.couch_user domain slug %}
+        {% custom_report_list request.couch_user domain slug %}
+    </ul>
+</nav>

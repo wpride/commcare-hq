@@ -1,0 +1,19 @@
+<head>
+<style>
+    h1 {
+        font-size: 130%;
+    }
+    th, td {
+        padding-right: 1em;
+    }
+    td.null-entry {
+        color: #ccc;
+    }
+</style>
+</head>
+<body>
+    <p>Domain: {{ domain }}</p>
+    {{ report_body|safe }}
+    <hr />
+    <p>You are receiving this automated report email from <a href="{{ DNS_name }}">CommCareHQ</a>. You can modify these settings by visiting <a href="{{ DNS_name }}{% url user_account domain couch_user %}">Account Settings</a>.</p>
+</body>

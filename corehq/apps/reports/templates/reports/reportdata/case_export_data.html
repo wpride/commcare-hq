@@ -1,0 +1,124 @@
+{% extends eport_base|default:"reports/async/default.html" %}
+{% load xforms_extras %}
+{% load hq_shared_tags %}
+
+{% block js %} {{ block.super }}
+    <script type="text/javascript" src="{% static 'reports/javascripts/reports.download_export.js' %}"></script>
+{% endblock %}
+{% block js-inline %}{{ block.super }}
+    <script type="text/javascript">
+        var exportDownloader = new HQExportDownloader({});
+        exportDownloader.init();
+    </script>
+{% endblock %}
+
+{% block reportcontent %}
+    <form class="form-horizontal hq-form-report" action="{% url download_cases domain %}" method="get">
+        {% for val, list in get_filter_params.lists %}
+            {% for item in list %}
+                <input type="hidden" name="{{ val }}" value="{{ item}}" />
+            {% endfor %}
+        {% endfor %}
+        <fieldset style="margin-top: 2em;">
+            <legend>Download Settings</legend>
+            <div class="control-group">
+                <label for="include-closed-select" class="control-label">Download</label>
+                <div class="controls">
+                    <select class="input-small" name="include_closed" id="include-closed-select">
+                        <option value="false">all open</option>
+                        <option value="true">all</option>
+                    </select> cases, all referrals, and all CHW users.
+                </div>
+            </div>
+        </fieldset>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-large"><i class="icon-download-alt icon-white"></i> Download</button>
+        </div>
+    </form>
+
+    <div class="hq-generic-report form-horizontal">
+        <h2>Saved Custom Exports</h2>
+
+        {% if saved_exports %}
+        <table class="export_data table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Preview</th>
+                    <th>Edit</th>
+                    <th>Download</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for export in saved_exports %}
+                <tr class="{% cycle "odd" "even" %}">
+                    <td>{{ export.name|default:"[blank]" }}</td>
+                    <td class="cell-vertical-centered">
+                        <a class="btn" href='{% url export_custom_data domain export.get_id %}?type=case&format=html&{{ get_filter_params.urlencode|safe }}'>
+                            HTML Preview
+                        </a>
+                    </td>
+                    <td class="cell-vertical-centered">
+                        <a class="btn btn-info" href='{% url corehq.apps.reports.views.edit_custom_export domain export.get_id %}?type=case'>
+                            <i class="icon-pencil icon-white"></i> Edit
+                        </a>
+                    </td>
+                    <td class="cell-vertical-centered">
+                        <a data-toggle="modal" href="#export-download-status" data-formname="{{ export.name }}" data-dlocation='{% url export_custom_data domain export.get_id %}?type=case&{{ get_filter_params.urlencode|safe }}&async=true'
+                           class="btn btn-primary export-action-download" ><i class="icon-download-alt icon-white"></i> Download</a>
+                    </td>
+                    <td class="cell-vertical-centered">
+                        <a class="btn btn-danger" data-toggle="modal" class="delete_link" href="#delete-export-modal-{{ export.get_id }}"><i class="icon-remove icon-white"></i> Delete</a>
+                        {% include "reports/dialogs/delete_custom_export_dialog.html" %}
+                     </td>
+                 </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">
+            <strong>No Custom Exports yet!</strong> Click "Create Custom Export" on a form below to make one.
+        </div>
+        {% endif %}
+
+        {% if case_types %}
+            <h2>Export cases</h2>
+            <table class="export_data table table-striped">
+                <thead>
+                <tr>
+                    <th>Case Type</th>
+                    <th>Custom Export</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for case in case_types %}
+                    <tr class="{% cycle "odd" "even" %}">
+                        <td>
+                            {% ifchanged %}
+                                {% if case %}
+                                    {{ case }}
+                                {% else %}
+                                    Unknown Case <!---->
+                                {% endif %}
+                            {% endifchanged %}
+                        </td>
+                        <td class="cell-vertical-centered">
+                            {% if case %}
+                                <a class="btn" href='{% url corehq.apps.reports.views.custom_export domain %}?export_tag="{{ case }}"&type=case'><i class="icon-star-empty"></i> Create Custom Export</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+    </div>
+{% endblock %}
+
+{% block modals %}
+{{ block.super }}
+    {% include 'reports/partials/export_download_modal.html' %}
+{% endblock %}

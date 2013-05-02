@@ -1,0 +1,77 @@
+{% extends "users/users_base.html" %}
+{% load hq_bootstrap_tags %}
+{% load hq_shared_tags %}
+{% load i18n %}
+
+{% block js-inline %}
+{{ block.super }}
+<script type="text/javascript">
+    $(function(){
+        var changeGateway = function() {
+            var gw = $("#id_gateway");
+            var options = $("#gateway_" + gw.val());
+            options.show();
+            options.siblings().hide();
+        };
+        $("#id_gateway").change(changeGateway);
+        changeGateway();
+    });
+</script>
+{% endblock %}
+
+{% block subsection-title %}
+    <li class="active">
+        <a href="#">SMS Gateways</a>
+    </li>
+{% endblock %}
+
+{% block user-view %}
+    <ul>
+    {% for gateway in gateways %}
+        <li>
+            <form class="form-inline" method="post" action="{% url domain_remove_sms_gateway domain gateway.id %}">
+                {% if gateway.country_code %}+{{ gateway.country_code }}{% else %}Default{% endif %}:
+                {{ gateway.description }}
+                <button type="submit" class="btn">Remove gateway</button>
+                <div>{{ gateway.help_message }}</div>
+                <ul>
+                    {% for field in gateway.form %}
+                        {% if field.value %}
+                            <li>
+                                {{ field.label }}:
+                                {{ field.value }}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </form>
+        </li>
+    {% endfor %}
+    </ul>
+    <form class="form-horizontal" method="post" action="{% url domain_add_sms_gateway domain %}">
+    <fieldset>
+        <legend>Add SMS Gateway</legend>
+        <div class="control-group">
+                    <label class="control-label" for="id_gateway">SMS Gateway</label>
+                    <div class="controls">
+                        <select name="gateway" id="id_gateway">
+                            {% for gateway, form in available_gateways %}
+                                <option value="{{ gateway.API_ID }}"{% if gateway.API_ID == selected_gateway %} selected="selected"{% endif %}>{{ gateway.API_DESCRIPTION }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+        </div>
+        <div id="gateway_forms">
+        {% for gateway, form in available_gateways %}
+                            <div id="gateway_{{ gateway.API_ID }}" class="hide">
+                                {% bootstrap_form_errors form %}
+                                {% bootstrap_fieldset form %}
+                            </div>
+                        {% endfor %}
+        </div>
+                        <button id="add_gateway" class="btn primary">Add gateway</button>
+    </fieldset>
+
+
+    </form>
+{% endblock %}>

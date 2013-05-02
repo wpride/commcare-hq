@@ -1,0 +1,6 @@
+<dl class="dl-horizontal">
+{% for key, val in couch_user.user_data.items %}
+    <dt>{{ key }}</dt>
+    <dd>{{ val }}</dd>
+{% endfor %}
+</dl>
