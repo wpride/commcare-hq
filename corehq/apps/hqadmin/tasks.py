@@ -4,4 +4,3 @@ import time
 @task
 def sleep(duration=10):
     time.sleep(duration)
-

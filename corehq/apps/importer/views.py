@@ -75,7 +75,7 @@ def excel_config(request, domain):
                                  reduce=True,
                                  group=True,
                                  startkey=[domain],
-                                 endkey=[domain,{}]).all():
+                                 endkey=[domain, {}]).all():
         if not row['key'][1] in case_types_from_apps:
             case_types_from_apps.append(row['key'][1])
 
@@ -85,7 +85,7 @@ def excel_config(request, domain):
                                  reduce=True,
                                  group=True,
                                  startkey=[domain],
-                                 endkey=[domain,{}]).all():
+                                 endkey=[domain, {}]).all():
         if not row['key'][1] in case_types_from_cases:
             case_types_from_cases.append(row['key'][1])
 
@@ -106,7 +106,7 @@ def excel_config(request, domain):
                                 'domain': domain,
                                 'report': {
                                     'name': 'Import: Configuration'
-                                 },
+                                },
                                 'slug': base.ImportCases.slug})
 
 @require_POST
@@ -168,7 +168,6 @@ def excel_fields(request, domain):
     except:
         pass
 
-
     return render(request, "importer/excel_fields.html", {
                                 'named_columns': named_columns,
                                 'case_type': case_type,
@@ -183,7 +182,7 @@ def excel_fields(request, domain):
                                 'domain': domain,
                                 'report': {
                                     'name': 'Import: Match columns to fields'
-                                 },
+                                },
                                 'slug': base.ImportCases.slug})
 
 @require_POST
@@ -224,7 +223,7 @@ def excel_commit(request, domain):
                                 'domain': domain,
                                 'report': {
                                     'name': 'Import: Completed'
-                                 },
+                                },
                                 'slug': base.ImportCases.slug})
 
 @require_can_edit_data
@@ -256,7 +255,6 @@ def importer_job_poll(request, domain, download_id, template="importer/partials/
                                       'uploaded has expired - please upload '
                                       'a new one.'))
             return HttpResponseRedirect(base.ImportCases.get_url(domain=domain) + "?error=cache")
-
 
     if download_data.task.state == 'SUCCESS':
         is_ready = True

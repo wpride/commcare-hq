@@ -59,7 +59,6 @@ class BulkExport(object):
 
         # now that the headers are set, lets build the rows
 
-
         for i, config in enumerate(configs):
             for doc in config.get_docs():
                 if self.export_objects[i].transform:
@@ -121,7 +120,7 @@ class ApplicationBulkExport(BulkExport):
         try:
             app = Application.get(self.export_id)
             if app:
-                filename = "%s-%s.%s" %(app.name, app.get_id, file_ext)
+                filename = "%s-%s.%s" % (app.name, app.get_id, file_ext)
         except Exception:
             pass
         return filename
@@ -211,8 +210,10 @@ def save_metadata_export_to_tempfile(domain, format):
                "userID", "xmlns", "version")
     def _form_data_to_row(formdata):
         def _key_to_val(formdata, key):
-            if key == "type":  return xmlns_to_name(domain, formdata.xmlns, app_id=None)
-            else:              return getattr(formdata, key)
+            if key == "type":
+                return xmlns_to_name(domain, formdata.xmlns, app_id=None)
+            else:
+                return getattr(formdata, key)
         return [_key_to_val(formdata, key) for key in headers]
 
     fd, path = tempfile.mkstemp()

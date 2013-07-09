@@ -12,7 +12,7 @@ for d in submodules_list:
         continue
     sys.path.insert(1, os.path.join(filedir, 'submodules', d))
 
-sys.path.append(os.path.join(filedir,'submodules'))
+sys.path.append(os.path.join(filedir, 'submodules'))
 
 try:
     import settings # Assumed to be in the same directory.

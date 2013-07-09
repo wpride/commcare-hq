@@ -61,7 +61,7 @@ class HQToggle(object):
 
     def __str__(self):
         return "%(klass)s[%(type)s:%(show)s:%(name)s]" % dict(
-            klass = self.__class__.__name__,
+            klass=self.__class__.__name__,
             type=self.type,
             name=self.name,
             show=self.show
@@ -648,7 +648,7 @@ class CaseActivityReportCache(Document):
                 startkey=key,
                 endkey=key+[{}]
             ).all()
-            self._case_list = [None] + [item.get('key',[])[-1] for item in data]
+            self._case_list = [None] + [item.get('key', [])[-1] for item in data]
         return self._case_list
 
     _now = None
@@ -670,7 +670,7 @@ class CaseActivityReportCache(Document):
         result = dict()
         for item in data:
             count = item.get('value', 0)
-            user_id = item.get('key',[])[-1]
+            user_id = item.get('key', [])[-1]
             if user_id:
                 if not user_id in result:
                     result[user_id] = count
@@ -687,7 +687,6 @@ class CaseActivityReportCache(Document):
         key = [prefix, self.domain]
         if case_type is not None:
             key.append(case_type)
-
 
         past = self.now - timedelta(days=landmark+1)
         data = get_db().view(self._couch_view,

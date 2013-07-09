@@ -12,8 +12,10 @@ from receiver import xml as receiver_xml
 from receiver.xml import ResponseNature
 
 def get_response(user, created):
-    if created:   text = "Thanks for registering! Your username is %s" % user.username
-    else:         text = "Thanks for updating your information, %s." % user.username
+    if created:
+        text = "Thanks for registering! Your username is %s" % user.username
+    else:
+        text = "Thanks for updating your information, %s." % user.username
         
     nature = ResponseNature.SUBMIT_USER_REGISTERED if created else \
              ResponseNature.SUBMIT_USER_UPDATED

@@ -100,7 +100,6 @@ class GenericReportView(CacheableRequestMixIn):
     special_notice = None
     override_permissions_check = False # whether to ignore the permissions check that's done when rendering the report
     
-    
     def __init__(self, request, base_context=None, domain=None, **kwargs):
         if not self.name or not self.section_name or self.slug is None or not self.dispatcher:
             raise NotImplementedError("Missing a required parameter: (name: %(name)s, section_name: %(section_name)s,"
@@ -161,7 +160,6 @@ class GenericReportView(CacheableRequestMixIn):
             domain=self.domain,
             context={}
         )
-
 
     _caching = False
     def __setstate__(self, state):
@@ -357,9 +355,8 @@ class GenericReportView(CacheableRequestMixIn):
             Intention: Override
             Returns an export table to be parsed by export_from_tables.
         """
-        return [ ['table_or_sheet_name', [['header'] ,['row']] ] ]
+        return [['table_or_sheet_name', [['header'], ['row']]]]
 
-    
     @property
     def filter_set(self):
         """
@@ -375,7 +372,6 @@ class GenericReportView(CacheableRequestMixIn):
                 pass
         return are_filters_set
         
-    
     @property
     def needs_filters(self):
         """
@@ -420,7 +416,7 @@ class GenericReportView(CacheableRequestMixIn):
                 needs_filters=self.needs_filters,
                 has_datespan=has_datespan,
                 show=self.override_permissions_check or \
-                   self.request.couch_user.can_view_reports() or self.request.couch_user.get_viewable_reports(),
+                self.request.couch_user.can_view_reports() or self.request.couch_user.get_viewable_reports(),
                 is_emailable=self.emailable,
                 is_printable=self.printable,
                 is_admin=self.is_admin_report,   # todo is this necessary???
@@ -500,7 +496,6 @@ class GenericReportView(CacheableRequestMixIn):
         self.set_announcements()
         return render(self.request, template, self.context)
 
-    
     @property
     @request_cache("mobile")
     def mobile_response(self):

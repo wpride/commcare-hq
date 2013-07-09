@@ -60,10 +60,7 @@ def add_reminder(request, domain, handler_id=None, template="reminders/partial/a
             handler.event_interpretation = EVENT_AS_OFFSET
             handler.events = [
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(hour=0,minute=0,second=0)
-                   ,message = reminder_form.cleaned_data["message"]
-                   ,callback_timeout_intervals = []
+                    day_num=0, fire_time=time(hour=0, minute=0, second=0), message=reminder_form.cleaned_data["message"], callback_timeout_intervals=[]
                )
             ]
             handler.save()
@@ -120,12 +117,12 @@ def scheduled_reminders(request, domain, template="reminders/partial/scheduled_r
         case = reminder.case
         
         reminder_data.append({
-            "handler_name" : handler.nickname,
-            "next_fire" : reminder.next_fire,
-            "recipient_desc" : recipient_desc,
-            "recipient_type" : handler.recipient,
-            "case_id" : case.get_id if case is not None else None,
-            "case_name" : case.name if case is not None else None,
+            "handler_name": handler.nickname,
+            "next_fire": reminder.next_fire,
+            "recipient_desc": recipient_desc,
+            "recipient_type": handler.recipient,
+            "case_id": case.get_id if case is not None else None,
+            "case_name": case.name if case is not None else None,
         })
     
     return render(request, template, {
@@ -194,59 +191,59 @@ def add_complex_reminder_schedule(request, domain, handler_id=None):
     else:
         if h is not None:
             initial = {
-                "active"                : h.active,
-                "case_type"             : h.case_type,
-                "nickname"              : h.nickname,
-                "default_lang"          : h.default_lang,
-                "method"                : h.method,
-                "recipient"             : h.recipient,
-                "start_property"        : h.start_property,
-                "start_value"           : h.start_value,
-                "start_date"            : h.start_date,
-                "start_match_type"      : h.start_match_type,
-                "start_offset"          : h.start_offset,
-                "schedule_length"       : h.schedule_length,
-                "event_interpretation"  : h.event_interpretation,
-                "max_iteration_count"   : h.max_iteration_count,
-                "until"                 : h.until,
-                "events"                : h.events,
-                "submit_partial_forms"  : h.submit_partial_forms,
-                "include_case_side_effects" : h.include_case_side_effects,
-                "start_condition_type"  : h.start_condition_type,
-                "start_datetime_date"   : str(h.start_datetime.date()) if isinstance(h.start_datetime, datetime) else None,
-                "start_datetime_time"   : str(h.start_datetime.time()) if isinstance(h.start_datetime, datetime) else None,
-                "frequency"             : h.ui_frequency,
-                "sample_id"             : h.sample_id,
-                "use_until"             : "Y" if h.until is not None else "N",
-                "max_question_retries"  : h.max_question_retries,
-                "recipient_case_match_property" : h.recipient_case_match_property,
-                "recipient_case_match_type" : h.recipient_case_match_type,
-                "recipient_case_match_value" : h.recipient_case_match_value,
+                "active": h.active,
+                "case_type": h.case_type,
+                "nickname": h.nickname,
+                "default_lang": h.default_lang,
+                "method": h.method,
+                "recipient": h.recipient,
+                "start_property": h.start_property,
+                "start_value": h.start_value,
+                "start_date": h.start_date,
+                "start_match_type": h.start_match_type,
+                "start_offset": h.start_offset,
+                "schedule_length": h.schedule_length,
+                "event_interpretation": h.event_interpretation,
+                "max_iteration_count": h.max_iteration_count,
+                "until": h.until,
+                "events": h.events,
+                "submit_partial_forms": h.submit_partial_forms,
+                "include_case_side_effects": h.include_case_side_effects,
+                "start_condition_type": h.start_condition_type,
+                "start_datetime_date": str(h.start_datetime.date()) if isinstance(h.start_datetime, datetime) else None,
+                "start_datetime_time": str(h.start_datetime.time()) if isinstance(h.start_datetime, datetime) else None,
+                "frequency": h.ui_frequency,
+                "sample_id": h.sample_id,
+                "use_until": "Y" if h.until is not None else "N",
+                "max_question_retries": h.max_question_retries,
+                "recipient_case_match_property": h.recipient_case_match_property,
+                "recipient_case_match_type": h.recipient_case_match_type,
+                "recipient_case_match_value": h.recipient_case_match_value,
             }
         else:
             initial = {
-                "events"    : [CaseReminderEvent(day_num=0, fire_time=time(0,0), message={"":""}, callback_timeout_intervals=[], form_unique_id=None)],
-                "use_until" : "N",
-                "max_question_retries" : QUESTION_RETRY_CHOICES[-1],
-                "active" : True,
+                "events": [CaseReminderEvent(day_num=0, fire_time=time(0, 0), message={"": ""}, callback_timeout_intervals=[], form_unique_id=None)],
+                "use_until": "N",
+                "max_question_retries": QUESTION_RETRY_CHOICES[-1],
+                "active": True,
             }
         
         form = ComplexCaseReminderForm(initial=initial)
     
     return render(request, "reminders/partial/add_complex_reminder.html", {
-        "domain":       domain,
-        "form":         form,
-        "form_list":    form_list,
-        "handler_id":   handler_id,
-        "sample_list":  sample_list,
+        "domain": domain,
+        "form": form,
+        "form_list": form_list,
+        "handler_id": handler_id,
+        "sample_list": sample_list,
     })
 
 
 @reminders_permission
 def manage_keywords(request, domain):
     context = {
-        "domain" : domain,
-        "keywords" : SurveyKeyword.get_all(domain)
+        "domain": domain,
+        "keywords": SurveyKeyword.get_all(domain)
     }
     return render(request, "reminders/partial/manage_keywords.html", context)
 
@@ -278,23 +275,23 @@ def add_keyword(request, domain, keyword_id=None):
         initial = {}
         if sk is not None:
             initial = {
-                "keyword" : sk.keyword,
-                "form_unique_id" : sk.form_unique_id,
-                "form_type" : sk.form_type,
-                "use_custom_delimiter" : sk.delimiter is not None,
-                "delimiter" : sk.delimiter,
-                "use_named_args" : sk.use_named_args,
-                "use_named_args_separator" : sk.named_args_separator is not None,
-                "named_args" : [{"name" : k, "xpath" : v} for k, v in sk.named_args.items()],
-                "named_args_separator" : sk.named_args_separator,
+                "keyword": sk.keyword,
+                "form_unique_id": sk.form_unique_id,
+                "form_type": sk.form_type,
+                "use_custom_delimiter": sk.delimiter is not None,
+                "delimiter": sk.delimiter,
+                "use_named_args": sk.use_named_args,
+                "use_named_args_separator": sk.named_args_separator is not None,
+                "named_args": [{"name": k, "xpath": v} for k, v in sk.named_args.items()],
+                "named_args_separator": sk.named_args_separator,
             }
         form = KeywordForm(initial=initial)
     
     context = {
-        "domain" : domain,
-        "form_list" : get_form_list(domain),
-        "form" : form,
-        "keyword" : sk,
+        "domain": domain,
+        "form_list": get_form_list(domain),
+        "form": form,
+        "keyword": sk,
     }
     
     return render(request, "reminders/partial/add_keyword.html", context)
@@ -332,7 +329,7 @@ def add_survey(request, domain, survey_id=None):
                 timeout_intervals = []
             
             timeout_duration = sum(timeout_intervals) / 1440
-            final_timeout = lambda wave : [((wave.end_date - wave.date).days - timeout_duration) * 1440]
+            final_timeout = lambda wave: [((wave.end_date - wave.date).days - timeout_duration) * 1440]
             
             if survey is None:
                 wave_list = []
@@ -351,38 +348,38 @@ def add_survey(request, domain, survey_id=None):
                         for sample in samples:
                             if sample["method"] == "SMS":
                                 handler = CaseReminderHandler(
-                                    domain = domain,
-                                    nickname = "Survey '%s'" % name,
-                                    default_lang = "en",
-                                    method = "survey",
-                                    recipient = RECIPIENT_SURVEY_SAMPLE,
-                                    start_condition_type = ON_DATETIME,
-                                    start_datetime = datetime.combine(wave.date, time(0,0)),
-                                    start_offset = 0,
-                                    events = [CaseReminderEvent(
-                                        day_num = 0,
-                                        fire_time = wave.time,
-                                        form_unique_id = wave.form_id,
-                                        callback_timeout_intervals = timeout_intervals + final_timeout(wave),
+                                    domain=domain,
+                                    nickname="Survey '%s'" % name,
+                                    default_lang="en",
+                                    method="survey",
+                                    recipient=RECIPIENT_SURVEY_SAMPLE,
+                                    start_condition_type=ON_DATETIME,
+                                    start_datetime=datetime.combine(wave.date, time(0, 0)),
+                                    start_offset=0,
+                                    events=[CaseReminderEvent(
+                                        day_num=0,
+                                        fire_time=wave.time,
+                                        form_unique_id=wave.form_id,
+                                        callback_timeout_intervals=timeout_intervals + final_timeout(wave),
                                     )],
-                                    schedule_length = 1,
-                                    event_interpretation = EVENT_AS_SCHEDULE,
-                                    max_iteration_count = 1,
-                                    sample_id = sample["sample_id"],
-                                    survey_incentive = sample["incentive"],
-                                    submit_partial_forms = True,
+                                    schedule_length=1,
+                                    event_interpretation=EVENT_AS_SCHEDULE,
+                                    max_iteration_count=1,
+                                    sample_id=sample["sample_id"],
+                                    survey_incentive=sample["incentive"],
+                                    submit_partial_forms=True,
                                 )
                                 handler.save()
                                 wave.reminder_definitions[sample["sample_id"]] = handler._id
                 
-                survey = Survey (
-                    domain = domain,
-                    name = name,
-                    waves = wave_list,
-                    followups = followups,
-                    samples = samples,
-                    send_automatically = send_automatically,
-                    send_followup = send_followup
+                survey = Survey(
+                    domain=domain,
+                    name=name,
+                    waves=wave_list,
+                    followups=followups,
+                    samples=samples,
+                    send_automatically=send_automatically,
+                    send_followup=send_followup
                 )
             else:
                 current_waves = survey.waves
@@ -453,26 +450,26 @@ def add_survey(request, domain, survey_id=None):
                     for sample_id in new_sample_ids:
                         if sample_id not in wave.reminder_definitions:
                             handler = CaseReminderHandler(
-                                domain = domain,
-                                nickname = "Survey '%s'" % name,
-                                default_lang = "en",
-                                method = "survey",
-                                recipient = RECIPIENT_SURVEY_SAMPLE,
-                                start_condition_type = ON_DATETIME,
-                                start_datetime = datetime.combine(wave.date, time(0,0)),
-                                start_offset = 0,
-                                events = [CaseReminderEvent(
-                                    day_num = 0,
-                                    fire_time = wave.time,
-                                    form_unique_id = wave.form_id,
-                                    callback_timeout_intervals = timeout_intervals + final_timeout(wave),
+                                domain=domain,
+                                nickname="Survey '%s'" % name,
+                                default_lang="en",
+                                method="survey",
+                                recipient=RECIPIENT_SURVEY_SAMPLE,
+                                start_condition_type=ON_DATETIME,
+                                start_datetime=datetime.combine(wave.date, time(0, 0)),
+                                start_offset=0,
+                                events=[CaseReminderEvent(
+                                    day_num=0,
+                                    fire_time=wave.time,
+                                    form_unique_id=wave.form_id,
+                                    callback_timeout_intervals=timeout_intervals + final_timeout(wave),
                                 )],
-                                schedule_length = 1,
-                                event_interpretation = EVENT_AS_SCHEDULE,
-                                max_iteration_count = 1,
-                                sample_id = sample_id,
-                                survey_incentive = sample_data[sample_id]["incentive"],
-                                submit_partial_forms = True,
+                                schedule_length=1,
+                                event_interpretation=EVENT_AS_SCHEDULE,
+                                max_iteration_count=1,
+                                sample_id=sample_id,
+                                survey_incentive=sample_data[sample_id]["incentive"],
+                                submit_partial_forms=True,
                             )
                             handler.save()
                             wave.reminder_definitions[sample_id] = handler._id
@@ -485,7 +482,7 @@ def add_survey(request, domain, survey_id=None):
                 survey.send_followup = send_followup
             
             # Sort the questionnaire waves by date and time
-            survey.waves = sorted(survey.waves, key = lambda wave : datetime.combine(wave.date, wave.time))
+            survey.waves = sorted(survey.waves, key=lambda wave: datetime.combine(wave.date, wave.time))
             
             # Create / Close delegation tasks as necessary for samples with method "CATI"
             survey.update_delegation_tasks(request.couch_user.get_id)
@@ -500,11 +497,11 @@ def add_survey(request, domain, survey_id=None):
             utcnow = datetime.utcnow()
             for wave in survey.waves:
                 wave_json = {
-                    "date" : str(wave.date),
-                    "form_id" : wave.form_id,
-                    "time" : str(wave.time),
-                    "ignore" : wave.has_started(survey),
-                    "end_date" : str(wave.end_date),
+                    "date": str(wave.date),
+                    "form_id": wave.form_id,
+                    "time": str(wave.time),
+                    "ignore": wave.has_started(survey),
+                    "end_date": str(wave.end_date),
                 }
                 
                 waves.append(wave_json)
@@ -519,27 +516,27 @@ def add_survey(request, domain, survey_id=None):
         form = SurveyForm(initial=initial)
     
     form_list = get_form_list(domain)
-    form_list.insert(0, {"code":"--choose--", "name":"-- Choose --"})
+    form_list.insert(0, {"code": "--choose--", "name": "-- Choose --"})
     sample_list = get_sample_list(domain)
-    sample_list.insert(0, {"code":"--choose--", "name":"-- Choose --"})
+    sample_list.insert(0, {"code": "--choose--", "name": "-- Choose --"})
     
     context = {
-        "domain" : domain,
-        "survey_id" : survey_id,
-        "form" : form,
-        "form_list" : form_list,
-        "sample_list" : sample_list,
-        "method_list" : SURVEY_METHOD_LIST,
-        "user_list" : CommCareUser.by_domain(domain),
-        "started" : survey.has_started() if survey is not None else False,
+        "domain": domain,
+        "survey_id": survey_id,
+        "form": form,
+        "form_list": form_list,
+        "sample_list": sample_list,
+        "method_list": SURVEY_METHOD_LIST,
+        "user_list": CommCareUser.by_domain(domain),
+        "started": survey.has_started() if survey is not None else False,
     }
     return render(request, "reminders/partial/add_survey.html", context)
 
 @reminders_permission
 def survey_list(request, domain):
     context = {
-        "domain" : domain,
-        "surveys" : Survey.get_all(domain)
+        "domain": domain,
+        "surveys": Survey.get_all(domain)
     }
     return render(request, "reminders/partial/survey_list.html", context)
 
@@ -552,17 +549,17 @@ def add_sample(request, domain, sample_id=None):
     if request.method == "POST":
         form = SurveySampleForm(request.POST, request.FILES)
         if form.is_valid():
-            name            = form.cleaned_data.get("name")
+            name = form.cleaned_data.get("name")
             sample_contacts = form.cleaned_data.get("sample_contacts")
-            time_zone       = form.cleaned_data.get("time_zone")
+            time_zone = form.cleaned_data.get("time_zone")
             use_contact_upload_file = form.cleaned_data.get("use_contact_upload_file")
             contact_upload_file = form.cleaned_data.get("contact_upload_file")
             
             if sample is None:
-                sample = SurveySample (
-                    domain = domain,
-                    name = name,
-                    time_zone = time_zone.zone
+                sample = SurveySample(
+                    domain=domain,
+                    name=name,
+                    time_zone=time_zone.zone
                 )
             else:
                 sample.name = name
@@ -625,22 +622,22 @@ def add_sample(request, domain, sample_id=None):
             contact_info = []
             for case_id in sample.contacts:
                 case = CommCareCase.get(case_id)
-                contact_info.append({"id":case.name, "phone_number":case.contact_phone_number, "case_id" : case_id})
+                contact_info.append({"id": case.name, "phone_number": case.contact_phone_number, "case_id": case_id})
             initial["sample_contacts"] = contact_info
         form = SurveySampleForm(initial=initial)
     
     context = {
-        "domain" : domain,
-        "form" : form,
-        "sample_id" : sample_id
+        "domain": domain,
+        "form": form,
+        "sample_id": sample_id
     }
     return render(request, "reminders/partial/add_sample.html", context)
 
 @reminders_permission
 def sample_list(request, domain):
     context = {
-        "domain" : domain,
-        "samples" : SurveySample.get_all(domain)
+        "domain": domain,
+        "samples": SurveySample.get_all(domain)
     }
     return render(request, "reminders/partial/sample_list.html", context)
 
@@ -664,14 +661,14 @@ def edit_contact(request, domain, sample_id, case_id):
                 return HttpResponseRedirect(reverse("edit_sample", args=[domain, sample_id]))
     else:
         initial = {
-            "phone_number" : case.get_case_property("contact_phone_number"),
+            "phone_number": case.get_case_property("contact_phone_number"),
         }
         form = EditContactForm(initial=initial)
     
     context = {
-        "domain" : domain,
-        "case" : case,
-        "form" : form,
+        "domain": domain,
+        "case": case,
+        "form": form,
     }
     return render(request, "reminders/partial/edit_contact.html", context)
 
@@ -711,20 +708,19 @@ def reminders_in_error(request, domain):
         recipient = reminder.recipient
         case = reminder.case
         reminders.append({
-            "reminder_id" : reminder._id,
-            "handler_id" : reminder.handler_id,
-            "handler_name" : handler.nickname,
-            "case_id" : case.get_id if case is not None else None,
-            "case_name" : case.name if case is not None else None,
-            "next_fire" : tz_utils.adjust_datetime_to_timezone(reminder.next_fire, pytz.utc.zone, timezone.zone).strftime("%Y-%m-%d %H:%M:%S"),
-            "error_msg" : reminder.error_msg,
-            "recipient_name" : get_recipient_name(recipient),
+            "reminder_id": reminder._id,
+            "handler_id": reminder.handler_id,
+            "handler_name": handler.nickname,
+            "case_id": case.get_id if case is not None else None,
+            "case_name": case.name if case is not None else None,
+            "next_fire": tz_utils.adjust_datetime_to_timezone(reminder.next_fire, pytz.utc.zone, timezone.zone).strftime("%Y-%m-%d %H:%M:%S"),
+            "error_msg": reminder.error_msg,
+            "recipient_name": get_recipient_name(recipient),
         })
     context = {
-        "domain" : domain,
-        "reminders" : reminders,
-        "timezone" : timezone,
-        "timezone_now" : datetime.now(tz=timezone),
+        "domain": domain,
+        "reminders": reminders,
+        "timezone": timezone,
+        "timezone_now": datetime.now(tz=timezone),
     }
     return render(request, "reminders/partial/reminders_in_error.html", context)
-

@@ -12,11 +12,10 @@ class Command(LabelCommand):
         print "Migrating CaseReminderHandlers"
         for h in handlers:            
             try:
-                h.start_property    = h.start
-                h.start_value       = "^(ok|OK|\d\d\d\d-\d\d-\d\d)"
-                h.start_date        = h.start
-                h.start_match_type  = MATCH_REGEX
+                h.start_property = h.start
+                h.start_value = "^(ok|OK|\d\d\d\d-\d\d-\d\d)"
+                h.start_date = h.start
+                h.start_match_type = MATCH_REGEX
                 h.save()
             except Exception as e:
                 print "There was an error migrating handler %s." % (h._id)
-

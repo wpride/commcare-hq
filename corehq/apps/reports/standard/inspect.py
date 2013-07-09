@@ -31,7 +31,6 @@ from dimagi.utils.timezones import utils as tz_utils
 from corehq.apps.groups.models import Group
 
 
-
 class ProjectInspectionReport(ProjectInspectionReportParamsMixin, GenericTabularReport, ProjectReport, ProjectReportParametersMixin):
     """
         Base class for this reporting section
@@ -303,7 +302,6 @@ class CaseListMixin(ElasticProjectInspectionReport, ProjectReportParametersMixin
     @memoized
     def case_es(self):
         return CaseES(self.domain)
-
 
     def build_query(self, case_type=None, filter=None, status=None, owner_ids=[], search_string=None):
         # there's no point doing filters that are like owner_id:(x1 OR x2 OR ... OR x612)

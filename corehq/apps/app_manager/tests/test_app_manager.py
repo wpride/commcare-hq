@@ -20,7 +20,7 @@ class AppManagerTest(TestCase):
         for i in range(3):
             module = self.app.new_module("Module%d" % i, "en")
             for j in range(3):
-                self.app.new_form(module.id, name="Form%s-%s" % (i,j), attachment=self.xform_str, lang="en")
+                self.app.new_form(module.id, name="Form%s-%s" % (i, j), attachment=self.xform_str, lang="en")
             module = self.app.get_module(i)
             detail = module.get_detail("ref_short")
             detail.append_column(
@@ -46,7 +46,6 @@ class AppManagerTest(TestCase):
         self.app.save()
         self.assertEqual(self.app.version, old_version + 1)
 
-
     def tearDown(self):
         self.app.delete()
         #for xform in XForm.view('app_manager/xforms', key=self.xform_xmlns, reduce=False).all():
@@ -63,9 +62,9 @@ class AppManagerTest(TestCase):
         self.app.create_jadjar()
 
     def testDeleteForm(self):
-        self.app.delete_form(0,0)
+        self.app.delete_form(0, 0)
         self.assertEqual(len(self.app.modules), 3)
-        for module, i in zip(self.app.get_modules(), [2,3,3]):
+        for module, i in zip(self.app.get_modules(), [2, 3, 3]):
             self.assertEqual(len(module.forms), i)
 
     def testDeleteModule(self):
@@ -85,7 +84,7 @@ class AppManagerTest(TestCase):
     def testSwapModules(self):
         m0 = self.app.modules[0].name['en']
         m1 = self.app.modules[1].name['en']
-        self.app.rearrange_modules(0,1)
+        self.app.rearrange_modules(0, 1)
         self.assertEqual(self.app.modules[0].name['en'], m1)
         self.assertEqual(self.app.modules[1].name['en'], m0)
 

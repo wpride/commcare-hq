@@ -35,7 +35,6 @@ class SubmissionTest(TestCase):
             # just so there's a printout
             self.assertEqual(msg, str(response))
         
-    
     def testSubmitSimpleForm(self):
         self.assertTrue(self._check_for_message("Thanks for submitting, someuser.  We have received 1 forms from you today (1 forms all time)", 
                                                 self._submit("simple_form.xml")),
@@ -60,4 +59,3 @@ class SubmissionTest(TestCase):
         self.assertTrue(self._check_for_message("Thanks for submitting, ctest.  We have received 1 forms from you today (1 forms all time)", 
                                                 self._submit("namespace_in_meta.xml")),
                         "Form with namespace in meta successfully parsed")
-        

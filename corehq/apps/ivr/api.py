@@ -47,8 +47,8 @@ def validate_answer(answer, question):
 
 def format_ivr_response(text, app):
     return {
-        "text_to_say" : text,
-        "audio_file_url" : convert_media_path_to_hq_url(text, app) if text.startswith("jr://") else None,
+        "text_to_say": text,
+        "audio_file_url": convert_media_path_to_hq_url(text, app) if text.startswith("jr://") else None,
     }
 
 def get_case_id(call_log_entry):
@@ -186,10 +186,10 @@ def incoming(phone_number, backend_module, gateway_session_id, ivr_event, input_
     
     # Save the call entry
     msg = CallLog(
-        phone_number    = cleaned_number,
-        direction       = INCOMING,
-        date            = datetime.utcnow(),
-        backend_api     = backend_module.API_ID
+        phone_number=cleaned_number,
+        direction=INCOMING,
+        date=datetime.utcnow(),
+        backend_api=backend_module.API_ID
     )
     if v is not None:
         msg.domain = v.domain
@@ -202,17 +202,17 @@ def incoming(phone_number, backend_module, gateway_session_id, ivr_event, input_
 # Returns True if the call was queued successfully, or False if an error occurred.
 def initiate_outbound_call(verified_number, form_unique_id, submit_partial_form, include_case_side_effects, max_question_retries):
     call_log_entry = CallLog(
-        couch_recipient_doc_type = verified_number.owner_doc_type,
-        couch_recipient          = verified_number.owner_id,
-        phone_number             = "+" + str(verified_number.phone_number),
-        direction                = OUTGOING,
-        date                     = datetime.utcnow(),
-        domain                   = verified_number.domain,
-        form_unique_id           = form_unique_id,
-        submit_partial_form      = submit_partial_form,
-        include_case_side_effects = include_case_side_effects,
-        max_question_retries     = max_question_retries,
-        current_question_retry_count = 0,
+        couch_recipient_doc_type=verified_number.owner_doc_type,
+        couch_recipient=verified_number.owner_id,
+        phone_number="+" + str(verified_number.phone_number),
+        direction=OUTGOING,
+        date=datetime.utcnow(),
+        domain=verified_number.domain,
+        form_unique_id=form_unique_id,
+        submit_partial_form=submit_partial_form,
+        include_case_side_effects=include_case_side_effects,
+        max_question_retries=max_question_retries,
+        current_question_retry_count=0,
     )
     backend = verified_number.ivr_backend
     kwargs = backend.get_cleaned_outbound_params()
@@ -220,7 +220,3 @@ def initiate_outbound_call(verified_number, form_unique_id, submit_partial_form,
     call_log_entry.backend_api = module.API_ID
     call_log_entry.save()
     return module.initiate_outbound_call(call_log_entry, **kwargs)
-
-
-
-

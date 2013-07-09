@@ -127,7 +127,6 @@ class FixtureDataItem(Document):
     def by_user(cls, user, wrap=True, domain=None):
         group_ids = Group.by_user(user, wrap=False)
 
-
         if isinstance(user, dict):
             user_id = user.get('user_id')
             user_domain = domain

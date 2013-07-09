@@ -79,7 +79,7 @@ class CurrentStockStatusReport(GenericTabularReport, CommtrackReportMixin):
 
     @property
     def rows(self):
-        return [pd[0:2] + ['%.1f%%' %d for d in pd[2:]] for pd in self.product_data]
+        return [pd[0:2] + ['%.1f%%' % d for d in pd[2:]] for pd in self.product_data]
 
     def get_data_for_graph(self):
         ret = [

@@ -33,7 +33,6 @@ class FullCasePillow(CasePillow):
         else:
             return None
 
-
     def get_type_string(self, doc_dict):
         """
         Unique ES type key for each case

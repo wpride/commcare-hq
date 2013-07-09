@@ -22,4 +22,3 @@ class ForwardingRuleForm(Form):
             return keyword
         else:
             return None
-

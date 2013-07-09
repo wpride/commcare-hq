@@ -30,7 +30,7 @@ EMAIL_SMTP_HOST = "smtp.gmail.com"
 EMAIL_SMTP_PORT = 587
 
 # Print emails to console so there is no danger of spamming, but you can still get registration URLs
-EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ADMINS = (('HQ Dev Team', 'commcarehq-dev+www-notifications@dimagi.com'),)
 BUG_REPORT_RECIPIENTS = ['commcarehq-support@dimagi.com']
@@ -62,13 +62,13 @@ BITLY_APIKEY = '*******'
 
 ####### Jar signing config ########
 
-_ROOT_DIR  = os.path.dirname(os.path.abspath(__file__))
+_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 JAR_SIGN = dict(
-    jad_tool = os.path.join(_ROOT_DIR, "corehq", "apps", "app_manager", "JadTool.jar"),
-    key_store = os.path.join(os.path.dirname(os.path.dirname(_ROOT_DIR)), "DimagiKeyStore"),
-    key_alias = "javarosakey",
-    store_pass = "*******",
-    key_pass = "*******",
+    jad_tool=os.path.join(_ROOT_DIR, "corehq", "apps", "app_manager", "JadTool.jar"),
+    key_store=os.path.join(os.path.dirname(os.path.dirname(_ROOT_DIR)), "DimagiKeyStore"),
+    key_alias="javarosakey",
+    store_pass="*******",
+    key_pass="*******",
 )
 
 ####### SMS Config ########
@@ -81,7 +81,7 @@ SMS_GATEWAY_PARAMS = "id=******&pw=******&dnr=%(phone_number)s&msg=%(message)s&s
 # Unicel
 UNICEL_CONFIG = {"username": "Dimagi",
                  "password": "******",
-                 "sender": "Promo" }
+                 "sender": "Promo"}
 
 ####### Domain sync / de-id ########
 
@@ -91,7 +91,7 @@ DOMAIN_SYNCS = {
         "transform": "corehq.apps.domainsync.transforms.deidentify_domain" 
     }
 }
-DOMAIN_SYNC_APP_NAME_MAP = { "app_name": "new_app_name" }
+DOMAIN_SYNC_APP_NAME_MAP = {"app_name": "new_app_name"}
 
 ####### Touchforms config - for CloudCare #######
 
@@ -106,7 +106,7 @@ TOUCHFORMS_API_PASSWORD = 'password'
 ####### Misc / HQ-specific Config ########
 
 DEFAULT_PROTOCOL = "http" # or https
-OVERRIDE_LOCATION="https://www.commcarehq.org"
+OVERRIDE_LOCATION = "https://www.commcarehq.org"
 
 #Set your analytics IDs here for GA and pingdom RUM
 ANALYTICS_IDS = {
@@ -167,8 +167,8 @@ LOCAL_PILLOWTOPS = []
 
 ####### django-coverage config ########
 
-COVERAGE_REPORT_HTML_OUTPUT_DIR='coverage-html'
-COVERAGE_MODULE_EXCLUDES= ['tests$', 'settings$', 'urls$', 'locale$',
+COVERAGE_REPORT_HTML_OUTPUT_DIR = 'coverage-html'
+COVERAGE_MODULE_EXCLUDES = ['tests$', 'settings$', 'urls$', 'locale$',
                            'common.views.test', '^django', 'management', 'migrations',
                            '^south', '^djcelery', '^debug_toolbar', '^rosetta']
 

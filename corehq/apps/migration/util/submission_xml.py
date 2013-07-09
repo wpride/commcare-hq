@@ -76,7 +76,6 @@ class SubmissionXML(object):
                 node = get_subnode(meta_node, INSTANCE_ID)
                 map_text(node, form_id_map)
 
-
     @dict_or_function(1)
     def replace_user_id(self, user_id_map):
         for meta_node in self.get_meta():

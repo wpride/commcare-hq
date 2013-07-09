@@ -46,7 +46,6 @@ def add_user_id(xml, user_map):
     return replace_user_id(xml, user_id)
     
     
-
 if __name__ == "__main__":
     user_regs = sys.argv[1]
     domain = sys.argv[2]

@@ -16,4 +16,3 @@ class Command(LabelCommand):
                                  reduce=False).all()
         for row in all_matching_records:
             ExceptionRecord.get_db().delete_doc(row["id"])
-        

@@ -229,7 +229,6 @@ class BulkRequisitionResponse(object):
         self.case_id = None
         self.config = config
 
-
     @memoized
     def get_case_ids(self):
         # todo: too many couch requests
@@ -242,14 +241,13 @@ class BulkRequisitionResponse(object):
             # this is going to hit the db a lot
             c = RequisitionCase.get(case_id)
             yield(RequisitionResponse(
-                product_id = c.product_id,
+                product_id=c.product_id,
                 case_id=c._id,
                 action_name=self.action_name,
                 value=c.get_default_value(),
                 inferred=True,
                 config=self.config,
             ))
-
 
     @property
     def category(self):

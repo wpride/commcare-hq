@@ -23,6 +23,5 @@ def safe_download(f):
         except AppError, e:
             logging.exception(e)
             messages.error(req, "Problem downloading file: %s" % e)
-            return HttpResponseRedirect(reverse("corehq.apps.app_manager.views.view_app", args=[domain,app_id]))
+            return HttpResponseRedirect(reverse("corehq.apps.app_manager.views.view_app", args=[domain, app_id]))
     return _safe_download
-    

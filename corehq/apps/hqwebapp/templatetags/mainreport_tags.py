@@ -2,7 +2,7 @@ from django import template
 from django.core.urlresolvers import reverse
 from datetime import datetime, timedelta
 
-xmldate_format= '%Y-%m-%dT%H:%M:%S'
+xmldate_format = '%Y-%m-%dT%H:%M:%S'
 output_format = '%Y-%m-%d %H:%M'
 username_datecount_cache = {}
 
@@ -10,13 +10,13 @@ register = template.Library()
 
 @register.simple_tag
 def get_daterange_links(view_name, args={}):
-    base_link = reverse(view_name,kwargs=args)
+    base_link = reverse(view_name, kwargs=args)
     return get_daterange_links_raw(base_link, args)
 
 @register.simple_tag
 def get_daterange_links_raw(base_link, args={}):
     delta_week = timedelta(days=7)
-    delta_day= timedelta(days=1)
+    delta_day = timedelta(days=1)
     delta_month = timedelta(days=30)
     delta_3month = timedelta(days=90)
     
@@ -34,7 +34,7 @@ def get_daterange_links_raw(base_link, args={}):
     return ret
 
 @register.simple_tag
-def get_daterange_links_basic(base_link, days=[0,7,30,90], args={}):
+def get_daterange_links_basic(base_link, days=[0, 7, 30, 90], args={}):
     '''Allows you to pass in a list of day counts representing how 
        far to go back for each link. For known links it will generate
        a pretty string to display the time, otherwise it will say
@@ -90,7 +90,6 @@ def aggregate_section_totals(section_name, results_arr, daily):
                 endindex = results_arr.index(itemarr)
                 break
     
-    
     summation = []
     section_arr = []
     if endindex == -1:
@@ -102,7 +101,7 @@ def aggregate_section_totals(section_name, results_arr, daily):
         if summation == []:
             summation = summation + itemarr[-1]
         else:
-            for i in range(0,len(itemarr[-1])):
+            for i in range(0, len(itemarr[-1])):
                 summation[i] += itemarr[-1][i]
                 
     ret = ''
@@ -115,4 +114,3 @@ def aggregate_section_totals(section_name, results_arr, daily):
             sum += item
         ret = "<td>%d</td>" % sum
     return ret
-                           

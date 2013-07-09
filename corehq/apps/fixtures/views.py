@@ -138,7 +138,7 @@ def data_items(request, domain, data_type_id, data_item_id):
     elif request.method == 'PUT' and data_item_id:
         original = FixtureDataItem.get(data_item_id)
         new = FixtureDataItem(domain=domain, **_to_kwargs(request))
-        for attr in 'fields',:
+        for attr in 'fields', :
             setattr(original, attr, getattr(new, attr))
         original.save()
         return json_response(strip_json(original, disallow=['data_type_id']))
@@ -222,7 +222,6 @@ def download_item_lists(request, domain):
     mmax_users = 0
     data_tables = []
     
-
     for data_type in data_types:
         type_schema = [data_type.name, data_type.tag]
         fields = [field for field in data_type.fields]
@@ -230,23 +229,23 @@ def download_item_lists(request, domain):
         data_table_of_type = []
         for item_row in FixtureDataItem.by_data_type(domain, type_id):
             group_len = len(item_row.get_groups())
-            max_groups = group_len if group_len>max_groups else max_groups
+            max_groups = group_len if group_len > max_groups else max_groups
             user_len = len(item_row.get_users())
-            max_users = user_len if user_len>max_users else max_users
+            max_users = user_len if user_len > max_users else max_users
         for item_row in FixtureDataItem.by_data_type(domain, type_id):
-            groups = [group.name for group in item_row.get_groups()] + ["" for x in range(0,max_groups-len(item_row.get_groups()))]
+            groups = [group.name for group in item_row.get_groups()] + ["" for x in range(0, max_groups-len(item_row.get_groups()))]
             users = [user.raw_username for user in item_row.get_users()] + ["" for x in range(0, max_users-len(item_row.get_users()))]
-            data_row = tuple([str(_id_from_doc(item_row)),"N"]+
-                             [item_row.fields[field] for field in fields]+
+            data_row = tuple([str(_id_from_doc(item_row)), "N"] +
+                             [item_row.fields[field] for field in fields] +
                              groups + users)
             data_table_of_type.append(data_row)
         type_schema.extend(fields)
         data_type_schemas.append(tuple(type_schema))
-        if max_fields<len(type_schema):
+        if max_fields < len(type_schema):
             max_fields = len(type_schema)
-        data_tables.append((data_type.tag,tuple(data_table_of_type)))
-        mmax_users = max_users if max_users>mmax_users else mmax_users
-        mmax_groups = max_groups if max_groups>mmax_groups else mmax_groups
+        data_tables.append((data_type.tag, tuple(data_table_of_type)))
+        mmax_users = max_users if max_users > mmax_users else mmax_users
+        mmax_groups = max_groups if max_groups > mmax_groups else mmax_groups
         max_users = 0
         max_groups = 0
 
@@ -347,7 +346,6 @@ def upload_fixture_api(request, domain, **kwargs):
     except Exception:
         return _return_response(response_codes["fail"], error_messages["invalid_file"])
 
-
     try:
         upload_resp = run_upload_api(request, domain, workbook) #error handle for other files
     except WorksheetNotFound as e:
@@ -375,7 +373,7 @@ def upload_fixture_api(request, domain, **kwargs):
     if num_unknown_groups:
         resp_json["message"] += "%s %s" % (warn_groups, upload_resp["unknown_groups"])
     if num_unknown_users:
-        resp_json["message"] += "%s%s%s" % (("and following " if num_unknown_groups else "" ), warn_users, upload_resp["unknown_users"])
+        resp_json["message"] += "%s%s%s" % (("and following " if num_unknown_groups else ""), warn_users, upload_resp["unknown_users"])
 
     return HttpResponse(json.dumps(resp_json), mimetype="application/json")
 

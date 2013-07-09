@@ -21,16 +21,16 @@ def validate_trans_doc(trans, request, domain=None):
 def get_translations(request):
     params = json_request(request.GET)
     lang = params.get('lang', 'en')
-    key  = params.get('key', None)
-    one  = params.get('one', False)
+    key = params.get('key', None)
+    one = params.get('one', False)
     return json_response(Translation.get_translations(lang, key, one))
 
 @require_POST
 def set_translations(request):
-    params          = json_request(request.POST)
-    doc_id          = params.get('doc_id')
-    lang            = params.get('lang')
-    translations    = params.get('translations')
+    params = json_request(request.POST)
+    doc_id = params.get('doc_id')
+    lang = params.get('lang')
+    translations = params.get('translations')
 
     trans = TranslationMixin.get(doc_id)
 
@@ -45,8 +45,8 @@ def set_translations(request):
 @require_GET
 def edit(request, template="translations/edit.html"):
     params = json_request(request.GET)
-    doc_id  = params.get('doc_id')
-    lang    = params.get('lang')
+    doc_id = params.get('doc_id')
+    lang = params.get('lang')
 
     trans = TranslationMixin.get(doc_id)
     validate_trans_doc(trans)

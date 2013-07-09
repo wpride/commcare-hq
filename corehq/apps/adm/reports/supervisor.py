@@ -7,6 +7,3 @@ class SupervisorReportsADMSection(DefaultReportADMSectionView):
     mobile_enabled = True
 
     adm_slug = "supervisor"
-
-
-

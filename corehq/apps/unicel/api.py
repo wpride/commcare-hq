@@ -114,6 +114,3 @@ def send(message, delay=True):
     create_billable_for_sms(message, API_ID, delay=delay, response=data)
 
     return data
-
-    
-    

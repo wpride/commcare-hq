@@ -164,7 +164,7 @@ class IndicatorDefinition(Document, AdminCRUDDocumentMixin):
             descending=True,
             **couch_key
         ).all()
-        return [item.get('key',[])[-1] for item in data]
+        return [item.get('key', [])[-1] for item in data]
 
     @classmethod
     def get_all(cls, namespace, domain, version=None, **kwargs):
@@ -181,8 +181,8 @@ class IndicatorDefinition(Document, AdminCRUDDocumentMixin):
         key = ["type", namespace, domain, cls.__name__]
         indicators = cls.view(
             cls.indicator_list_view(),
-            reduce = False,
-            include_docs = True,
+            reduce=False,
+            include_docs=True,
             startkey=key,
             endkey=key+[{}]
         ).all()
@@ -225,7 +225,7 @@ class DynamicIndicatorDefinition(IndicatorDefinition):
             start and end are (year, month) tuples
         """
         if end is None:
-            end=start
+            end = start
         return DateSpan(
             self.get_first_day_of_month(start[0], start[1]),
             self.get_last_day_of_month(end[0], end[1]),

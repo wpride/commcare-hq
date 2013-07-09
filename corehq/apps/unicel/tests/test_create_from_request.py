@@ -41,7 +41,6 @@ class IncomingPostTest(TestCase):
         self.assertEqual((log.date + self.INDIA_TZ_OFFSET).strftime(DATE_FORMAT),
                          fake_post[InboundParams.TIMESTAMP])
 
-
     def testPostToIncomingUtf(self):
         fake_post = {InboundParams.SENDER: str(self.number),
                      InboundParams.MESSAGE: self.message_utf_hex,

@@ -29,7 +29,7 @@ EMAIL_LOGIN = "notifications@dimagi.com"
 EMAIL_PASSWORD = "******"
 EMAIL_SMTP_HOST = "smtp.gmail.com"
 EMAIL_SMTP_PORT = 587
-EMAIL_BACKEND='django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ####### Bitly ########
 
@@ -39,13 +39,13 @@ BITLY_APIKEY = '*******'
 
 ####### Jar signing config ########
 
-_ROOT_DIR  = os.path.dirname(os.path.abspath(__file__))
+_ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 JAR_SIGN = dict(
-    jad_tool = os.path.join(_ROOT_DIR, "corehq", "apps", "app_manager", "JadTool.jar"),
-    key_store = os.path.join(_ROOT_DIR, "InsecureTestingKeyStore"),
-    key_alias = "javarosakey",
-    store_pass = "onetwothreefourfive",
-    key_pass = "onetwothreefourfive",
+    jad_tool=os.path.join(_ROOT_DIR, "corehq", "apps", "app_manager", "JadTool.jar"),
+    key_store=os.path.join(_ROOT_DIR, "InsecureTestingKeyStore"),
+    key_alias="javarosakey",
+    store_pass="onetwothreefourfive",
+    key_pass="onetwothreefourfive",
 )
 
 # prod settings
@@ -67,7 +67,7 @@ CACHES = {
 ELASTICSEARCH_HOST = 'localhost' 
 ELASTICSEARCH_PORT = 9200
 
-AUDIT_ADMIN_VIEWS=False
+AUDIT_ADMIN_VIEWS = False
 
 # No logging
 LOGGING = {

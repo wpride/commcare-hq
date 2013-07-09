@@ -83,4 +83,3 @@ def _require_api_user(permission=None):
 
 require_api_user = _require_api_user()
 require_api_user_permission = _require_api_user
-

@@ -427,16 +427,15 @@ class SuiteGenerator(object):
                                    src='jr://instance/session')
             e.instances.extend(get_instances())
 
-
             # I'm setting things individually instead of in the constructor
             # so that they appear in the correct order
             e.datum = SessionDatum()
-            e.datum.id='case_id'
-            e.datum.nodeset="instance('casedb')/casedb/case[@case_type='{module.case_type}'][@status='open']{filter_xpath}".format(
+            e.datum.id = 'case_id'
+            e.datum.nodeset = "instance('casedb')/casedb/case[@case_type='{module.case_type}'][@status='open']{filter_xpath}".format(
                 module=module,
                 filter_xpath=self.get_filter_xpath(module) if use_filter else ''
             )
-            e.datum.value="./@case_id"
+            e.datum.value = "./@case_id"
 
             detail_ids = [detail.id for detail in self.details]
 
@@ -454,7 +453,7 @@ class SuiteGenerator(object):
             for form in module.get_forms():
                 e = Entry()
                 e.form = form.xmlns
-                e.command=Command(
+                e.command = Command(
                     id=self.id_strings.form_command(form),
                     locale_id=self.id_strings.form_locale(form),
                     media_image=form.media_image,
@@ -532,4 +531,3 @@ class SuiteGenerator(object):
 
         map(add_to_suite, sections)
         return suite.serializeDocument(pretty=True)
-

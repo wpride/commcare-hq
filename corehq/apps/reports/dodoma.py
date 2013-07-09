@@ -85,7 +85,6 @@ def _household_verification_json(
             stats.append({'userID': userID, 'username': username, 'total': 0, 'correct': 0})
     stats.sort(key=lambda s: s['username'])
 
-    
     return {
         "headers": ["Username", "Correct", "Total", "Percent Correct"],
         "rows": [[
@@ -107,11 +106,11 @@ def get_household_verification_data(submissions, next_hvid_path, last_hvid_path)
             return None
 
     submissions = map(lambda s: HVSub(
-        userID      = s['form']['meta']['userID'],
-        caseID      = s['form']['case']['case_id'],
-        time        = s['received_on'],
-        next_hvid   = follow_path(s['form'], next_hvid_path),
-        last_hvid   = follow_path(s['form'], last_hvid_path),
+        userID=s['form']['meta']['userID'],
+        caseID=s['form']['case']['case_id'],
+        time=s['received_on'],
+        next_hvid=follow_path(s['form'], next_hvid_path),
+        last_hvid=follow_path(s['form'], last_hvid_path),
     ), submissions)
 
     submissions.sort()

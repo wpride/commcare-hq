@@ -163,4 +163,3 @@ def make_form(domain, parent, data, existing=None):
         return ('%s-%s' % (prefix, propname), v)
     payload = dict(make_payload(k, v) for k, v in data.iteritems())
     return LocationForm(location, payload)
-

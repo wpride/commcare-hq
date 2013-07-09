@@ -16,7 +16,7 @@ https://confluence.dimagi.com/display/lmis/API
 class ProductResource(JsonResource):
 
     type = "product"
-    id  = fields.CharField(attribute='_id', readonly=True, unique=True)
+    id = fields.CharField(attribute='_id', readonly=True, unique=True)
     code = fields.CharField(attribute='code', readonly=True, unique=True)
     name = fields.CharField(attribute='name', readonly=True)
     unit = fields.CharField(attribute='unit', readonly=True, null=True)
@@ -108,7 +108,7 @@ class ManualRelatedField(fields.RelatedField):
 
 class StockReportResource(JsonResource):
     type = "stock_report"
-    id  = fields.CharField(attribute='id', readonly=True, unique=True)
+    id = fields.CharField(attribute='id', readonly=True, unique=True)
     user_id = fields.CharField(attribute='user_id', readonly=True, unique=True)
     location_id = fields.CharField(attribute='location_id', readonly=True)
     submitted_on = fields.DateTimeField(attribute='submitted_on', readonly=True, null=True)

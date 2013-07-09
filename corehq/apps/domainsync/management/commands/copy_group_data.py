@@ -91,7 +91,6 @@ class Command(LabelCommand):
 
             self.lenient_bulk_save(CommCareCase, cases)
 
-
         print 'copying %s xforms' % len(xform_ids)
         user_ids = set(group.users)
 

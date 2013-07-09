@@ -30,17 +30,17 @@ def exception_safe_password_reset(request, *args, **kwargs):
     try:
         return password_reset(request, *args, **kwargs)                
     except None: 
-        vals = {'error_msg':'There was a problem with your request',
-                'error_details':sys.exc_info(),
-                'show_homepage_link': 1 }
-        return render_to_response('error.html', vals, context_instance = RequestContext(request))   
+        vals = {'error_msg': 'There was a problem with your request',
+                'error_details': sys.exc_info(),
+                'show_homepage_link': 1}
+        return render_to_response('error.html', vals, context_instance=RequestContext(request))   
 
 
 # auth templates are normally in 'registration,'but that's too confusing a name, given that this app has
 # both user and domain registration. Move them somewhere more descriptive.
 
 def auth_pages_path(page):
-    return {'template_name':'login_and_password/' + page}
+    return {'template_name': 'login_and_password/' + page}
 
 def extend(d1, d2):
     return dict(d1.items() + d2.items())
@@ -52,16 +52,16 @@ urlpatterns =\
     ) +\
     patterns('django.contrib.auth.views',
         url(r'^accounts/password_change/$', 'password_change', auth_pages_path('password_change_form.html'), name='password_change'),
-        url(r'^accounts/password_change_done/$', 'password_change_done', auth_pages_path('password_change_done.html') ),
+        url(r'^accounts/password_change_done/$', 'password_change_done', auth_pages_path('password_change_done.html')),
 
         url(r'^accounts/password_reset_email/$', exception_safe_password_reset, extend(auth_pages_path('password_reset_form.html'),
-                                                                                       { 'password_reset_form': ConfidentialPasswordResetForm,
-                                                                                         'from_email':settings.DEFAULT_FROM_EMAIL}),
+                                                                                       {'password_reset_form': ConfidentialPasswordResetForm,
+                                                                                         'from_email': settings.DEFAULT_FROM_EMAIL}),
                                                                                 name='password_reset_email'),
-        url(r'^accounts/password_reset_email/done/$', 'password_reset_done', auth_pages_path('password_reset_done.html') ),
+        url(r'^accounts/password_reset_email/done/$', 'password_reset_done', auth_pages_path('password_reset_done.html')),
 
-        url(r'^accounts/password_reset_confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'password_reset_confirm', auth_pages_path('password_reset_confirm.html'), name="confirm_password_reset" ),
-        url(r'^accounts/password_reset_confirm/done/$', 'password_reset_complete', auth_pages_path('password_reset_complete.html') ) 
+        url(r'^accounts/password_reset_confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'password_reset_confirm', auth_pages_path('password_reset_confirm.html'), name="confirm_password_reset"),
+        url(r'^accounts/password_reset_confirm/done/$', 'password_reset_complete', auth_pages_path('password_reset_complete.html')) 
     )
 
 

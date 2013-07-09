@@ -38,8 +38,8 @@ def send_sms(domain, id, phone_number, text):
         couch_recipient_doc_type="CouchUser",
         phone_number=phone_number,
         direction=OUTGOING,
-        date = datetime.utcnow(),
-        text = text
+        date=datetime.utcnow(),
+        text=text
     )
     
     def onerror():
@@ -56,13 +56,13 @@ def send_sms_to_verified_number(verified_number, text):
     return  True on success, False on failure
     """
     msg = SMSLog(
-        couch_recipient_doc_type    = verified_number.owner_doc_type,
-        couch_recipient             = verified_number.owner_id,
-        phone_number                = "+" + str(verified_number.phone_number),
-        direction                   = OUTGOING,
-        date                        = datetime.utcnow(),
-        domain                      = verified_number.domain,
-        text                        = text
+        couch_recipient_doc_type=verified_number.owner_doc_type,
+        couch_recipient=verified_number.owner_id,
+        phone_number="+" + str(verified_number.phone_number),
+        direction=OUTGOING,
+        date=datetime.utcnow(),
+        domain=verified_number.domain,
+        text=text
     )
 
     def onerror():
@@ -212,16 +212,16 @@ def incoming(phone_number, text, backend_api, timestamp=None, domain_scope=None,
 
     # Log message in message log
     msg = SMSLog(
-        phone_number    = phone_number,
-        direction       = INCOMING,
-        date            = timestamp or datetime.utcnow(),
-        text            = text,
-        backend_api     = backend_api
+        phone_number=phone_number,
+        direction=INCOMING,
+        date=timestamp or datetime.utcnow(),
+        text=text,
+        backend_api=backend_api
     )
     if v is not None and v.verified:
-        msg.couch_recipient_doc_type    = v.owner_doc_type
-        msg.couch_recipient             = v.owner_id
-        msg.domain                      = v.domain
+        msg.couch_recipient_doc_type = v.owner_doc_type
+        msg.couch_recipient = v.owner_id
+        msg.domain = v.domain
     msg.save()
 
     create_billable_for_sms(msg, backend_api, delay=delay)
@@ -623,5 +623,3 @@ def forwarding_handler(v, text):
 def fallback_handler(v, text):
     send_sms_to_verified_number(v, 'could not understand your message. please check keyword.')
     return True
-
-

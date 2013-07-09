@@ -50,13 +50,10 @@ class PtopReindexer(NoArgsCommand):
                     help='Previous run input file prefix',),
     )
 
-
     doc_class = None
     view_name = None
     pillow_class = None
     file_prefix = "ptop_fast_reindex_"
-
-
 
     def custom_filter(self, view_row):
         """
@@ -83,7 +80,7 @@ class PtopReindexer(NoArgsCommand):
         return seq_filename
 
     def get_dump_filename(self):
-        view_dump_filename = "%s%s_%s_data.json" % (self.file_prefix, self.doc_class.__name__,  self.get_seq_prefix())
+        view_dump_filename = "%s%s_%s_data.json" % (self.file_prefix, self.doc_class.__name__, self.get_seq_prefix())
         return view_dump_filename
 
     def load_from_view(self):
@@ -253,9 +250,3 @@ class PtopReindexer(NoArgsCommand):
                     bulk_start = datetime.utcnow() #reset timestamp when looping again
             start += self.chunk_size
             end += self.chunk_size
-
-
-
-
-
-

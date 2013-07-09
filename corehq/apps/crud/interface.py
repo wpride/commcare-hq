@@ -30,7 +30,7 @@ class BaseCRUDAdminInterface(GenericTabularReport):
         context = super(BaseCRUDAdminInterface, self).report_context
         context.update(
             detailed_description=self.detailed_description,
-            crud_item = {
+            crud_item={
                 'type': self.crud_item_type,
                 'form': self.form_class.__name__,
                 'doc': self.document_class.__name__,

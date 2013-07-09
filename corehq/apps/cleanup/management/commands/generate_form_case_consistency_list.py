@@ -81,7 +81,6 @@ class Command(BaseCommand):
             start += chunk
             view_chunk = call_view(sk, ek, start, chunk)
 
-
     def is_case_updated(self, submission, method="couch"):
         # use the same case processing utilities the case code does
         def _case_ids_in_couch(submission):
@@ -98,7 +97,7 @@ class Command(BaseCommand):
                     ]
                 },
                 "from": 0,
-                "size":1
+                "size": 1
             }
             es_results = self.es['hqcases'].post('_search', data=query)
             return [row['_source']['_id'] for row in es_results['hits']['hits']] \
@@ -132,9 +131,9 @@ class Command(BaseCommand):
                 outrow = [domain, submit['received_on'], submit['doc_type'], submit['_id']]
 
                 # basic case info
-                is_dupe=False
+                is_dupe = False
                 if submit['doc_type'] == 'XFormDuplicate':
-                    is_dupe=True
+                    is_dupe = True
                     orig_submit = XFormInstance.get_db().get(submit['form']['meta']['instanceID'])
                     case_ids, missing, updated = self.is_case_updated(orig_submit)
                 else:
@@ -157,5 +156,3 @@ class Command(BaseCommand):
 
                 if _should_write():
                     self.println(','.join(str(x) for x in outrow))
-
-

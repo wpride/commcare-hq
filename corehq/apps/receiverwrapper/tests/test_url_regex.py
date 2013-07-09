@@ -17,5 +17,3 @@ class UrlRegexTest(TestCase):
                 xform = XFormInstance(path=path)
                 self.assertEqual(_get_domain(xform), domain, "%s %s" % (_get_domain(xform), path))
                 self.assertEqual(_get_app_id(xform), app_id if has_app_id else None, "%s %s" % (_get_app_id(xform), path))
-
-                

@@ -107,10 +107,10 @@ class TestXFormInstanceResource(APIResourceTest):
         fake_xform_es = FakeXFormES()
         v0_4.MOCK_XFORM_ES = fake_xform_es
 
-        backend_form = XFormInstance(xmlns = 'fake-xmlns',
-                                     domain = self.domain.name,
-                                     received_on = datetime.utcnow(),
-                                     form = {
+        backend_form = XFormInstance(xmlns='fake-xmlns',
+                                     domain=self.domain.name,
+                                     received_on=datetime.utcnow(),
+                                     form={
                                          '#type': 'fake-type',
                                          '@xmlns': 'fake-xmlns'
                                      })
@@ -150,7 +150,6 @@ class TestXFormInstanceResource(APIResourceTest):
                  {'term': {'domain.exact': 'qwerty'}},
                  {'term': {'xmlns.exact': 'foo'}}])
             
-
             return prior_run_query(es_query)
             
         fake_xform_es.run_query = mock_run_query
@@ -218,7 +217,7 @@ class TestCommCareCaseResource(APIResourceTest):
 
         modify_date = datetime.utcnow()
 
-        backend_case = CommCareCase(server_modified_on = modify_date)
+        backend_case = CommCareCase(server_modified_on=modify_date)
         backend_case.save()
 
         translated_doc = pillow.change_transform(backend_case.to_json())
@@ -287,7 +286,6 @@ class TestWebUserResource(APIResourceTest):
                      'edit_apps', 'view_reports']:
             self.assertEqual(getattr(role.permissions, perm), json_user['permissions'][perm])
 
-
     def test_get_list(self):
         self.client.login(username=self.username, password=self.password)
 
@@ -318,7 +316,6 @@ class TestWebUserResource(APIResourceTest):
         self.assertEqual(response.status_code, 200)
         api_users = simplejson.loads(response.content)['objects']
         self.assertEqual(len(api_users), 0)
-
 
     def test_get_single(self):
         self.client.login(username=self.username, password=self.password)
@@ -408,7 +405,6 @@ class TestRepeaterResource(APIResourceTest):
             self.assertEqual(repeater_json['domain'], repeater_back.domain)
             self.assertEqual(repeater_json['type'], repeater_back.doc_type)
             self.assertEqual(repeater_json['url'], repeater_back.url)
-
 
     def test_update(self):
         self.client.login(username=self.username, password=self.password)
@@ -573,8 +569,8 @@ class TestToManyDictField(TestCase):
         }
         
         source_objs = [
-            ToManyDictSourceModel(other_model_ids={ 'first_other': 'foo', 'second_other': 'bar'}, other_model_dict=dest_objs),
-            ToManyDictSourceModel(other_model_ids={ 'first_other': 'bar', 'second_other': 'baz'}, other_model_dict=dest_objs)
+            ToManyDictSourceModel(other_model_ids={'first_other': 'foo', 'second_other': 'bar'}, other_model_dict=dest_objs),
+            ToManyDictSourceModel(other_model_ids={'first_other': 'bar', 'second_other': 'baz'}, other_model_dict=dest_objs)
         ]
 
         source_resource = ToManyDictSourceResource(source_objs)
@@ -583,15 +579,14 @@ class TestToManyDictField(TestCase):
         dehydrated_bundle = source_resource.full_dehydrate(bundle)
 
         self.assertTrue('other_models' in dehydrated_bundle.data)
-        self.assertEqual(dehydrated_bundle.data['other_models']['first_other']['id'] , 'foo')
+        self.assertEqual(dehydrated_bundle.data['other_models']['first_other']['id'], 'foo')
         self.assertEqual(dehydrated_bundle.data['other_models']['second_other']['id'], 'bar')
 
         bundle = source_resource.build_bundle(obj=source_objs[1])
         dehydrated_bundle = source_resource.full_dehydrate(bundle)
 
-        self.assertEqual(dehydrated_bundle.data['other_models']['first_other']['id'] , 'bar')
+        self.assertEqual(dehydrated_bundle.data['other_models']['first_other']['id'], 'bar')
         self.assertEqual(dehydrated_bundle.data['other_models']['second_other']['id'], 'baz')
-
 
 
 class ToOneSourceModel(object):

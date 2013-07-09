@@ -31,4 +31,3 @@ def object_does_not_exist(doc_type, doc_id):
     """
     return ObjectDoesNotExist(_("Could not find %(doc_type)s with id %(id)s") % \
                               {"doc_type": doc_type, "id": doc_id})
-

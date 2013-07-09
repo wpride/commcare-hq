@@ -79,7 +79,6 @@ class MultiFormDrilldownMixin(object):
                            if (FormsByApplicationFilter.fuzzy_slug in k and
                                FormsByApplicationFilter.split_xmlns_app_key(k, only_xmlns=True) in all_submitted_xmlns)])
 
-
         relevant_forms = relevant_forms.union(fuzzy_xmlns)
         return dict([(k, selected_forms[k]) for k in relevant_forms])
 
@@ -387,7 +386,7 @@ class DailyFormStatsReport(WorkerMonitoringReportTableBase, CompletionOrSubmissi
         ).all()
 
         user_map = dict([(user.get('user_id'), i) for (i, user) in enumerate(self.users)])
-        date_map = dict([(date.strftime(DATE_FORMAT), i+1) for (i,date) in enumerate(self.dates)])
+        date_map = dict([(date.strftime(DATE_FORMAT), i+1) for (i, date) in enumerate(self.dates)])
         rows = [[0]*(2+len(date_map)) for _tmp in range(len(self.users))]
         total_row = [0]*(2+len(date_map))
 
@@ -598,7 +597,7 @@ class FormCompletionVsSubmissionTrendsReport(WorkerMonitoringReportTableBase, Mu
             td = datetime.timedelta(seconds=td)
         if isinstance(td, datetime.timedelta):
             hours = td.seconds//3600
-            minutes = (td.seconds//60)%60
+            minutes = (td.seconds//60) % 60
             vals = [td.days, hours, minutes, (td.seconds - hours*3600 - minutes*60)]
             names = [_("day"), _("hour"), _("minute"), _("second")]
             status = ["%s %s%s" % (val, names[i], "s" if val != 1 else "") for (i, val) in enumerate(vals) if val > 0]
@@ -666,7 +665,7 @@ class WorkerActivityTimes(WorkerMonitoringChartBase,
                 all_times.extend([dateutil.parser.parse(d['key'][-1]) for d in data])
         if self.by_submission_time:
             # completion time is assumed to be in the phone's timezone until we can send proper timezone info
-            all_times = [tz_utils.adjust_datetime_to_timezone(t,  pytz.utc.zone, self.timezone.zone) for t in all_times]
+            all_times = [tz_utils.adjust_datetime_to_timezone(t, pytz.utc.zone, self.timezone.zone) for t in all_times]
         return [(t.weekday(), t.hour) for t in all_times]
 
     @property
@@ -697,7 +696,7 @@ class WorkerActivityTimes(WorkerMonitoringChartBase,
 
         chart.add_data([(h % 24) for h in range(24 * 8)])
 
-        d=[]
+        d = []
         for i in range(8):
             d.extend([i] * 24)
         chart.add_data(d)
@@ -708,7 +707,7 @@ class WorkerActivityTimes(WorkerMonitoringChartBase,
         # i.e. Sun, Sat, Fri, Thu, etc
         days = (0, 6, 5, 4, 3, 2, 1)
 
-        sizes=[]
+        sizes = []
         for d in days:
             sizes.extend([data[(d, h)] for h in range(24)])
         sizes.extend([0] * 24)

@@ -63,15 +63,15 @@ class Team(UndoableDocument, MultiMembershipMixin):
     @classmethod
     def get_by_org_and_name(cls, org_name, name):
         return cls.view("orgs/team_by_org_and_name",
-            key=[org_name,name],
+            key=[org_name, name],
             reduce=False,
             include_docs=True).one()
 
     @classmethod
     def get_by_org(cls, org_name):
         return cls.view("orgs/team_by_org_and_name",
-            startkey = [org_name],
-            endkey=[org_name,{}],
+            startkey=[org_name],
+            endkey=[org_name, {}],
             reduce=False,
             include_docs=True).all()
 

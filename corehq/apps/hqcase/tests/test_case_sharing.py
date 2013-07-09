@@ -109,7 +109,6 @@ class CaseSharingTest(TestCase):
                 version=version
             )
 
-
     def get_create_block(self, case_id, type, user_id, owner_id, name=None, version=V1, **kwargs):
         name = name or case_id
         case_block = CaseBlock(

@@ -76,4 +76,3 @@ for report_name in report_names:
     name = re.sub(r"[^a-z\s]", "", report_name.lower()).replace(" ", "_")
     setattr(ReportsTestCase, "test_%s" % name,
             ReportsTestCase.generate_test(report_name))
-

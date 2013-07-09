@@ -86,4 +86,3 @@ class CommCareCaseSerializer(Serializer):
                     element.text = force_unicode(simple_data)
 
         return element
-        

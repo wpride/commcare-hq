@@ -48,7 +48,7 @@ def add_days(date, days=1):
     try:
         return date + span
     except:
-        return datetime.strptime(date,'%m/%d/%Y').date() + span 
+        return datetime.strptime(date, '%m/%d/%Y').date() + span 
     
 @register.filter
 def concat(str1, str2):
@@ -161,7 +161,7 @@ def mod(value, arg):
 # This is taken verbatim from https://code.djangoproject.com/ticket/15583
 @register.filter(name='sort')
 def listsort(value):
-    if isinstance(value,dict):
+    if isinstance(value, dict):
         new_dict = SortedDict()
         key_list = value.keys()
         key_list.sort()

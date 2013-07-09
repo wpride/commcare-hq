@@ -62,7 +62,6 @@ def get_hqadmin_base_context(request):
     }
 
 
-
 @require_superuser
 def active_users(request):
     keys = []
@@ -80,7 +79,8 @@ def active_users(request):
     final_count = defaultdict(int)
 
     def is_valid_user_id(user_id):
-        if not user_id: return False
+        if not user_id:
+            return False
         try:
             get_db().get(user_id)
             return True
@@ -111,7 +111,8 @@ def global_report(request, template="hqadmin/global.html", as_export=False):
     def _metric(name):
         counts = []
         for result in get_db().view("hqadmin/%ss_over_time" % name, group_level=2):
-            if not result or not result.has_key('key') or not result.has_key('value'): continue
+            if not result or not result.has_key('key') or not result.has_key('value'):
+                continue
             if result['key'][0] and int(result['key'][0]) >= 2010 and \
                (int(result['key'][0]) < datetime.utcnow().year or
                 (int(result['key'][0]) == datetime.utcnow().year and
@@ -131,7 +132,8 @@ def global_report(request, template="hqadmin/global.html", as_export=False):
     def _active_metric(name):
         dates = {}
         for result in get_db().view("hqadmin/%ss_over_time" % name, group=True):
-            if not result or not result.has_key('key') or not result.has_key('value'): continue
+            if not result or not result.has_key('key') or not result.has_key('value'):
+                continue
             if result['key'][0] and int(result['key'][0]) >= 2010 and\
                (int(result['key'][0]) < datetime.utcnow().year or
                 (int(result['key'][0]) == datetime.utcnow().year and
@@ -153,7 +155,6 @@ def global_report(request, template="hqadmin/global.html", as_export=False):
     active_metrics = ["active_domain", "active_user"]
     for a in active_metrics:
         _active_metric(a)
-
 
     if as_export:
         all_metrics = standard_metrics + active_metrics
@@ -237,7 +238,7 @@ def _cacheable_domain_activity_report(request):
         for form in forms:
             user_id = form.get('user_id')
             try:
-                time = string_to_datetime(form['submission_time']).replace(tzinfo = None)
+                time = string_to_datetime(form['submission_time']).replace(tzinfo=None)
             except ValueError:
                 continue
             if user_id in domain['users']:
@@ -475,7 +476,6 @@ def update_domains(request):
             dom.first_submission = ""
             dom.last_submission = ""
             
-        
     context = get_hqadmin_base_context(request)
     context.update({"domains": domains})
     
@@ -541,7 +541,7 @@ def system_ajax(request):
         #            'total_changes': 1023}]
         return HttpResponse(json.dumps(tasks), mimetype='application/json')
     elif type == "_stats":
-        return HttpResponse(json.dumps({}), mimetype = 'application/json')
+        return HttpResponse(json.dumps({}), mimetype='application/json')
     elif type == "_logs":
         pass
 
@@ -567,7 +567,7 @@ def system_ajax(request):
                     tinfo['name'] = '.'.join(tinfo['name'].split('.')[-2:])
                     ret.append(tinfo)
             ret = sorted(ret, key=lambda x: x['succeeded'], reverse=True)
-            return HttpResponse(json.dumps(ret), mimetype = 'application/json')
+            return HttpResponse(json.dumps(ret), mimetype='application/json')
 
 #        if type=="celerymon_tasks_types":
 #            #call CELERYMON_URL/api/task/name/ to get seen task types
@@ -580,7 +580,7 @@ def system_ajax(request):
 #                t = cresource.get("/api/task/name/%s/?limit=%d" % (task_name, task_limit))
 #                return HttpResponse(t.body_string(), mimetype = 'application/json')
 
-    return HttpResponse('{}', mimetype = 'application/json')
+    return HttpResponse('{}', mimetype='application/json')
 
 @require_superuser
 def system_info(request):
@@ -621,7 +621,7 @@ def system_info(request):
     try:
         #todo, fix on bigcouch/cloudant
         context['couch_log'] = "Will be back online shortly" if is_bigcouch() \
-            else couchlog_resource.get('_log', params_dict={'bytes': 2000 }).body_string()
+            else couchlog_resource.get('_log', params_dict={'bytes': 2000}).body_string()
     except Exception, ex:
         context['couch_log'] = "unable to open couch log: %s" % ex
 
@@ -649,7 +649,7 @@ def system_info(request):
     #rabbitmq status
     mq_status = "Unknown"
     if settings.BROKER_URL.startswith('amqp'):
-        amqp_parts = settings.BROKER_URL.replace('amqp://','').split('/')
+        amqp_parts = settings.BROKER_URL.replace('amqp://', '').split('/')
         mq_management_url = amqp_parts[0].replace('5672', '55672')
         vhost = amqp_parts[1]
         try:
@@ -658,13 +658,12 @@ def system_info(request):
             mq_status = "Offline"
             for d in vhost_dict:
                 if d['name'] == vhost:
-                    mq_status='OK'
+                    mq_status = 'OK'
         except Exception, ex:
             mq_status = "Error connecting: %s" % ex
     else:
         mq_status = "Not configured"
     context['rabbitmq_status'] = mq_status
-
 
     #memcached_status
     mc = cache.get_cache('default')
@@ -709,8 +708,8 @@ def noneulized_users(request, template="hqadmin/noneulized_users.html"):
     users = WebUser.view("eula_report/noneulized_users",
         reduce=False,
         include_docs=True,
-        startkey =["WebUser", days_ago.strftime("%Y-%m-%dT%H:%M:%SZ")],
-        endkey =["WebUser", {}]
+        startkey=["WebUser", days_ago.strftime("%Y-%m-%dT%H:%M:%SZ")],
+        endkey=["WebUser", {}]
     ).all()
 
     context.update({"users": filter(lambda user: not user.is_dimagi, users), "days": days})

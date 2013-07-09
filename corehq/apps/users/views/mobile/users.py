@@ -299,7 +299,6 @@ class UploadCommCareUsers(TemplateView):
         else:
             return response
 
-
     @method_decorator(require_can_edit_commcare_users)
     def dispatch(self, request, domain, *args, **kwargs):
         self.domain = domain

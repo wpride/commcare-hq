@@ -123,8 +123,8 @@ class IndexedSchema(DocumentSchema):
         def __call__(self, instance):
             items = getattr(instance, self.attr)
             l = len(items)
-            for i,item in enumerate(items):
-                yield item.with_id(i%l, instance)
+            for i, item in enumerate(items):
+                yield item.with_id(i % l, instance)
         def __get__(self, instance, owner):
             # thanks, http://metapython.blogspot.com/2010/11/python-instance-methods-how-are-they.html
             # this makes Getter('foo') act like a bound method
@@ -139,22 +139,22 @@ class FormActionCondition(DocumentSchema):
     in which case the action takes place if question has answer answer,
     or {'type': 'always'} in which case the action always takes place.
     """
-    type        = StringProperty(choices=["if", "always", "never"], default="never")
-    question    = StringProperty()
-    answer      = StringProperty()
+    type = StringProperty(choices=["if", "always", "never"], default="never")
+    question = StringProperty()
+    answer = StringProperty()
 
 class FormAction(DocumentSchema):
     """
     Corresponds to Case XML
 
     """
-    condition   = SchemaProperty(FormActionCondition)
+    condition = SchemaProperty(FormActionCondition)
 
     def is_active(self):
         return self.condition.type in ('if', 'always')
 
 class UpdateCaseAction(FormAction):
-    update  = DictProperty()
+    update = DictProperty()
 
 class PreloadAction(FormAction):
     preload = DictProperty()
@@ -162,11 +162,11 @@ class PreloadAction(FormAction):
         return bool(self.preload)
 
 class UpdateReferralAction(FormAction):
-    followup_date   = StringProperty()
+    followup_date = StringProperty()
     def get_followup_date(self):
         if self.followup_date:
             return "if(date({followup_date}) >= date(today()), {followup_date}, date(today() + 2))".format(
-                followup_date = self.followup_date,
+                followup_date=self.followup_date,
             )
         return self.followup_date or "date(today() + 2)"
 
@@ -573,7 +573,7 @@ class FormBase(DocumentSchema):
             self.actions.referral_preload = DocumentSchema()
         elif requires == "case":
             self.actions.open_case = DocumentSchema()
-            self.actions.close_referral= DocumentSchema()
+            self.actions.close_referral = DocumentSchema()
             self.actions.update_referral = DocumentSchema()
             self.actions.referral_preload = DocumentSchema()
         elif requires == "referral":
@@ -588,7 +588,7 @@ class FormBase(DocumentSchema):
 
     def requires_case_type(self):
         return self.requires_case() or \
-               bool(self.active_non_preloader_actions())
+            bool(self.active_non_preloader_actions())
 
     def requires_referral(self):
         return self.requires == "referral"
@@ -643,14 +643,14 @@ class DetailColumn(IndexedSchema):
         }
 
     """
-    header      = DictProperty()
-    model       = StringProperty()
-    field       = StringProperty()
-    format      = StringProperty()
+    header = DictProperty()
+    model = StringProperty()
+    field = StringProperty()
+    format = StringProperty()
 
-    enum        = DictProperty()
-    late_flag   = IntegerProperty(default=30)
-    advanced    = StringProperty(default="")
+    enum = DictProperty()
+    late_flag = IntegerProperty(default=30)
+    advanced = StringProperty(default="")
     filter_xpath = StringProperty(default="")
     time_ago_interval = FloatProperty(default=365.25)
 
@@ -707,15 +707,15 @@ class Detail(IndexedSchema):
     get_columns = IndexedSchema.Getter('columns')
     @parse_int([1])
     def get_column(self, i):
-        return self.columns[i].with_id(i%len(self.columns), self)
+        return self.columns[i].with_id(i % len(self.columns), self)
 
     def append_column(self, column):
         self.columns.append(column)
     def update_column(self, column_id, column):
         my_column = self.columns[column_id]
 
-        my_column.model  = column.model
-        my_column.field  = column.field
+        my_column.model = column.model
+        my_column.field = column.field
         my_column.format = column.format
         my_column.late_flag = column.late_flag
         my_column.advanced = column.advanced
@@ -740,11 +740,10 @@ class Detail(IndexedSchema):
     def display(self):
         return "short" if self.type.endswith('short') else 'long'
 
-
     def filter_xpath(self):
 
         filters = []
-        for i,column in enumerate(self.columns):
+        for i, column in enumerate(self.columns):
             if column.format == 'filter':
                 filters.append("(%s)" % column.filter_xpath.replace('.', '%s_%s_%s' % (column.model, column.field, i + 1)))
         xpath = ' and '.join(filters)
@@ -788,7 +787,7 @@ class Module(IndexedSchema, NavMenuItemMediaMixin):
     @parse_int([1])
     def get_form(self, i):
         self__forms = self.forms
-        return self__forms[i].with_id(i%len(self.forms), self)
+        return self__forms[i].with_id(i % len(self.forms), self)
 
     get_details = IndexedSchema.Getter('details')
 
@@ -1111,7 +1110,6 @@ class ApplicationBase(VersionedDoc, SnapshotMixin):
                 descending=True,
             ).first()
 
-
     def get_latest_saved(self):
         """
         This looks really similar to get_latest_app, not sure why tim added
@@ -1244,7 +1242,7 @@ class ApplicationBase(VersionedDoc, SnapshotMixin):
             spec += {
                 ('native',): '-native-input',
                 ('roman',): '-generic',
-                ('custom-keys',):  '-custom-keys',
+                ('custom-keys',): '-custom-keys',
                 ('qwerty',): '-qwerty'
             }[(self.text_input,)]
 
@@ -1272,7 +1270,6 @@ class ApplicationBase(VersionedDoc, SnapshotMixin):
                     'in CommCare versions before %s.%s. '
                     '(You are using %s.%s)'
                 ) % ((name,) + setting_version + my_version))
-
 
     @property
     def jad_settings(self):
@@ -1490,7 +1487,6 @@ class Application(ApplicationBase, TranslationMixin, HQMediaMixin):
 
         return app
 
-
     @property
     def profile_url(self):
         return self.hq_profile_url
@@ -1679,7 +1675,7 @@ class Application(ApplicationBase, TranslationMixin, HQMediaMixin):
 
     def create_suite(self):
         if self.application_version == '1.0':
-            template='app_manager/suite-%s.xml' % self.application_version
+            template = 'app_manager/suite-%s.xml' % self.application_version
             return render_to_string(template, {
                 'app': self,
                 'langs': ["default"] + self.build_langs
@@ -1721,7 +1717,7 @@ class Application(ApplicationBase, TranslationMixin, HQMediaMixin):
     @parse_int([1])
     def get_module(self, i):
         self__modules = self.modules
-        return self__modules[i].with_id(i%len(self__modules), self)
+        return self__modules[i].with_id(i % len(self__modules), self)
 
     def get_user_registration(self):
         form = self.user_registration
@@ -1826,13 +1822,12 @@ class Application(ApplicationBase, TranslationMixin, HQMediaMixin):
             return
         if new_lang in self.langs:
             raise AppError("Language %s already exists!" % new_lang)
-        for i,lang in enumerate(self.langs):
+        for i, lang in enumerate(self.langs):
             if lang == old_lang:
                 self.langs[i] = new_lang
         for module in self.get_modules():
             module.rename_lang(old_lang, new_lang)
         _rename_key(self.translations, old_lang, new_lang)
-
 
     def rearrange_langs(self, i, j):
         langs = self.langs
@@ -1863,12 +1858,12 @@ class Application(ApplicationBase, TranslationMixin, HQMediaMixin):
                 source['_attachments']["%s.xml" % new_unique_id] = source['_attachments'].pop("%s.xml" % unique_id)
 
         change_unique_id(source['user_registration'])
-        for m,module in enumerate(source['modules']):
-            for f,form in enumerate(module['forms']):
+        for m, module in enumerate(source['modules']):
+            for f, form in enumerate(module['forms']):
                 change_unique_id(source['modules'][m]['forms'][f])
 
     def copy_form(self, module_id, form_id, to_module_id):
-        form  = self.get_module(module_id).get_form(form_id)
+        form = self.get_module(module_id).get_form(form_id)
         copy_source = deepcopy(form.to_json())
         if copy_source.has_key('unique_id'):
             del copy_source['unique_id']
@@ -1939,7 +1934,6 @@ class Application(ApplicationBase, TranslationMixin, HQMediaMixin):
                         needs_case_detail=True
                     )
                 )
-
 
         for form in self.get_forms():
             errors.extend(form.validate_for_build())
@@ -2123,7 +2117,6 @@ class RemoteApp(ApplicationBase):
             self.save()
         questions = self.questions_map.get(xmlns, [])
         return questions
-
 
 
 class DomainError(Exception):

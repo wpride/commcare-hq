@@ -11,10 +11,9 @@ class HQFormDataTable(Table):
     xmlns = Column()
     received_on = DateColumn()
     timeStart = DateColumn()
-    timeEnd= DateColumn()
+    timeEnd = DateColumn()
     userID = Column()
     username = Column()
     
     class Meta:
         order_by = '-received_on'
-

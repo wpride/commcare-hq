@@ -77,7 +77,7 @@ def inactive_cases_in_last(domain, days):
                      "range": {
                          "modified_on": {
                              "from": then,
-                             "to": now }}}}}}
+                             "to": now}}}}}}
     data = es_query(params={"domain.exact": domain, 'closed': False}, q=q, es_url=CASE_INDEX + '/case/_search', size=1)
     return data['hits']['total'] if data.get('hits') else 0
 
@@ -207,12 +207,12 @@ def _all_domain_stats():
 
     case_counts.update(dict([(row["key"][0], row["value"]) for row in \
                              get_db().view("hqcase/types_by_domain",
-                                           group=True,group_level=1).all()]))
+                                           group=True, group_level=1).all()]))
 
     return {"web_users": webuser_counts,
             "commcare_users": commcare_counts,
             "forms": form_counts,
             "cases": case_counts}
 
-ES_CALCED_PROPS = ["cp_n_web_users", "cp_n_active_cc_users", "cp_n_cc_users", "cp_n_active_cases" , "cp_n_cases",
+ES_CALCED_PROPS = ["cp_n_web_users", "cp_n_active_cc_users", "cp_n_cc_users", "cp_n_active_cases", "cp_n_cases",
                    "cp_n_forms", "cp_first_form", "cp_last_form", "cp_is_active", 'cp_has_app']

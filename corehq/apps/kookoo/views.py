@@ -73,6 +73,3 @@ def ivr_finished(request):
         call_log_entry.save()
     
     return HttpResponse("")
-
-
-

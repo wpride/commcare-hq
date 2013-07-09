@@ -1,7 +1,7 @@
 from urlparse import urlparse
 import httplib
 
-def post_data(data, url, submit_time=None, content_type = "text/xml"):
+def post_data(data, url, submit_time=None, content_type="text/xml"):
     """
     Do a POST from file with some options.  Returns a tuple of the response
     from the server and any errors.
@@ -26,4 +26,4 @@ def post_data(data, url, submit_time=None, content_type = "text/xml"):
         results = resp.read()
     except Exception, e:
         errors = str(e)
-    return (results,errors)
+    return (results, errors)

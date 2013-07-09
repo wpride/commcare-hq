@@ -164,12 +164,12 @@ def es_domain_query(params=None, facets=None, terms=None, domains=None, return_q
         terms = ['search']
     if facets is None:
         facets = []
-    q = {"query": {"match_all":{}}}
+    q = {"query": {"match_all": {}}}
 
     if domains is not None:
         q["query"] = {
-            "in" : {
-                "name" : domains,
+            "in": {
+                "name": domains,
             }
         }
 
@@ -183,17 +183,17 @@ def es_domain_query(params=None, facets=None, terms=None, domains=None, return_q
         q['query'] = {
             "bool": {
                 "must": {
-                    "match" : {
-                        "_all" : {
-                            "query" : search_query,
-                            "operator" : "or", }}}}}
+                    "match": {
+                        "_all": {
+                            "query": search_query,
+                            "operator": "or", }}}}}
 
     q["facets"] = {}
     stats = ['cp_n_active_cases', 'cp_n_inactive_cases', 'cp_n_active_cc_users', 'cp_n_cc_users', 'cp_n_60_day_cases', 'cp_n_web_users', 'cp_n_forms', 'cp_n_cases']
     for prop in stats:
         q["facets"].update({"%s-STATS" % prop: {"statistical": {"field": prop}}})
 
-    q["sort"] = sort if sort else [{"name" : {"order": "asc"}},]
+    q["sort"] = sort if sort else [{"name": {"order": "asc"}}, ]
 
     return es_query(params, facets, terms, q, DOMAIN_INDEX + '/hqdomain/_search', start_at, size, dict_only=return_q_dict)
 
@@ -275,7 +275,6 @@ class AdminDomainStatsReport(DomainStatsReport, ElasticTabularReport):
         self.show_name = True
         return super(AdminDomainStatsReport, self).export_table
 
-
     @property
     def rows(self):
         domains = [res['_source'] for res in self.es_results.get('hits', {}).get('hits', [])]
@@ -298,7 +297,7 @@ class AdminDomainStatsReport(DomainStatsReport, ElasticTabularReport):
             for index in range(1, len(self.headers)):
                 if index in CALCS_ROW_INDEX:
                     val = get_from_stat_facets(CALCS_ROW_INDEX[index], what_to_get)
-                    row.append('%.2f' % float(val) if val and type=='float' else val or "Not yet calculated")
+                    row.append('%.2f' % float(val) if val and type == 'float' else val or "Not yet calculated")
                 else:
                     row.append('---')
             return row

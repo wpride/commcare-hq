@@ -17,10 +17,8 @@ class HQAnnouncementCRUDManager(BaseAdminHQTabularCRUDManager):
             return markdown(property)
         return super(HQAnnouncementCRUDManager, self).format_property(key, property)
 
-
     def update(self, **kwargs):
         if not self.document_instance.date_created:
             self.document_instance.date_created = datetime.datetime.utcnow()
         self.document_instance.valid_until = datetime.datetime.utcnow() + datetime.timedelta(days=35) # temporary
         super(HQAnnouncementCRUDManager, self).update(**kwargs)
-

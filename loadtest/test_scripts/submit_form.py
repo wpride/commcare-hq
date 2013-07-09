@@ -42,10 +42,10 @@ def _submission(extras=""):
     return SUBMIT_TEMPLATE % {"timestart": _format_datetime(datetime.utcnow()),
                               "timeend": _format_datetime(datetime.utcnow()),
                               "instanceid": uuid.uuid4().hex,
-                              "extras": extras }
+                              "extras": extras}
 def _case_submission():
     caseblock = CASE_TEMPLATE % {"moddate": _format_datetime(datetime.utcnow()),
-                                 "caseid": uuid.uuid4().hex }
+                                 "caseid": uuid.uuid4().hex}
     return _submission(extras=caseblock)
 
 def _post(data, url, content_type="text/xml"):

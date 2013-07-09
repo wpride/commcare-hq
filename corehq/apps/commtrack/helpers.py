@@ -125,5 +125,3 @@ def make_psi_config(domain):
     )
     c.save()
     return c
-
-    

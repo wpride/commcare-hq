@@ -33,4 +33,3 @@ class Command(BaseCommand):
                     reprocess_form_cases(form)
                 except AssertionError:
                     print 'form %s FAILED' % doc_id
-

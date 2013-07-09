@@ -37,7 +37,7 @@ def export_cases_and_referrals(domain, cases, workbook, users=None, groups=None,
 
     def render_case_attr(case, key):
         attr = getattr(case, key)
-        if isinstance (attr, dict):
+        if isinstance(attr, dict):
             return attr.get('#text', '')
         else:
             return attr

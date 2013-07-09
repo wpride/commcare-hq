@@ -19,7 +19,7 @@ CRS_REGISTRATION = "http://openrosa.org/formdesigner/393CC825-7874-40E7-9AC6-927
 CRS_CHECKLIST = "http://openrosa.org/formdesigner/51283B9F-F810-44C9-8BCE-0A170F917BC1"
 CRS_BIRTH = "http://openrosa.org/formdesigner/B3CEEEFF-0673-4AAF-8A77-AC6C0DB68ADD"
 
-FORM_CONFIG = { CRS_REGISTRATION: {
+FORM_CONFIG = {CRS_REGISTRATION: {
                     "full_name": random_fullname,
                     "age": random_momage,
                     "number": random_phonenumber,
@@ -27,7 +27,7 @@ FORM_CONFIG = { CRS_REGISTRATION: {
                     "hamlet_name": random_lastname,
                     "case/create/case_name": random_fullname, 
                     "case/update/husband_name": random_fullname,
-                    "meta/username": random_username },
+                    "meta/username": random_username},
                 CRS_CHECKLIST: {
                     "client_name": random_fullname,
                     "meta/username": random_username,
@@ -96,9 +96,9 @@ FORM_CONFIG = { CRS_REGISTRATION: {
                     "case/update/tetanus-1": random_yesno,
                     "case/update/tetanus-2": random_yesno,
                     "case/update/manual-labor-info": random_yesno,
-                    "case/update/knows-closest-facility": random_yesno },
+                    "case/update/knows-closest-facility": random_yesno},
                 CRS_BIRTH: {
-                    "meta/username": random_username }
+                    "meta/username": random_username}
               }
     
 def deidentify_form(doctransform):
@@ -136,4 +136,3 @@ def deidentify_form(doctransform):
         # to return anything, to prevent potentially identified
         # data from sneaking in
         return None
-    

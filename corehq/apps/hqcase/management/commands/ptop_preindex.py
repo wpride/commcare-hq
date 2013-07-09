@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.core.mail import mail_admins
 import sys
-from gevent import monkey;monkey.patch_all()
+from gevent import monkey; monkey.patch_all()
 import gevent
 from gevent import Greenlet
 from pillowtop.listener import AliasedElasticPillow
@@ -63,8 +63,6 @@ class Command(BaseCommand):
 
             mail_admins("Pillow preindexing starting", preindex_message)
 
-
-
         start = datetime.utcnow()
         for pillow in reindex_pillows:
             #loop through pillows once before running greenlets to fail hard on misconfigured pillows
@@ -84,10 +82,3 @@ class Command(BaseCommand):
                 (datetime.utcnow() - start).seconds
             ))
         print "All pillowtop reindexing jobs completed"
-
-
-
-
-
-
-

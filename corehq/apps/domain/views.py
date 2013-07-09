@@ -219,9 +219,9 @@ def project_settings(request, domain, template="domain/admin/project_settings.ht
             initial.update(domain.billing_address._doc)
             billing_info_form = DomainBillingInfoForm(initial=initial)
         billing_info_partial = 'hqbilling/domain/forms/billing_info.html'
-        billing_enabled=True
+        billing_enabled = True
     except ImportError:
-        billing_enabled=False
+        billing_enabled = False
         billing_info_form = None
         billing_info_partial = None
 
@@ -373,7 +373,7 @@ def create_snapshot(request, domain):
         published_snapshot = snapshots[0] if snapshots else domain
         published_apps = {}
         if published_snapshot is not None:
-            initial={
+            initial = {
                 'default_timezone': published_snapshot.default_timezone,
                 'case_sharing': json.dumps(published_snapshot.case_sharing),
                 'project_type': published_snapshot.project_type,
@@ -600,7 +600,7 @@ def manage_multimedia(request, domain):
             'm_id': m._id,
             'tags': m.tags.get(domain, []),
             'type': m.doc_type
-                   } for m in media],
+        } for m in media],
         'licenses': LICENSES.items()
     })
 
@@ -647,7 +647,7 @@ def commtrack_settings(request, domain):
         settings.actions = [mk_action(a) for a in payload['actions']]
         settings.location_types = [mk_loctype(l) for l in payload['loc_types']]
         settings.requisition_config.enabled = payload['requisition_config']['enabled']
-        settings.requisition_config.actions =  [mk_action(a) for a in payload['requisition_config']['actions']]
+        settings.requisition_config.actions = [mk_action(a) for a in payload['requisition_config']['actions']]
         settings.save()
 
     def settings_to_json(config):

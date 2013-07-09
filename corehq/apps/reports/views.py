@@ -163,7 +163,7 @@ def export_data(req, domain):
         resp = export_raw_data([domain, export_tag], filename=export_tag)
     else:
         try:
-            resp = export_data_shared([domain,export_tag], **kwargs)
+            resp = export_data_shared([domain, export_tag], **kwargs)
         except UnsupportedExportFormat as e:
             return HttpResponseBadRequest(e)
     if resp:
@@ -233,7 +233,6 @@ def _export_default_or_custom_data(request, domain, export_id=None, bulk_export=
             export_tags = json.loads(request.GET.get("export_tags", "null") or "null")
         except ValueError:
             return HttpResponseBadRequest()
-
 
         export_helper = (CustomBulkExportHelper if is_custom else ApplicationBulkExportHelper)(
             domain=domain,
@@ -383,7 +382,6 @@ def export_all_form_metadata_async(req, domain):
         filename=filename,
     ))
     return download.get_start_response()
-
 
 
 @require_form_export_permission
@@ -983,7 +981,6 @@ def mk_date_range(start=None, end=None, ago=timedelta(days=7), iso=False):
         return json_format_datetime(start), json_format_datetime(end)
     else:
         return start, end
-
 
 
 @login_and_domain_required

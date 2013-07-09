@@ -21,16 +21,16 @@ DIRECTION_CHOICES = (
     (OUTGOING, "Outgoing"))
 
 class MessageLog(Document, UnicodeMixIn):
-    base_doc                    = "MessageLog"
-    couch_recipient_doc_type    = StringProperty() # "CommCareCase" or "CouchUser"
-    couch_recipient             = StringProperty()
-    phone_number                = StringProperty()
-    direction                   = StringProperty()
-    date                        = DateTimeProperty()
-    domain                      = StringProperty()
-    backend_api                 = StringProperty() # This must be set to <backend module>.API_ID in order to process billing correctly
-    billed                      = BooleanProperty(default=False)
-    billing_errors              = ListProperty()
+    base_doc = "MessageLog"
+    couch_recipient_doc_type = StringProperty() # "CommCareCase" or "CouchUser"
+    couch_recipient = StringProperty()
+    phone_number = StringProperty()
+    direction = StringProperty()
+    date = DateTimeProperty()
+    domain = StringProperty()
+    backend_api = StringProperty() # This must be set to <backend module>.API_ID in order to process billing correctly
+    billed = BooleanProperty(default=False)
+    billing_errors = ListProperty()
 
     def __unicode__(self):
         to_from = (self.direction == INCOMING) and "from" or "to"
@@ -83,7 +83,7 @@ class MessageLog(Document, UnicodeMixIn):
                     descending=True)
 
     @classmethod
-    def count_by_domain(cls, domain, start_date = None, end_date = {}):
+    def count_by_domain(cls, domain, start_date=None, end_date={}):
         if cls.__name__ == "MessageLog":
             raise NotImplementedError("Log queries not yet implemented for base class")
         if not end_date:
@@ -97,7 +97,7 @@ class MessageLog(Document, UnicodeMixIn):
         return 0
 
     @classmethod
-    def count_incoming_by_domain(cls, domain, start_date = None, end_date = {}):
+    def count_incoming_by_domain(cls, domain, start_date=None, end_date={}):
         if cls.__name__ == "MessageLog":
             raise NotImplementedError("Log queries not yet implemented for base class")
         if not end_date:
@@ -111,7 +111,7 @@ class MessageLog(Document, UnicodeMixIn):
         return 0
 
     @classmethod
-    def count_outgoing_by_domain(cls, domain, start_date = None, end_date = {}):
+    def count_outgoing_by_domain(cls, domain, start_date=None, end_date={}):
         if cls.__name__ == "MessageLog":
             raise NotImplementedError("Log queries not yet implemented for base class")
         if not end_date:
@@ -125,7 +125,7 @@ class MessageLog(Document, UnicodeMixIn):
         return 0
     
     @classmethod
-    def by_domain_date(cls, domain, start_date = None, end_date = {}):
+    def by_domain_date(cls, domain, start_date=None, end_date={}):
         if cls.__name__ == "MessageLog":
             raise NotImplementedError("Log queries not yet implemented for base class")
         return cls.view("sms/by_domain",
@@ -148,8 +148,10 @@ class SMSLog(MessageLog):
     def __unicode__(self):
 
         # crop the text (to avoid exploding the admin)
-        if len(self.text) < 60: str = self.text
-        else: str = "%s..." % (self.text[0:57])
+        if len(self.text) < 60:
+            str = self.text
+        else:
+            str = "%s..." % (self.text[0:57])
 
         to_from = (self.direction == INCOMING) and "from" or "to"
         return "%s (%s %s)" % (str, to_from, self.phone_number)
@@ -221,18 +223,18 @@ class CallLog(MessageLog):
         return result
 
 class EventLog(Document):
-    base_doc                    = "EventLog"
-    domain                      = StringProperty()
-    date                        = DateTimeProperty()
-    couch_recipient_doc_type    = StringProperty()
-    couch_recipient             = StringProperty()
+    base_doc = "EventLog"
+    domain = StringProperty()
+    date = DateTimeProperty()
+    couch_recipient_doc_type = StringProperty()
+    couch_recipient = StringProperty()
 
 CALLBACK_PENDING = "PENDING"
 CALLBACK_RECEIVED = "RECEIVED"
 CALLBACK_MISSED = "MISSED"
 
 class ExpectedCallbackEventLog(EventLog):
-    status = StringProperty(choices=[CALLBACK_PENDING,CALLBACK_RECEIVED,CALLBACK_MISSED])
+    status = StringProperty(choices=[CALLBACK_PENDING, CALLBACK_RECEIVED, CALLBACK_MISSED])
     
     @classmethod
     def by_domain(cls, domain, start_date=None, end_date={}):
@@ -259,14 +261,14 @@ class ForwardingRule(Document):
         self.save()
 
 class MessageLogOld(models.Model):
-    couch_recipient    = models.TextField()
-    phone_number       = models.TextField()
-    direction          = models.CharField(max_length=1, choices=DIRECTION_CHOICES)
-    date               = models.DateTimeField()
-    text               = models.TextField()
+    couch_recipient = models.TextField()
+    phone_number = models.TextField()
+    direction = models.CharField(max_length=1, choices=DIRECTION_CHOICES)
+    date = models.DateTimeField()
+    text = models.TextField()
     # hm, this data is duplicate w/ couch, but will make the query much more
     # efficient to store here rather than doing a couch query for each couch user
-    domain             = models.TextField()
+    domain = models.TextField()
 
     class Meta(): 
         db_table = "sms_messagelog"
@@ -274,8 +276,10 @@ class MessageLogOld(models.Model):
     def __unicode__(self):
 
         # crop the text (to avoid exploding the admin)
-        if len(self.text) < 60: str = self.text
-        else: str = "%s..." % (self.text[0:57])
+        if len(self.text) < 60:
+            str = self.text
+        else:
+            str = "%s..." % (self.text[0:57])
 
         to_from = (self.direction == INCOMING) and "from" or "to"
         return "%s (%s %s)" % (str, to_from, self.phone_number)
@@ -332,5 +336,3 @@ def case_changed_receiver(sender, case, **kwargs):
 
 
 case_post_save.connect(case_changed_receiver, CommCareCase)
-
-

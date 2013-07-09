@@ -46,4 +46,4 @@ class HQFormData(FormDataBase):
             
     def matches_exact(self, instance):
         return super(HQFormData, self).matches_exact(instance) and \
-               self.domain == instance.domain
+            self.domain == instance.domain

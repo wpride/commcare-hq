@@ -23,8 +23,8 @@ from django.utils.translation import ugettext as _
 from corehq.apps.app_manager.models import Form as CCHQForm
 
 YES_OR_NO = (
-    ("Y","Yes"),
-    ("N","No"),
+    ("Y", "Yes"),
+    ("N", "No"),
 )
 
 METHOD_CHOICES = (
@@ -169,7 +169,7 @@ class ComplexCaseReminderForm(Form):
     A form used to create/edit CaseReminderHandlers with any type of schedule.
     """
     active = BooleanField(required=False)
-    nickname = CharField(error_messages={"required":"Please enter the name of this reminder definition."})
+    nickname = CharField(error_messages={"required": "Please enter the name of this reminder definition."})
     start_condition_type = CharField()
     case_type = CharField(required=False)
     method = ChoiceField(choices=METHOD_CHOICES)
@@ -196,9 +196,9 @@ class ComplexCaseReminderForm(Form):
     frequency = CharField()
     sample_id = CharField(required=False)
     enable_advanced_time_choices = BooleanField(required=False)
-    max_question_retries = ChoiceField(choices=((n,n) for n in QUESTION_RETRY_CHOICES))
+    max_question_retries = ChoiceField(choices=((n, n) for n in QUESTION_RETRY_CHOICES))
     recipient_case_match_property = CharField(required=False)
-    recipient_case_match_type = ChoiceField(choices=MATCH_TYPE_DISPLAY_CHOICES,required=False)
+    recipient_case_match_type = ChoiceField(choices=MATCH_TYPE_DISPLAY_CHOICES, required=False)
     recipient_case_match_value = CharField(required=False)
     
     def __init__(self, *args, **kwargs):
@@ -233,9 +233,9 @@ class ComplexCaseReminderForm(Form):
         if "events" in initial:
             for e in initial["events"]:
                 ui_event = {
-                    "day"       : e.day_num,
-                    "time"      : e.fire_time_aux if e.fire_time_type == FIRE_TIME_CASE_PROPERTY else "%02d:%02d" % (e.fire_time.hour, e.fire_time.minute),
-                    "time_type" : e.fire_time_type,
+                    "day": e.day_num,
+                    "time": e.fire_time_aux if e.fire_time_type == FIRE_TIME_CASE_PROPERTY else "%02d:%02d" % (e.fire_time.hour, e.fire_time.minute),
+                    "time_type": e.fire_time_type,
                 }
                 
                 if e.fire_time_type != FIRE_TIME_DEFAULT:
@@ -244,7 +244,7 @@ class ComplexCaseReminderForm(Form):
                 messages = {}
                 counter = 1
                 for key, value in e.message.items():
-                    messages[str(counter)] = {"language" : key, "text" : value}
+                    messages[str(counter)] = {"language": key, "text": value}
                     counter += 1
                 ui_event["messages"] = messages
                 
@@ -451,13 +451,13 @@ class ComplexCaseReminderForm(Form):
                     raise ValidationError("Please create a form for the survey first, and then create the reminder definition.")
             
             events.append(CaseReminderEvent(
-                day_num = day,
-                fire_time = time,
-                message = message,
-                callback_timeout_intervals = timeouts_int,
-                form_unique_id = form_unique_id,
-                fire_time_type = fire_time_type,
-                fire_time_aux = fire_time_aux,
+                day_num=day,
+                fire_time=time,
+                message=message,
+                callback_timeout_intervals=timeouts_int,
+                form_unique_id=form_unique_id,
+                fire_time_type=fire_time_type,
+                fire_time_aux=fire_time_aux,
             ))
         
         if len(events) == 0:
@@ -518,13 +518,13 @@ class ComplexCaseReminderForm(Form):
                     minimum_tick = None
                     for e in events:
                         if first:
-                            minimum_tick = timedelta(days = e.day_num, hours = e.fire_time.hour, minutes = e.fire_time.minute)
+                            minimum_tick = timedelta(days=e.day_num, hours=e.fire_time.hour, minutes=e.fire_time.minute)
                             first = False
                         else:
-                            this_tick = timedelta(days = e.day_num, hours = e.fire_time.hour, minutes = e.fire_time.minute)
+                            this_tick = timedelta(days=e.day_num, hours=e.fire_time.hour, minutes=e.fire_time.minute)
                             if this_tick < minimum_tick:
                                 minimum_tick = this_tick
-                    if minimum_tick < timedelta(hours = 1):
+                    if minimum_tick < timedelta(hours=1):
                         self._errors["events"] = self.error_class(["Minimum tick for a schedule repeated multiple times intraday is 1 hour."])
                         del cleaned_data["events"]
         
@@ -543,7 +543,6 @@ class ComplexCaseReminderForm(Form):
                         break
         
         return cleaned_data
-
 
 
 class RecordListWidget(Widget):
@@ -578,7 +577,7 @@ class RecordListField(Field):
         self.required = required
         self.label = label
         self.initial = initial
-        self.widget = RecordListWidget(attrs={"input_name" : kwargs["input_name"]})
+        self.widget = RecordListWidget(attrs={"input_name": kwargs["input_name"]})
         self.help_text = help_text
     
     def clean(self, value):
@@ -595,7 +594,7 @@ class SurveyForm(Form):
     def clean_waves(self):
         value = self.cleaned_data["waves"]
         datetimes = {}
-        samples = [SurveySample.get(sample["sample_id"]) for sample in self.cleaned_data.get("samples",[])]
+        samples = [SurveySample.get(sample["sample_id"]) for sample in self.cleaned_data.get("samples", [])]
         utcnow = datetime.utcnow()
         followups = [int(followup["interval"]) for followup in self.cleaned_data.get("followups", [])]
         followup_duration = sum(followups)
@@ -636,7 +635,7 @@ class SurveyForm(Form):
                         raise ValidationError("Waves cannot be scheduled in the past.")
         
         # Ensure wave start and end dates do not overlap
-        start_end_intervals.sort(key = lambda t : t[0])
+        start_end_intervals.sort(key=lambda t: t[0])
         i = 0
         last_end = None
         for start_end in start_end_intervals:
@@ -712,7 +711,7 @@ class SurveySampleForm(Form):
             for row in worksheet:
                 if "PhoneNumber" not in row:
                     raise ValidationError("Column 'PhoneNumber' not found.")
-                contacts.append({"phone_number" : validate_phone_number(row.get("PhoneNumber"))})
+                contacts.append({"phone_number": validate_phone_number(row.get("PhoneNumber"))})
             
             if len(contacts) == 0:
                 raise ValidationError(_("Please add at least one contact."))
@@ -823,4 +822,3 @@ class KeywordForm(Form):
             return value
         else:
             return None
-

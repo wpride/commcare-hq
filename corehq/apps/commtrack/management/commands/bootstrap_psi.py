@@ -20,7 +20,7 @@ class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('-f', '--force', action='store_true', dest='force', default=False,
                     help='force bootstrapping of domain, even if already appears set up'),
-         )
+    )
     help = 'Initialize commtrack config for PSI'
 
     def handle(self, *args, **options):
@@ -66,4 +66,3 @@ def commtrack_enable_domain(domain):
 def make_products(domain, products):
     for name, code in products:
         make_product(domain, name, code)
-

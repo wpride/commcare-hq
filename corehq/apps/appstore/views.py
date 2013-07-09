@@ -20,7 +20,7 @@ from dimagi.utils.couch.database import apply_update
 
 SNAPSHOT_FACETS = ['project_type', 'license', 'author']
 DEPLOYMENT_FACETS = ['deployment.region']
-SNAPSHOT_MAPPING = {'category':'project_type', 'license': 'license', 'author': 'author'}
+SNAPSHOT_MAPPING = {'category': 'project_type', 'license': 'license', 'author': 'author'}
 DEPLOYMENT_MAPPING = {'region': 'deployment.region'}
 
 
@@ -64,7 +64,7 @@ def project_info(request, domain, template="appstore/project_info.html"):
                 review.info = info
                 review.date_published = date_published
             else:
-                review = Review(title=title, rating=rating, user=user, info=info, date_published = date_published, domain=domain, project_id=dom.copied_from._id)
+                review = Review(title=title, rating=rating, user=user, info=info, date_published=date_published, domain=domain, project_id=dom.copied_from._id)
             review.save()
         else:
             form = AddReviewForm()
@@ -153,7 +153,7 @@ def generate_sortables_from_facets(results, params=None, mapping=None, prefix=''
 
     def generate_facet_dict(f_name, ft):
         if isinstance(ft['term'], unicode): #hack to get around unicode encoding issues. However it breaks this specific facet
-            ft['term'] = ft['term'].encode('ascii','replace')
+            ft['term'] = ft['term'].encode('ascii', 'replace')
 
         ccs = {
             'cc': 'CC BY',
@@ -282,20 +282,20 @@ def es_snapshot_query(params, facets=None, terms=None, sort_by="snapshot_time"):
         terms = ['is_approved', 'sort_by', 'search']
     if facets is None:
         facets = []
-    q = {"sort": {sort_by: {"order" : "desc"} },
-         "query":   {"bool": {"must":
+    q = {"sort": {sort_by: {"order": "desc"}},
+         "query": {"bool": {"must":
                                   [{"match": {'doc_type': "Domain"}},
                                    {"term": {"published": True}},
                                    {"term": {"is_snapshot": True}}]}},
-         "filter":  {"and": [{"term": {"is_approved": params.get('is_approved', None) or True}}]}}
+         "filter": {"and": [{"term": {"is_approved": params.get('is_approved', None) or True}}]}}
 
     search_query = params.get('search', "")
     if search_query:
         q['query']['bool']['must'].append({
-            "match" : {
-                "_all" : {
-                    "query" : search_query,
-                    "operator" : "and"
+            "match": {
+                "_all": {
+                    "query": search_query,
+                    "operator": "and"
                 }
             }
         })
@@ -422,7 +422,7 @@ def deployments(request, template="appstore/deployments.html"):
 
     facets_sortables = generate_sortables_from_facets(results, params, inverse_dict(DEPLOYMENT_MAPPING))
     include_unapproved = True if request.GET.get('is_approved', "") == "false" else False
-    vals = { 'deployments': d_results[(page-1)*10:page*10],
+    vals = {'deployments': d_results[(page-1)*10:page*10],
              'page': page,
              'prev_page': page-1,
              'next_page': (page+1),
@@ -445,17 +445,17 @@ def es_deployments_query(params, facets=None, terms=None, sort_by="snapshot_time
         terms = ['is_approved', 'sort_by', 'search']
     if facets is None:
         facets = []
-    q = {"query":   {"bool": {"must":
+    q = {"query": {"bool": {"must":
                                   [{"match": {'doc_type': "Domain"}},
                                    {"term": {"deployment.public": True}}]}}}
 
     search_query = params.get('search', "")
     if search_query:
         q['query']['bool']['must'].append({
-            "match" : {
-                "_all" : {
-                    "query" : search_query,
-                    "operator" : "and"
+            "match": {
+                "_all": {
+                    "query": search_query,
+                    "operator": "and"
                 }
             }
         })

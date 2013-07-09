@@ -9,4 +9,3 @@ class Command(LabelCommand):
     def handle(self, *args, **options):
         daily_reports()
         weekly_reports()
-        

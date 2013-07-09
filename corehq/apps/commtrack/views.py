@@ -92,7 +92,7 @@ def product_edit(request, domain, prod_id=None):
         'form': form,
     }
 
-    template="commtrack/manage/product.html"
+    template = "commtrack/manage/product.html"
     return render(request, template, context)
 
 @require_superuser
@@ -166,7 +166,6 @@ def charts(request, domain, template="commtrack/charts.html"):
 
     from random import randint
     num_facilities = randint(44, 444)
-
 
     ### gen fake data
     def vals():
@@ -262,4 +261,3 @@ def api_query_supply_point(request, domain):
         payload = map(loc_to_payload, locs)
 
     return HttpResponse(json.dumps(payload), 'text/json')
-

@@ -53,7 +53,6 @@ get_data = lambda mk_sub: [
 ]
 
 
-
 class HouseholdVerificationTest(TestCase):
 #    def testView(self):
 #        xml_subs = get_data(mk_xml_sub)

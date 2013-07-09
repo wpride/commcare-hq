@@ -365,7 +365,6 @@ LUCENE_ENABLED = False
 FORMDATA_MODEL = 'hqsofabed.HQFormData'
 
 
-
 # unicel sms config
 UNICEL_CONFIG = {"username": "Dimagi",
                  "password": "changeme",
@@ -432,7 +431,7 @@ COUCH_HTTPS = False
 # this should be overridden in localsettings
 INTERNAL_DATA = defaultdict(list)
 
-COUCH_STALE_QUERY='update_after'  # 'ok' for cloudant
+COUCH_STALE_QUERY = 'update_after'  # 'ok' for cloudant
 
 
 MESSAGE_LOG_OPTIONS = {
@@ -707,18 +706,18 @@ INDICATOR_CONFIG = {
 CASE_WRAPPER = 'corehq.apps.hqcase.utils.get_case_wrapper'
 
 PILLOWTOPS = [
-                 'corehq.pillows.case.CasePillow',
-                 'corehq.pillows.fullcase.FullCasePillow',
-                 'corehq.pillows.xform.XFormPillow',
-                 'corehq.pillows.fullxform.FullXFormPillow',
-                 'corehq.pillows.domain.DomainPillow',
-                 'corehq.pillows.user.UserPillow',
-                 'corehq.pillows.exchange.ExchangePillow',
-                 'corehq.pillows.commtrack.ConsumptionRatePillow',
+    'corehq.pillows.case.CasePillow',
+    'corehq.pillows.fullcase.FullCasePillow',
+    'corehq.pillows.xform.XFormPillow',
+    'corehq.pillows.fullxform.FullXFormPillow',
+    'corehq.pillows.domain.DomainPillow',
+    'corehq.pillows.user.UserPillow',
+    'corehq.pillows.exchange.ExchangePillow',
+    'corehq.pillows.commtrack.ConsumptionRatePillow',
 
-                 # fluff
-                 'bihar.models.CareBiharFluffPillow',
-             ] + LOCAL_PILLOWTOPS
+    # fluff
+    'bihar.models.CareBiharFluffPillow',
+] + LOCAL_PILLOWTOPS
 
 # List of Fluff pillow classes that ctable should process diffs for
 FLUFF_PILLOW_TYPES_TO_SQL = []

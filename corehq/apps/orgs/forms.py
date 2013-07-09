@@ -40,7 +40,7 @@ class AddProjectForm(forms.Form):
         return data
 
 class InviteMemberForm(forms.Form):
-    email = forms.CharField(label = "User Email")
+    email = forms.CharField(label="User Email")
 
     def __init__(self, org_name, *args, **kwargs):
         self.org_name = org_name

@@ -51,7 +51,3 @@ class DevicelogPillow(LogstashMonitoringPillow):
     endpoint_port = settings.LOGSTASH_DEVICELOG_PORT
     document_class = XFormInstance
     couch_filter = 'couchforms/devicelogs'
-
-
-
-

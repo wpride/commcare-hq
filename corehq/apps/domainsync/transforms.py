@@ -52,4 +52,3 @@ def deidentify_domain(doc):
                         "SavedExportSchema": identity}
     if "doc_type" in doc.doc and doc.doc["doc_type"] in handleable_types:
         return handleable_types[doc.doc["doc_type"]](doc)
-        

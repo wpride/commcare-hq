@@ -26,4 +26,3 @@ class BaseADMAdminInterface(BaseCRUDAdminInterface):
     @property
     def default_report_url(self):
         return reverse("default_adm_admin_interface")
-

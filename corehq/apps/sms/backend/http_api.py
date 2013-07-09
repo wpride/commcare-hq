@@ -34,4 +34,3 @@ def send(msg, *args, **kwargs):
         response = urlopen(url + "?" + url_params).read()
     else:
         response = urlopen(url, url_params).read()
-

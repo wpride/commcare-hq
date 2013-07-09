@@ -38,7 +38,6 @@ class UserPillow(AliasedElasticPillow):
     @memoized
     def calc_meta(self):
         #todo: actually do this correctly
-
         """
         override of the meta calculator since we're separating out all the types,
         so we just do a hash of the "prototype" instead to determined md5

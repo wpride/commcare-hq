@@ -12,7 +12,7 @@ class XFormParsingTest(TestCase):
             self.xforms[filename].validate()
 
     def test_properties(self):
-        for _,xform in self.xforms.items():
+        for _, xform in self.xforms.items():
             xform.data_node
             xform.model_node
             xform.instance_node
@@ -30,4 +30,3 @@ class XFormParsingTest(TestCase):
             self.failUnlessEqual(str(e), "Can't find <itext>")  
         self.failUnlessEqual(self.xforms["itext_form.xml"].localize(id="pork", lang="kosher"), None)
         self.failUnlessEqual(self.xforms["itext_form.xml"].localize(id="question1", lang="pt"), "P1")
-    

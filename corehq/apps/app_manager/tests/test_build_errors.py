@@ -32,4 +32,3 @@ class BuildErrorsTest(TestCase):
         errors = form.validate_for_build()
         self.assertIn(update_path_error, errors)
         self.assertIn(subcase_path_error, errors)
-

@@ -110,7 +110,7 @@ class CommCareExchangeAdvanced(GenericTabularReport, AppstoreInterface, Datespan
          # use self.organization_filter, self.license_filter, self.category_filter and self.region_filter to search with lucene
 
     def get_app_info(self, data):
-        app =  None
+        app = None
         app_link = ""
         if "doc" in data:
             app = CommCareCase.wrap(data["doc"])
@@ -120,4 +120,3 @@ class CommCareExchangeAdvanced(GenericTabularReport, AppstoreInterface, Datespan
             app_link = '<a href="%s">%s</a>' %\
                         (reverse('project_info', args=[app.domain]), app.domain)
         return app, app_link
-

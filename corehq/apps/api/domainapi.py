@@ -34,7 +34,7 @@ class DomainAPI(View):
     http_method_names = ['get', 'post', 'head', ]
     def get(self, *args, **kwargs):
         raise NotImplementedError("Not implemented")
-    def post(self,  *args, **kwargs):
+    def post(self, *args, **kwargs):
         raise NotImplementedError("Not implemented")
     def head(self, *args, **kwargs):
         raise NotImplementedError("Not implemented")
@@ -44,5 +44,5 @@ class DomainAPI(View):
         req = args[0]
         if not self.allowed_domain(req.domain):
             raise Http404
-        ret =  super(DomainAPI, self).dispatch(*args, **kwargs)
+        ret = super(DomainAPI, self).dispatch(*args, **kwargs)
         return ret

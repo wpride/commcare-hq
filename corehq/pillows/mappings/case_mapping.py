@@ -15,7 +15,7 @@ CASE_MAPPING = {
                                                                      'type': 'string'},
                                                           'exact': {'index': 'not_analyzed',
                                                                     'type': 'string'}},
-                                                                     'type': 'multi_field'},
+                                                              'type': 'multi_field'},
                                                           'referrals': {'type': 'object',
                                                                         'enabled': False},
                                                           'xform_ids': {'index': 'not_analyzed',
@@ -26,10 +26,10 @@ CASE_MAPPING = {
                                                                       'type': 'object',
                                                                       'properties': {'identifier': {
                                                                       'type': 'string'},
-                                                                                     'referenced_type': {
-                                                                                     'type': 'string'},
-                                                                                     'referenced_id': {
-                                                                                     'type': 'string'}}},
+                                                                          'referenced_type': {
+                                                                              'type': 'string'},
+                                                                          'referenced_id': {
+                                                                              'type': 'string'}}},
                                                           'initial_processing_complete': {
                                                           'type': 'boolean'},
                                                           'export_tag': {'type': 'string'},

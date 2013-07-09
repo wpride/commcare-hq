@@ -10,16 +10,15 @@ from corehq.pillows.dynamic import DEFAULT_MAPPING_WRAPPER, domain_special_types
 from django.conf import settings
 
 class Command(MappingOutputCommand):
-    help="Generate mapping JSON of our ES indexed types. For domains"
+    help = "Generate mapping JSON of our ES indexed types. For domains"
     option_list = NoArgsCommand.option_list + (
     )
     doc_class_str = "corehq.apps.domain.models.Domain"
     doc_class = Domain
 
-
     def finish_handle(self):
 
-        filepath = os.path.join(settings.FILEPATH, 'corehq','pillows','mappings','domain_mapping.py')
+        filepath = os.path.join(settings.FILEPATH, 'corehq', 'pillows', 'mappings', 'domain_mapping.py')
         domainpillow = DomainPillow(create_index=False)
 
         #current index
@@ -62,6 +61,6 @@ class Command(MappingOutputCommand):
 
         if newcalc_index not in aliased_indices and newcalc_index != current_index:
             sys.stderr.write("\n\tWarning, current index %s is not aliased at the moment\n" % current_index)
-            sys.stderr.write("\tCurrent live aliased index: %s\n\n"  % (','.join(aliased_indices)))
+            sys.stderr.write("\tCurrent live aliased index: %s\n\n" % (','.join(aliased_indices)))
 
         sys.stderr.write("File written to %s\n" % filepath)

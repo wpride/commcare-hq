@@ -20,12 +20,11 @@ class SubmitFilter(CouchFilter):
     def __init__(self, domain, doc_type):
         self.domain = domain
         self.doc_type = doc_type
-        self._kwargs = { "endkey":       [self.domain, "by_type", self.doc_type],
-                         "startkey":     [self.domain, "by_type", self.doc_type, {}],
-                         "reduce":       False,
-                         "descending":   True }
+        self._kwargs = {"endkey": [self.domain, "by_type", self.doc_type],
+                         "startkey": [self.domain, "by_type", self.doc_type, {}],
+                         "reduce": False,
+                         "descending": True}
         
-    
     def get_total(self):
         return XFormError.view("receiverwrapper/all_submissions_by_domain",
                                **self._kwargs).count()

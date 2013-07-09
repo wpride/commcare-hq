@@ -24,4 +24,3 @@ urlpatterns = patterns('corehq.apps.appstore.views',
     url(r'^(?P<domain>[\w\.-]+)/image/$', 'project_image', name='appstore_project_image'),
     url(r'^(?P<domain>[\w\.-]+)/multimedia/$', 'media_files', name='media_files'),
 )
-

@@ -14,14 +14,14 @@ class DataTablesColumn(object):
         self.help_text = help_text
         self.sortable = sortable
         self.rotate = rotate
-        self.prop_name=prop_name
+        self.prop_name = prop_name
         if isinstance(expected, int):
             expected = "%d" % expected
         self.expected = expected
 
     @property
     def render_html(self):
-        column_params=dict(
+        column_params = dict(
             title=self.html,
             sort=self.sortable,
             rotate=self.rotate,

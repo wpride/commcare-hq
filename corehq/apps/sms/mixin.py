@@ -21,13 +21,13 @@ class VerifiedNumber(Document):
     There should only be one VerifiedNumber entry per (owner_doc_type, owner_id), and
     each VerifiedNumber.phone_number should be unique across all entries.
     """
-    domain          = StringProperty()
-    owner_doc_type  = StringProperty()
-    owner_id        = StringProperty()
-    phone_number    = StringProperty()
-    backend_id      = StringProperty() # points to a MobileBackend
-    ivr_backend_id  = StringProperty() # points to a MobileBackend
-    verified        = BooleanProperty()
+    domain = StringProperty()
+    owner_doc_type = StringProperty()
+    owner_id = StringProperty()
+    phone_number = StringProperty()
+    backend_id = StringProperty() # points to a MobileBackend
+    ivr_backend_id = StringProperty() # points to a MobileBackend
+    verified = BooleanProperty()
     
     def __repr__(self):
         return '{phone} in {domain} (owned by {owner})'.format(
@@ -238,8 +238,8 @@ class CommCareMobileContactMixin(object):
             v = self.get_verified_number(phone_number)
         if v is None:
             v = VerifiedNumber(
-                owner_doc_type = self.doc_type,
-                owner_id = self._id
+                owner_doc_type=self.doc_type,
+                owner_id=self._id
             )
         v.domain = domain
         v.phone_number = phone_number
@@ -259,4 +259,3 @@ class CommCareMobileContactMixin(object):
         if v is not None:
             v.doc_type += "-Deleted"
             v.save()
-

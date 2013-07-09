@@ -4,10 +4,10 @@ def get_server_url(http_method, server_root, username, password):
             {
                 "http_method": http_method,
                 "user": username,
-             "pass": password, 
-             "server": server_root }
+                "pass": password, 
+                "server": server_root}
     else:
-        return "%(http_method)s://%(server)s" % {"http_method": http_method, "server": server_root }
+        return "%(http_method)s://%(server)s" % {"http_method": http_method, "server": server_root}
 
 def get_dynamic_db_settings(server_root, username, password, dbname, installed_apps, use_https=False):
     """
@@ -19,9 +19,9 @@ def get_dynamic_db_settings(server_root, username, password, dbname, installed_a
     server_url = get_server_url(http_method, server_root, username, password)
     database = "%(server)s/%(database)s" % {"server": server_url, "database": dbname}
     posturl = "http://%s/%s/_design/couchforms/_update/xform/" % (server_root, dbname)
-    return {"COUCH_SERVER":  server_url,
+    return {"COUCH_SERVER": server_url,
             "COUCH_DATABASE": database,
-            "XFORMS_POST_URL": posturl }
+            "XFORMS_POST_URL": posturl}
             
 
 def get_commit_id():
@@ -45,4 +45,3 @@ def make_couchdb_tuple(app_label, couch_database_url):
         return app_label, "%s__%s" % (couch_database_url, app_label)
     else:
         return app_label, couch_database_url
-

@@ -256,7 +256,6 @@ class DeidExportReport(FormExportReportBase):
             stale=settings.COUCH_STALE_QUERY,
         ).count() > 0
 
-
     def get_saved_exports(self):
         return filter(lambda export: export.is_safe, super(DeidExportReport, self).get_saved_exports())
 

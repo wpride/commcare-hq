@@ -125,6 +125,3 @@ class CombinedCouchIndicatorCRUDManager(BaseDynamicIndicatorCRUDManager):
     def properties_in_row(self):
         original_props = super(CombinedCouchIndicatorCRUDManager, self).properties_in_row
         return original_props[:4] + ["numerator_slug", "denominator_slug"] + original_props[-2:]
-
-
-

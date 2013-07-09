@@ -97,7 +97,6 @@ class AdvancedSettingsForm(forms.Form):
 
         return cleaned_data
 
-    
     def __init__(self, *args, **kwargs):
         self.helper = FormHelper()
         self.helper.form_class = 'form-horizontal'

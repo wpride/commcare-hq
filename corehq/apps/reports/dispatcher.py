@@ -147,7 +147,7 @@ class ReportDispatcher(View):
         nav_context = []
 
         dispatcher = cls()  # uhoh
-        current_slug = context.get('report',{}).get('slug','')
+        current_slug = context.get('report', {}).get('slug', '')
 
         reports = dispatcher.get_reports(domain)
         for section_name, report_group in reports:

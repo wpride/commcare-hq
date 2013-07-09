@@ -28,7 +28,6 @@ class Account(Document):
         except:
             return None
 
-
     def username_html(self):
         username = self.login['username']
         html = "<span class='user_username'>%s</span>" % username
@@ -107,8 +106,6 @@ class CouchUser(Document, UnicodeMixIn):
     _user = None
     _user_checked = False
 
-
-
     """This is the future intended API"""
 
     @property
@@ -133,7 +130,6 @@ class CouchUser(Document, UnicodeMixIn):
     @username.setter
     def username(self, value):
         pass
-
 
     @property
     def raw_username(self):
@@ -184,7 +180,6 @@ class CouchUser(Document, UnicodeMixIn):
         else:
             raise User.DoesNotExist("This couch user doesn't have a linked django login!")
         return django_user_from_couch_id(login_id)
-
 
     def get_email(self):
         return self.email or self.default_django_user.email

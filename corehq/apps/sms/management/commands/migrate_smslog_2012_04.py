@@ -18,4 +18,3 @@ class Command(LabelCommand):
                 message.save()
             except Exception as e:
                 print "There was an error migrating message %s." % (message._id)
-

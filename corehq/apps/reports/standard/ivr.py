@@ -115,7 +115,7 @@ class CallLogReport(ProjectReport, ProjectReportParametersMixin, GenericTabularR
                 self._fmt_timestamp(timestamp),
                 self._fmt(username),
                 self._fmt(phone_number),
-                self._fmt(direction_map.get(call.direction,"-")),
+                self._fmt(direction_map.get(call.direction, "-")),
                 self._fmt(form_name),
                 self._fmt("-") if submission_id is None else self._fmt_submission_link(submission_id),
                 self._fmt(answered),
@@ -175,9 +175,9 @@ class ExpectedCallbackReport(ProjectReport, ProjectReportParametersMixin, Generi
         result = []
         
         status_descriptions = {
-            CALLBACK_PENDING : _("Pending"),
-            CALLBACK_RECEIVED : _("Received"),
-            CALLBACK_MISSED : _("Missed"),
+            CALLBACK_PENDING: _("Pending"),
+            CALLBACK_RECEIVED: _("Received"),
+            CALLBACK_MISSED: _("Missed"),
         }
         
         # Store the results of lookups for faster loading
@@ -224,4 +224,3 @@ class ExpectedCallbackReport(ProjectReport, ProjectReportParametersMixin, Generi
             timestamp,
             timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         )
-

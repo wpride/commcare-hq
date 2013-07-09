@@ -63,7 +63,7 @@ class ReducedColumnAdminCRUDManager(CouchViewColumnAdminCRUDManager):
     @property
     def properties_in_row(self):
         return super(ReducedColumnAdminCRUDManager, self).properties_in_row + \
-               ["returns_numerical", "ignore_datespan"]
+            ["returns_numerical", "ignore_datespan"]
 
 
 class DaysSinceColumnAdminCRUDManager(CouchViewColumnAdminCRUDManager):
@@ -71,7 +71,7 @@ class DaysSinceColumnAdminCRUDManager(CouchViewColumnAdminCRUDManager):
     @property
     def properties_in_row(self):
         return super(DaysSinceColumnAdminCRUDManager, self).properties_in_row + \
-               ["property_name", "start_or_end"]
+            ["property_name", "start_or_end"]
 
     def format_property(self, key, property):
         if key == "start_or_end":
@@ -198,4 +198,3 @@ class ADMReportCRUDManager(ADMAdminCRUDManager):
             options = dict(SORT_BY_DIRECTION_OPTIONS)
             return options.get(property, "Ascending")
         return super(ADMReportCRUDManager, self).format_property(key, property)
-

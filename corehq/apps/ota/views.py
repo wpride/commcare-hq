@@ -3,7 +3,6 @@ from django_digest.decorators import *
 from casexml.apps.phone.restore import generate_restore_response
 
 
-
 @httpdigest
 def restore(request, domain):
     """

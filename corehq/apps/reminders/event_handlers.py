@@ -143,11 +143,11 @@ def fire_sms_callback_event(reminder, handler, recipients, verified_numbers):
         else:
             # It's the first time sending the sms, so create an expected callback event
             event = ExpectedCallbackEventLog(
-                domain                   = reminder.domain,
-                date                     = reminder.event_initiation_timestamp,
-                couch_recipient_doc_type = recipients[0].doc_type,
-                couch_recipient          = recipients[0].get_id,
-                status                   = CALLBACK_PENDING,
+                domain=reminder.domain,
+                date=reminder.event_initiation_timestamp,
+                couch_recipient_doc_type=recipients[0].doc_type,
+                couch_recipient=recipients[0].get_id,
+                status=CALLBACK_PENDING,
             )
             event.save()
         
@@ -275,14 +275,11 @@ def raise_error(reminder, error_msg):
 # The dictionary which maps an event type to its event handling method
 
 EVENT_HANDLER_MAP = {
-    METHOD_SMS : fire_sms_event,
-    METHOD_SMS_CALLBACK : fire_sms_callback_event,
-    METHOD_SMS_SURVEY : fire_sms_survey_event,
-    METHOD_IVR_SURVEY : fire_ivr_survey_event,
-    METHOD_TEST : fire_sms_event,
-    METHOD_SMS_CALLBACK_TEST : fire_sms_callback_event,
+    METHOD_SMS: fire_sms_event,
+    METHOD_SMS_CALLBACK: fire_sms_callback_event,
+    METHOD_SMS_SURVEY: fire_sms_survey_event,
+    METHOD_IVR_SURVEY: fire_ivr_survey_event,
+    METHOD_TEST: fire_sms_event,
+    METHOD_SMS_CALLBACK_TEST: fire_sms_callback_event,
     # METHOD_EMAIL is a placeholder at the moment; it's not implemented yet anywhere in the framework
 }
-
-
-

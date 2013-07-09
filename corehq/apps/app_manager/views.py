@@ -75,7 +75,7 @@ def _encode_if_unicode(s):
     return s.encode('utf-8') if isinstance(s, unicode) else s
 
 CASE_TYPE_CONFLICT_MSG = "Warning: The form's new module has a different case type from the old module.<br />" + \
-                             "Make sure all case properties you are loading are available in the new case type"
+    "Make sure all case properties you are loading are available in the new case type"
 
 
 class ApplicationViewMixin(DomainViewMixin):
@@ -134,7 +134,6 @@ def back_to_main(req, domain, app_id=None, module_id=None, form_id=None, unique_
             args.append(module_id)
             if form_id is not None:
                 args.append(form_id)
-
 
     if page:
         view_name = page
@@ -425,7 +424,7 @@ def get_app_view_context(request, app):
         for option in options:
             options_labels.append(option.get_label())
             options_builds.append(option.build.to_string())
-            commcare_build_options[version] = {"options" : options, "labels" : options_labels, "builds" : options_builds}
+            commcare_build_options[version] = {"options": options, "labels": options_labels, "builds": options_builds}
 
     (build_spec_setting,) = filter(
         lambda x: x['type'] == 'hq' and x['id'] == 'build_spec',
@@ -440,10 +439,10 @@ def get_app_view_context(request, app):
     app_build_spec_label = app.build_spec.get_label()
 
     context.update({
-        "commcare_build_options" : commcare_build_options,
-        "app_build_spec_string" : app_build_spec_string,  # todo: remove
-        "app_build_spec_label" : app_build_spec_label,  # todo: remove
-        "app_version" : app.application_version,  # todo: remove
+        "commcare_build_options": commcare_build_options,
+        "app_build_spec_string": app_build_spec_string,  # todo: remove
+        "app_build_spec_label": app_build_spec_label,  # todo: remove
+        "app_version": app.application_version,  # todo: remove
     })
 
     if app.get_doc_type() == 'Application':
@@ -637,7 +636,7 @@ def view_generic(req, domain, app_id=None, module_id=None, form_id=None, is_user
         return back_to_main(**locals())
     if app and app.copy_of:
         # don't fail hard.
-        return HttpResponseRedirect(reverse("corehq.apps.app_manager.views.view_app", args=[domain,app.copy_of]))
+        return HttpResponseRedirect(reverse("corehq.apps.app_manager.views.view_app", args=[domain, app.copy_of]))
 
     # grandfather in people who set commcare sense earlier
     if app and 'use_commcare_sense' in app:
@@ -694,7 +693,7 @@ def view_generic(req, domain, app_id=None, module_id=None, form_id=None, is_user
         force_edit = True
     context.update({
         'force_edit': force_edit,
-        'error':error,
+        'error': error,
         'app': app,
         })
     response = render(req, template, context)
@@ -761,7 +760,6 @@ def form_designer(req, domain, app_id, module_id=None, form_id=None,
         'multimedia_object_map': app.get_object_map()
     })
     return render(req, 'app_manager/form_designer.html', context)
-
 
 
 @require_POST
@@ -888,7 +886,7 @@ def copy_form(req, domain, app_id, module_id, form_id):
     app = get_app(domain, app_id)
     to_module_id = int(req.POST['to_module_id'])
     if app.copy_form(int(module_id), int(form_id), to_module_id) == 'case type conflict':
-        messages.warning(req, CASE_TYPE_CONFLICT_MSG,  extra_tags="html")
+        messages.warning(req, CASE_TYPE_CONFLICT_MSG, extra_tags="html")
     app.save()
     return back_to_main(**locals())
 
@@ -1381,8 +1379,8 @@ def edit_app_langs(request, domain, app_id):
 @require_can_edit_apps
 @require_POST
 def edit_app_translations(request, domain, app_id):
-    params  = json_request(request.POST)
-    lang    = params.get('lang')
+    params = json_request(request.POST)
+    lang = params.get('lang')
     translations = params.get('translations')
     #    key     = params.get('key')
     #    value   = params.get('value')
@@ -1487,7 +1485,6 @@ def edit_app_attr(request, domain, app_id, attr):
         if app.get_doc_type() not in ("Application",):
             raise Exception("App type %s does not support cloudcare" % app.get_doc_type())
 
-
     def require_remote_app():
         if app.get_doc_type() not in ("RemoteApp",):
             raise Exception("App type %s does not support profile url" % app.get_doc_type())
@@ -1522,12 +1519,11 @@ def rearrange(req, domain, app_id, key):
     i, j = (int(x) for x in (req.POST['to'], req.POST['from']))
     resp = {}
 
-
     if   "forms" == key:
         to_module_id = int(req.POST['to_module_id'])
         from_module_id = int(req.POST['from_module_id'])
         if app.rearrange_forms(to_module_id, from_module_id, i, j) == 'case type conflict':
-            messages.warning(req, CASE_TYPE_CONFLICT_MSG,  extra_tags="html")
+            messages.warning(req, CASE_TYPE_CONFLICT_MSG, extra_tags="html")
     elif "modules" == key:
         app.rearrange_modules(i, j)
     elif "detail" == key:

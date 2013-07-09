@@ -31,12 +31,9 @@ class ReminderTestCase(TestCase):
             max_iteration_count=REPEAT_SCHEDULE_INDEFINITELY,
             schedule_length=3,
             event_interpretation=EVENT_AS_OFFSET,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(0,0,0)
-                   ,message={"en":cls.message}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(0, 0, 0), message={"en": cls.message}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -154,24 +151,13 @@ class ReminderIrregularScheduleTestCase(TestCase):
             max_iteration_count=2,
             schedule_length=7,
             event_interpretation=EVENT_AS_SCHEDULE,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(10,00,00)
-                   ,message={"en":cls.message_1}
-                   ,callback_timeout_intervals=[]
-                )
-               ,CaseReminderEvent(
-                    day_num = 3
-                   ,fire_time = time(11,00,00)
-                   ,message={"en":cls.message_2}
-                   ,callback_timeout_intervals=[]
-                )
-               ,CaseReminderEvent(
-                    day_num = 3
-                   ,fire_time = time(11,30,00)
-                   ,message={"en":cls.message_3}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(10, 00, 00), message={"en": cls.message_1}, callback_timeout_intervals=[]
+                ), CaseReminderEvent(
+                    day_num=3, fire_time=time(11, 00, 00), message={"en": cls.message_2}, callback_timeout_intervals=[]
+                ), CaseReminderEvent(
+                    day_num=3, fire_time=time(11, 30, 00), message={"en": cls.message_3}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -188,7 +174,6 @@ class ReminderIrregularScheduleTestCase(TestCase):
     @classmethod
     def tearDownClass(cls):
         cls.user.delete()
-
 
     def test_ok(self):
         self.assertEqual(self.handler.get_reminder(self.case), None)
@@ -311,25 +296,18 @@ class ReminderCallbackTestCase(TestCase):
             max_iteration_count=3,
             schedule_length=1,
             event_interpretation=EVENT_AS_SCHEDULE,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(10,00,00)
-                   ,message={"en":cls.message_1}
-                   ,callback_timeout_intervals=[]
-                )
-               ,CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(11,00,00)
-                   ,message={"en":cls.message_2}
-                   ,callback_timeout_intervals=[15,30]
+                    day_num=0, fire_time=time(10, 00, 00), message={"en": cls.message_1}, callback_timeout_intervals=[]
+                ), CaseReminderEvent(
+                    day_num=0, fire_time=time(11, 00, 00), message={"en": cls.message_2}, callback_timeout_intervals=[15, 30]
                 )
             ]
         )
         cls.handler.save()
         cls.user_id = "USER-ID-109349"
         cls.user = CommCareUser.create(cls.domain, 'chw.bob3', '****', uuid=cls.user_id)
-        cls.user.user_data["time_zone"]="Africa/Nairobi"
+        cls.user.user_data["time_zone"] = "Africa/Nairobi"
         cls.user.save()
         cls.case = CommCareCase(
             domain=cls.domain,
@@ -387,11 +365,11 @@ class ReminderCallbackTestCase(TestCase):
         
         # Create a callback
         c = CallLog(
-            couch_recipient_doc_type    = "CommCareUser",
-            couch_recipient             = self.user_id,
-            phone_number                = "14445551234",
-            direction                   = "I",
-            date                        = datetime(year=2012, month=1, day=1, hour=8, minute=5)
+            couch_recipient_doc_type="CommCareUser",
+            couch_recipient=self.user_id,
+            phone_number="14445551234",
+            direction="I",
+            date=datetime(year=2012, month=1, day=1, hour=8, minute=5)
         )
         c.save()
         
@@ -515,11 +493,11 @@ class ReminderCallbackTestCase(TestCase):
         
         # Create a callback (with phone_number missing country code)
         c = CallLog(
-            couch_recipient_doc_type    = "CommCareUser",
-            couch_recipient             = self.user_id,
-            phone_number                = "4445551234",
-            direction                   = "I",
-            date                        = datetime(year=2012, month=1, day=3, hour=8, minute=22)
+            couch_recipient_doc_type="CommCareUser",
+            couch_recipient=self.user_id,
+            phone_number="4445551234",
+            direction="I",
+            date=datetime(year=2012, month=1, day=3, hour=8, minute=22)
         )
         c.save()
         
@@ -561,12 +539,9 @@ class CaseTypeReminderTestCase(TestCase):
             max_iteration_count=REPEAT_SCHEDULE_INDEFINITELY,
             schedule_length=3,
             event_interpretation=EVENT_AS_OFFSET,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(0,0,0)
-                   ,message={"en":"Message1"}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(0, 0, 0), message={"en": "Message1"}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -586,12 +561,9 @@ class CaseTypeReminderTestCase(TestCase):
             max_iteration_count=REPEAT_SCHEDULE_INDEFINITELY,
             schedule_length=3,
             event_interpretation=EVENT_AS_OFFSET,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(0,0,0)
-                   ,message={"en":"Message2"}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(0, 0, 0), message={"en": "Message2"}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -611,12 +583,9 @@ class CaseTypeReminderTestCase(TestCase):
             max_iteration_count=REPEAT_SCHEDULE_INDEFINITELY,
             schedule_length=3,
             event_interpretation=EVENT_AS_OFFSET,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(0,0,0)
-                   ,message={"en":"Message3"}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(0, 0, 0), message={"en": "Message3"}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -659,12 +628,10 @@ class CaseTypeReminderTestCase(TestCase):
         self.assertEqual(self.handler3.get_reminder(self.case2), None)
         
         self.assertEqual(
-            self.handler1.get_reminder(self.case1).next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
+            self.handler1.get_reminder(self.case1).next_fire, CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(
-            self.handler2.get_reminder(self.case1).next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler2.start_offset)
+            self.handler2.get_reminder(self.case1).next_fire, CaseReminderHandler.now + timedelta(days=self.handler2.start_offset)
         )
         
         # Test deactivation and spawn on change of CaseReminderHandler.case_type
@@ -685,12 +652,10 @@ class CaseTypeReminderTestCase(TestCase):
         self.assertNotEqual(self.handler3.get_reminder(self.case2), None)
         
         self.assertEqual(
-            self.handler1.get_reminder(self.case2).next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
+            self.handler1.get_reminder(self.case2).next_fire, CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(
-            self.handler3.get_reminder(self.case2).next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler3.start_offset)
+            self.handler3.get_reminder(self.case2).next_fire, CaseReminderHandler.now + timedelta(days=self.handler3.start_offset)
         )
         
         # Test spawn on change of Case.type
@@ -708,21 +673,17 @@ class CaseTypeReminderTestCase(TestCase):
         self.assertNotEqual(self.handler3.get_reminder(self.case2), None)
         
         self.assertEqual(
-            self.handler1.get_reminder(self.case1).next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
+            self.handler1.get_reminder(self.case1).next_fire, CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(
-            self.handler2.get_reminder(self.case1).next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler2.start_offset)
+            self.handler2.get_reminder(self.case1).next_fire, CaseReminderHandler.now + timedelta(days=self.handler2.start_offset)
         )
         
         self.assertEqual(
-            self.handler1.get_reminder(self.case2).next_fire
-           ,prev_now + timedelta(days=self.handler1.start_offset)
+            self.handler1.get_reminder(self.case2).next_fire, prev_now + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(
-            self.handler3.get_reminder(self.case2).next_fire
-           ,prev_now + timedelta(days=self.handler3.start_offset)
+            self.handler3.get_reminder(self.case2).next_fire, prev_now + timedelta(days=self.handler3.start_offset)
         )
         
         # Test deactivation on change of Case.type
@@ -740,12 +701,10 @@ class CaseTypeReminderTestCase(TestCase):
         self.assertEqual(self.handler3.get_reminder(self.case2), None)
         
         self.assertEqual(
-            self.handler1.get_reminder(self.case1).next_fire
-           ,prev_now + timedelta(days=self.handler1.start_offset)
+            self.handler1.get_reminder(self.case1).next_fire, prev_now + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(
-            self.handler2.get_reminder(self.case1).next_fire
-           ,prev_now + timedelta(days=self.handler2.start_offset)
+            self.handler2.get_reminder(self.case1).next_fire, prev_now + timedelta(days=self.handler2.start_offset)
         )
 
 class StartConditionReminderTestCase(TestCase):
@@ -769,12 +728,9 @@ class StartConditionReminderTestCase(TestCase):
             max_iteration_count=REPEAT_SCHEDULE_INDEFINITELY,
             schedule_length=3,
             event_interpretation=EVENT_AS_OFFSET,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(0,0,0)
-                   ,message={"en":"Message1"}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(0, 0, 0), message={"en": "Message1"}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -791,7 +747,6 @@ class StartConditionReminderTestCase(TestCase):
     def tearDownClass(cls):
         cls.user.delete()
 
-
     def test_ok(self):
         #
         # Test changing a start condition of "ok"
@@ -807,8 +762,7 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
         )
         
         # Test that saving the case without changing the start condition has no effect
@@ -831,7 +785,7 @@ class StartConditionReminderTestCase(TestCase):
         # Test changing a start condition which is a datetime value
         #
         # Spawn the reminder with datetime start condition value
-        start = datetime(2012,2,20,9,0,0)
+        start = datetime(2012, 2, 20, 9, 0, 0)
         self.case1.set_case_property("start_sending1", start)
         self.case1.save()
         
@@ -839,13 +793,12 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,start + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, start + timedelta(days=self.handler1.start_offset)
         )
         
         # Reset the datetime start condition
         old_reminder_id = reminder._id
-        start = datetime(2012,2,22,10,15,0)
+        start = datetime(2012, 2, 22, 10, 15, 0)
         self.case1.set_case_property("start_sending1", start)
         self.case1.save()
         
@@ -853,8 +806,7 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,start + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, start + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(CaseReminder.get(old_reminder_id).doc_type, "CaseReminder-Deleted")
         
@@ -879,7 +831,7 @@ class StartConditionReminderTestCase(TestCase):
         # Test changing a start condition which is a date value
         #
         # Spawn the reminder with date start condition value
-        start = date(2012,2,20)
+        start = date(2012, 2, 20)
         self.case1.set_case_property("start_sending1", start)
         self.case1.save()
         
@@ -887,13 +839,12 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,datetime(start.year, start.month, start.day) + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, datetime(start.year, start.month, start.day) + timedelta(days=self.handler1.start_offset)
         )
         
         # Reset the date start condition
         old_reminder_id = reminder._id
-        start = date(2012,2,22)
+        start = date(2012, 2, 22)
         self.case1.set_case_property("start_sending1", start)
         self.case1.save()
         
@@ -901,8 +852,7 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,datetime(start.year, start.month, start.day) + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, datetime(start.year, start.month, start.day) + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(CaseReminder.get(old_reminder_id).doc_type, "CaseReminder-Deleted")
         
@@ -934,8 +884,7 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,datetime(2012,2,25,11,15) + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, datetime(2012, 2, 25, 11, 15) + timedelta(days=self.handler1.start_offset)
         )
         
         # Reset the datetime start condition
@@ -947,8 +896,7 @@ class StartConditionReminderTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,datetime(2012,2,26,11,20) + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, datetime(2012, 2, 26, 11, 20) + timedelta(days=self.handler1.start_offset)
         )
         self.assertEqual(CaseReminder.get(old_reminder_id).doc_type, "CaseReminder-Deleted")
         
@@ -990,12 +938,9 @@ class ReminderLockTestCase(TestCase):
             max_iteration_count=REPEAT_SCHEDULE_INDEFINITELY,
             schedule_length=3,
             event_interpretation=EVENT_AS_OFFSET,
-            events = [
+            events=[
                 CaseReminderEvent(
-                    day_num = 0
-                   ,fire_time = time(0,0,0)
-                   ,message={"en":"Testing the lock"}
-                   ,callback_timeout_intervals=[]
+                    day_num=0, fire_time=time(0, 0, 0), message={"en": "Testing the lock"}, callback_timeout_intervals=[]
                 )
             ]
         )
@@ -1012,7 +957,6 @@ class ReminderLockTestCase(TestCase):
     def tearDownClass(cls):
         cls.user.delete()
 
-
     def test_ok(self):
         # Spawn the reminder with an "ok" start condition value
         CaseReminderHandler.now = datetime(year=2012, month=2, day=17, hour=12, minute=0)
@@ -1026,8 +970,7 @@ class ReminderLockTestCase(TestCase):
         self.assertNotEqual(reminder, None)
         
         self.assertEqual(
-            reminder.next_fire
-           ,CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
+            reminder.next_fire, CaseReminderHandler.now + timedelta(days=self.handler1.start_offset)
         )
         
         # Fire the reminder, testing that the locking process works
@@ -1048,7 +991,7 @@ class ReminderLockTestCase(TestCase):
         # Test the lock timeout
         self.assertEqual(reminder.acquire_lock(CaseReminderHandler.now), True)
         self.assertEqual(reminder.acquire_lock(CaseReminderHandler.now), False)
-        self.assertEqual(reminder.acquire_lock(CaseReminderHandler.now + LOCK_EXPIRATION + timedelta(minutes = 1)), True)
+        self.assertEqual(reminder.acquire_lock(CaseReminderHandler.now + LOCK_EXPIRATION + timedelta(minutes=1)), True)
 
 
 class MessageTestCase(TestCase):

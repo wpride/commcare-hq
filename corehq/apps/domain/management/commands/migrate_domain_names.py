@@ -17,7 +17,6 @@ class Command(LabelCommand):
         normalized_names = {}
         domains_that_need_to_change = set()
 
-
         # print some warnings if things are fishy
         for domain in couch_domain_names.union(couch_user_domain_names):
             if domain not in django_domain_names:
@@ -66,7 +65,7 @@ class Command(LabelCommand):
                 if 'domain' in doc:
                     doc['domain'] = normalize_domain_name(doc['domain'])
                 if 'domains' in doc:
-                    for i,domain in enumerate(doc['domains']):
+                    for i, domain in enumerate(doc['domains']):
                         doc['domains'][i] = normalize_domain_name(doc['domains'][i])
                 doc.save()
             print

@@ -8,4 +8,3 @@ class FormDataTestCase(TestCase):
     def testExtend(self):
         settings.FORMDATA_MODEL = "hqsofabed.HQFormData"
         self.assertEqual(HQFormData, get_formdata_class())
-        

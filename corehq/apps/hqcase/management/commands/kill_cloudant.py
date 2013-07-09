@@ -34,4 +34,3 @@ class Command(LabelCommand):
         for c in stream_cases(case_ids):
             count += 1
         print 'read %s cases' % count
-

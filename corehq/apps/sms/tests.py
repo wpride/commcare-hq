@@ -18,4 +18,3 @@ class UtilTestCase(TestCase):
         cleaned = clean_outgoing_sms_text(text)
         # make sure '+' and unicode get encoded for GET properly
         self.assertEquals(cleaned, "%2Bthis%20is%20a%20test%20%D8%B4%D8%B3%DB%8C%D8%A8%D8%B4%D8%B3%DB%8C")
-    

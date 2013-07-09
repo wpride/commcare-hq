@@ -16,7 +16,6 @@ class ADMSectionView(GenericReportView):
     hide_filters = True
     emailable = True
 
-
     # adm-specific stuff
     adm_slug = None
     
@@ -170,4 +169,3 @@ class DefaultReportADMSectionView(GenericTabularReport, ADMSectionView, ProjectR
     @classmethod
     def show_subreport_in_navigation(cls, subreport_slug):
         return True
-

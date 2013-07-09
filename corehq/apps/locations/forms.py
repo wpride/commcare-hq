@@ -197,4 +197,3 @@ class LocationCustomPropertiesSubForm(forms.Form):
                         raise forms.ValidationError(mark_safe(str(e)))
                 return clean_custom
         raise AttributeError
-

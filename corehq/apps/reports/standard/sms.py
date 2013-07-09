@@ -163,7 +163,7 @@ class MessageLogReport(ProjectReport, ProjectReportParametersMixin, GenericTabul
                 self._fmt_timestamp(timestamp),
                 self._fmt(username),
                 self._fmt(phone_number),
-                self._fmt(direction_map.get(message.direction,"-")),
+                self._fmt(direction_map.get(message.direction, "-")),
                 self._fmt(message.text),
             ])
         
@@ -177,4 +177,3 @@ class MessageLogReport(ProjectReport, ProjectReportParametersMixin, GenericTabul
             timestamp,
             timestamp.strftime("%Y-%m-%d %H:%M:%S"),
         )
-

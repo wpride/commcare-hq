@@ -48,7 +48,7 @@ def base_context(request, organization, update_form=None):
 @require_superuser
 def orgs_base(request, template="orgs/orgs_base.html"):
     organizations = Organization.get_all()
-    vals = dict(orgs = organizations)
+    vals = dict(orgs=organizations)
     return render(request, template, vals)
 
 class MainNotification(Notification):
@@ -291,7 +291,7 @@ class OrgInvitationView(InvitationView):
 
     @property
     def redirect_to_on_success(self):
-        return reverse("orgs_landing", args=[self.organization,])
+        return reverse("orgs_landing", args=[self.organization, ])
 
     def invite(self, invitation, user):
         user.add_org_membership(self.organization)
@@ -635,7 +635,6 @@ def stats_data(request, org):
 
         return es_query(params, facets, terms, q, USER_INDEX + '/user/_search')["hits"]["total"]
 
-
     def _total_users_until_date(dom, date):
         from corehq.apps.appstore.views import es_query
         q = {
@@ -648,7 +647,6 @@ def stats_data(request, org):
             },
         }
         return es_query(q=q, es_url=USER_INDEX + '/user/_search')["hits"]["total"]
-
 
     init_val_fn = {
         "forms": _total_forms_until_date,
@@ -664,17 +662,17 @@ def stats_data(request, org):
     })
 
 def es_histogram(histo_type, domains=None, startdate=None, enddate=None, tz_diff=None):
-    date_field = {  "forms": "received_on",
+    date_field = {"forms": "received_on",
                     "cases": "opened_on",
                     "users": "created_on", }[histo_type]
-    es_url = {  "forms": XFORM_INDEX + '/xform/_search',
+    es_url = {"forms": XFORM_INDEX + '/xform/_search',
                 "cases": CASE_INDEX + '/case/_search',
-                "users": USER_INDEX + '/user/_search' }[histo_type]
+                "users": USER_INDEX + '/user/_search'}[histo_type]
 
-    q = {"query": {"match_all":{}}}
+    q = {"query": {"match_all": {}}}
 
     if domains is not None:
-        q["query"] = {"in" : {"domain.exact": domains}}
+        q["query"] = {"in": {"domain.exact": domains}}
 
     q.update({
         "facets": {

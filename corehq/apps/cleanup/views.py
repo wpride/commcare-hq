@@ -44,14 +44,14 @@ def submissions_json(request, domain):
             else:
                 key = [domain, userID]
             subs = [dict(
-                userID = r['key'][1],
-                username = r['key'][2],
-                deviceID = r['key'][3],
-                submissions = r['value'],
+                userID=r['key'][1],
+                username=r['key'][2],
+                deviceID=r['key'][3],
+                submissions=r['value'],
             ) for r in get_db().view('cleanup/submissions',
-                startkey = key,
-                endkey   = key + [{}],
-                group    = True,
+                startkey=key,
+                endkey=key + [{}],
+                group=True,
             )]
             total = len(subs)
         else:
@@ -91,10 +91,10 @@ def submissions_json(request, domain):
             for s in subs:
                 try:
                     _subs.append(dict(
-                        username = s['form']['meta']['username'],
-                        userID = s['form']['meta']['userID'],
-                        received_on = unicode(s['received_on']),
-                        deviceID = s['form']['meta']['deviceID'],
+                        username=s['form']['meta']['username'],
+                        userID=s['form']['meta']['userID'],
+                        received_on=unicode(s['received_on']),
+                        deviceID=s['form']['meta']['deviceID'],
                     ))
                 except:
                     continue
@@ -134,7 +134,6 @@ def relabel_submissions(request, domain):
         case.user_id = userID
         case.save()
 
-
     return HttpResponseRedirect(reverse('corehq.apps.cleanup.views.submissions', args=[domain]))
 
 # -----------cases-------------
@@ -147,16 +146,16 @@ def cases(request, domain, template="cleanup/cases.html"):
 def cases_json(request, domain):
     def query(stale="ok", **kwargs):
         subs = [dict(
-            userID      = r['key'][1],
-            username    = r['key'][2],
-            deviceID    = r['key'][3],
-            submissions = r['value']['count'],
-            start       = r['value']['start'].split('T')[0],
-            end         = r['value']['end'  ].split('T')[0]
+            userID=r['key'][1],
+            username=r['key'][2],
+            deviceID=r['key'][3],
+            submissions=r['value']['count'],
+            start=r['value']['start'].split('T')[0],
+            end=r['value']['end'].split('T')[0]
         ) for r in get_db().view('cleanup/case_submissions',
              startkey=[domain],
-             endkey=[domain, {}],
-             group=True,
+            endkey=[domain, {}],
+            group=True,
 #             stale=stale
         )]
         subs.sort(key=lambda sub: (sub['userID'], sub['end']))
@@ -171,12 +170,10 @@ def cases_json(request, domain):
             else:
                 sub['old'] = False
 
-
         # show the number of cases made by these xforms
 #        for sub in subs:
 #            cases = _get_cases(_get_submissions(domain, [sub]))
 #            sub['cases'] = len([None for case in cases if not case.closed])
-
         open_cases = CommCareCase.view('hqcase/open_cases', startkey=[domain], endkey=[domain, {}], reduce=False, include_docs=True).all()
         xform_ids = [case.xform_ids[0] for case in open_cases]
         case_count = defaultdict(int)

@@ -77,7 +77,6 @@ class SubmissionErrorTest(TestCase):
         with open(file) as f:
             self.assertEqual(f.read(), log.get_xml())
         
-            
     def testSubmissionError(self):
         evil_laugh = "mwa ha ha!"
         
@@ -131,4 +130,3 @@ class SubmissionErrorTest(TestCase):
         self.assertTrue(log is not None)
         self.assertTrue("render_error" in log.problem)
         self.assertEqual("this isn't even close to xml", log.get_xml())
-        

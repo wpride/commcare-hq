@@ -56,7 +56,6 @@ class LoginAndDomainAuthentication(Authentication):
         else:
             return response
 
-
     def get_identifier(self, request):
         return request.couch_user.username
 
@@ -84,7 +83,7 @@ class CustomResourceMeta(object):
     authorization = ReadOnlyAuthorization()
     authentication = LoginAndDomainAuthentication()
     serializer = CustomXMLSerializer()
-    default_format='application/json'
+    default_format = 'application/json'
 
 class UserResource(JsonResource, DomainSpecificResourceMixin):
     type = "user"
@@ -184,10 +183,10 @@ class CommCareCaseResource(JsonResource, DomainSpecificResourceMixin):
     def obj_get_list(self, bundle, **kwargs):
         domain = kwargs['domain']
         closed_only = {
-                          'true': True,
-                          'false': False,
-                          'any': True
-                      }[bundle.request.GET.get('closed', 'false')]
+            'true': True,
+            'false': False,
+            'any': True
+        }[bundle.request.GET.get('closed', 'false')]
         case_type = bundle.request.GET.get('case_type')
 
         key = [domain]
@@ -201,7 +200,6 @@ class CommCareCaseResource(JsonResource, DomainSpecificResourceMixin):
         ).all()
 
         return list(cases)
-
 
     class Meta(CustomResourceMeta):
         object_class = CommCareCase    

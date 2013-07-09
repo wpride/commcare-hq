@@ -11,12 +11,11 @@ from django.conf import settings
 from corehq.pillows.fullcase import FullCasePillow
 
 class Command(MappingOutputCommand):
-    help="Generate mapping JSON of our ES indexed types. For casexml"
+    help = "Generate mapping JSON of our ES indexed types. For casexml"
     option_list = NoArgsCommand.option_list + (
     )
     doc_class_str = "casexml.apps.case.models.CommCareCase"
     doc_class = CommCareCase
-
 
     def finish_handle(self):
         """
@@ -27,7 +26,7 @@ class Command(MappingOutputCommand):
         a concept dictionary setup, so a little ugliness in execution will get things done for now
         """
 
-        filepath = os.path.join(settings.FILEPATH, 'corehq','pillows','mappings','fullcase_mapping.py')
+        filepath = os.path.join(settings.FILEPATH, 'corehq', 'pillows', 'mappings', 'fullcase_mapping.py')
         casepillow = FullCasePillow(create_index=False)
 
         #current index
@@ -55,9 +54,6 @@ class Command(MappingOutputCommand):
 
         if newcalc_index not in aliased_indices and newcalc_index != current_index:
             sys.stderr.write("\n\tWarning, current index %s is not aliased at the moment\n" % current_index)
-            sys.stderr.write("\tCurrent live aliased index: %s\n\n"  % (','.join(aliased_indices)))
+            sys.stderr.write("\tCurrent live aliased index: %s\n\n" % (','.join(aliased_indices)))
 
         sys.stderr.write("File written to %s\n" % filepath)
-
-
-

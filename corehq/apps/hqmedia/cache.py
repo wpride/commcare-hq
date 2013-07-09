@@ -110,4 +110,3 @@ class BulkMultimediaStatusCache(BaseMultimediaStatusCache):
     @classmethod
     def get_cache_key(cls, processing_id):
         return "MMBULK_%s" % processing_id
-

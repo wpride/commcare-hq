@@ -31,19 +31,19 @@ def guess_domain(form):
         es = get_es()
         throwaway_facet_name = 'facets'
         query = {
-            "filter":{
-                "term":{
+            "filter": {
+                "term": {
                     key: value
                 }
             },
-            "facets":{
+            "facets": {
                 throwaway_facet_name: {
-                    "terms":{
-                            "field":"domain.exact",
-                            "size":1000
+                    "terms": {
+                            "field": "domain.exact",
+                            "size": 1000
                         },
-                        "facet_filter":{
-                        "term":{
+                        "facet_filter": {
+                        "term": {
                             key: value
                         }
                     }

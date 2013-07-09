@@ -301,7 +301,7 @@ class ReducedADMColumn(CouchViewADMColumn, NumericalADMColumnMixin, IgnoreDatesp
     _admin_crud_class = ReducedColumnAdminCRUDManager
 
     def aggregate(self, values):
-        return reduce(lambda x, y: x+ y, values) if self.returns_numerical \
+        return reduce(lambda x, y: x + y, values) if self.returns_numerical \
             else ', '.join(values)
 
     def get_couch_view_data(self, key, datespan=None):
@@ -545,7 +545,7 @@ class CompareADMColumn(ConfigurableADMColumn):
     def html_value(self, value):
         default_value = "--"
         d = value.get('denominator', 0)
-        if d<= 0:
+        if d <= 0:
             return default_value
         n = value.get('numerator', 0)
         try:

@@ -89,7 +89,7 @@ class InvitationView():
                                              "{invited} but you are already a member of {entity} with the "
                                              "account {current}. Please sign out to accept this invitation "
                                              "as another user.").format(
-                                                 entity=self.inviting_entity,
+                                   entity=self.inviting_entity,
                                                  invited=invitation.email,
                                                  current=request.couch_user.username,
                                              ))
@@ -126,4 +126,3 @@ class InvitationView():
                 form = NewWebUserRegistrationForm(initial={'email': invitation.email})
 
         return render(request, self.template, {"form": form})
-

@@ -89,6 +89,3 @@ class XFormPillow(AliasedElasticPillow):
                     if case_dict.get(date_modified_key, None) == "":
                         case_dict[date_modified_key] = None
             return doc_ret
-
-
-

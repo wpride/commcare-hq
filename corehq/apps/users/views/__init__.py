@@ -185,7 +185,7 @@ class UserInvitationView(InvitationView):
 
     @property
     def redirect_to_on_success(self):
-        return reverse("domain_homepage", args=[self.domain,])
+        return reverse("domain_homepage", args=[self.domain, ])
 
     def invite(self, invitation, user):
         user.add_domain_membership(domain=self.domain)
@@ -213,7 +213,7 @@ def invite_web_user(request, domain, template="users/invite_web_user.html"):
         current_users = [user.username for user in WebUser.by_domain(domain)]
         pending_invites = [di.email for di in DomainInvitation.by_domain(domain)]
         form = AdminInvitesUserForm(request.POST,
-            excluded_emails= current_users + pending_invites,
+            excluded_emails=current_users + pending_invites,
             role_choices=role_choices
         )
         if form.is_valid():
@@ -377,7 +377,7 @@ def verify_phone_number(request, domain, couch_user_id):
     # create pending verified entry if doesn't exist already
     user.save_verified_number(domain, phone_number, False, None)
 
-    return HttpResponseRedirect(reverse("user_account", args=(domain, couch_user_id )))
+    return HttpResponseRedirect(reverse("user_account", args=(domain, couch_user_id)))
 
 
 #@require_POST
@@ -413,7 +413,7 @@ def domain_accounts(request, domain, couch_user_id, template="users/domain_accou
         domain = request.POST['domain']
         couch_user.add_domain_membership(domain)
         couch_user.save()
-        messages.success(request,'Domain added')
+        messages.success(request, 'Domain added')
     context.update({"user": request.user})
     return render(request, template, context)
 

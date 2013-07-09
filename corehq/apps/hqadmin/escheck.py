@@ -29,7 +29,7 @@ def check_exchange_index():
         couch_rev = latest_snapshot['doc']['_rev']
         return _check_es_rev(ExchangePillow.es_index, doc_id, couch_rev)
     else:
-        return {"%s_status" % ExchangePillow.es_index: False, "%s_message" % ExchangePillow.es_index: "Exchange stale" }
+        return {"%s_status" % ExchangePillow.es_index: False, "%s_message" % ExchangePillow.es_index: "Exchange stale"}
 
 def check_xform_index():
     latest_xforms = _get_latest_xforms()
@@ -43,7 +43,7 @@ def check_xform_index():
             xform_doc = xform['doc']
             couch_rev = xform_doc['_rev']
             return _check_es_rev(XFormPillow.es_alias, doc_id, couch_rev)
-    return {"%s_status" % XFormPillow.es_alias: False, "%s_message" % XFormPillow.es_alias: "XForms stale" }
+    return {"%s_status" % XFormPillow.es_alias: False, "%s_message" % XFormPillow.es_alias: "XForms stale"}
 
 
 def _get_latest_xforms(skip=0, limit=100):
@@ -71,37 +71,37 @@ def _check_es_rev(index, doc_id, couch_rev):
     es = get_es()
     doc_id_query = {
         "filter": {
-            "ids": { "values": [ doc_id ] }
+            "ids": {"values": [doc_id]}
         },
-        "fields": [ "_id", "_rev" ]
+        "fields": ["_id", "_rev"]
     }
 
     try:
         res = es[index].get('_search', data=doc_id_query)
-        status=False
-        message="Not in sync"
+        status = False
+        message = "Not in sync"
 
         if res.has_key('hits'):
             if res['hits'].get('total', 0) == 0:
-                status=False
+                status = False
                 #if doc doesn't exist it's def. not in sync
-                message="Not in sync %s" % index
+                message = "Not in sync %s" % index
             elif res['hits'].has_key('hits'):
                 fields = res['hits']['hits'][0]['fields']
                 if fields['_rev'] == couch_rev:
-                    status=True
-                    message="%s OK" % index
+                    status = True
+                    message = "%s OK" % index
                 else:
-                    status=False
+                    status = False
                     #less likely, but if it's there but the rev is off
-                    message="Not in sync - %s stale" % index
+                    message = "Not in sync - %s stale" % index
         else:
-            status=False
-            message="Not in sync - query failed"
+            status = False
+            message = "Not in sync - query failed"
     except Exception, ex:
         message = "ES Error: %s" % ex
-        status=False
-    return {"%s_status" % index: status, "%s_message" % index: message }
+        status = False
+    return {"%s_status" % index: status, "%s_message" % index: message}
 
 
 def check_case_index():
@@ -122,4 +122,4 @@ def check_case_index():
     #this could be if there's 100 devicelogs that come in
     message = "No recent xforms with case ids - will try again later"
 
-    return {"%s_status" % CasePillow.es_alias: False, "%s_message" % CasePillow.es_alias: message }
+    return {"%s_status" % CasePillow.es_alias: False, "%s_message" % CasePillow.es_alias: message}

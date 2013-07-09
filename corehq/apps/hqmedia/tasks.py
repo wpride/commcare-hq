@@ -115,4 +115,3 @@ def process_bulk_upload_zip(processing_id, domain, app_id, username=None, share_
 
     status.complete = True
     status.save()
-

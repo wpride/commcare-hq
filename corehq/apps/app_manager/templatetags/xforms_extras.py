@@ -40,18 +40,18 @@ def html_name(name):
 
 @register.filter
 def input_trans(name, langs=["default"]):
-    template='<input type="text" name="name" value="%(value)s" placeholder="%(placeholder)s" />'
+    template = '<input type="text" name="name" value="%(value)s" placeholder="%(placeholder)s" />'
     for lang in langs:
         if lang in name:
             if langs and lang == langs[0]:
                 return template % {"value": name[lang], "placeholder": ""}
             else:
                 return template % {"value": "", "placeholder": name[lang]} + \
-                       LANG_BUTTON % {"lang": lang, "extra_class": " langcode-input"}
+                    LANG_BUTTON % {"lang": lang, "extra_class": " langcode-input"}
     default = "Untitled"
     if 'en' in name:
         default = name['en']
-    return template % {"value": "", "placeholder": default }
+    return template % {"value": "", "placeholder": default}
 
 @register.filter
 def clean_trans(name, langs=["default"]):

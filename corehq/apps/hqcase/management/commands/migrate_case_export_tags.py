@@ -15,7 +15,8 @@ class Command(LabelCommand):
             help="Don't do the actual migration, just print the output"),)
 
     def handle(self, *args, **options):
-        if len(args) != 0: raise CommandError("This command doesn't expect arguments!")
+        if len(args) != 0:
+            raise CommandError("This command doesn't expect arguments!")
             
         count = 0
         for line in get_db().view("case/by_user", reduce=False):

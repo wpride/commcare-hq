@@ -38,4 +38,3 @@ class SupplyPointProductTest(CommTrackTest):
         for dateprop in ('opened_on', 'modified_on', 'server_modified_on'):
             self.assertTrue(getattr(spp, dateprop) is not None)
             self.assertTrue(isinstance(getattr(spp, dateprop), datetime))
-

@@ -36,4 +36,3 @@ def reparent_linked_docs(loc_id):
 
     delattr(loc, 'flag_post_move')
     loc.save()
-

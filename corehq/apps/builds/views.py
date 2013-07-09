@@ -9,9 +9,9 @@ from corehq.apps.domain.decorators import require_superuser
 
 @require_api_user
 def post(request):
-    artifacts       = request.FILES.get('artifacts')
-    build_number    = request.POST.get('build_number')
-    version         = request.POST.get('version')
+    artifacts = request.FILES.get('artifacts')
+    build_number = request.POST.get('build_number')
+    version = request.POST.get('version')
 
     if not artifacts:
         return HttpResponseBadRequest("Must post a zip file called 'artifacts' with a username, password"
@@ -21,7 +21,6 @@ def post(request):
     except Exception:
         print "%r" % build_number
         return HttpResponseBadRequest("build_number has to be a base-10 integer")
-
 
     CommCareBuild.create_from_zip(artifacts, build_number=build_number, version=version)
     return HttpResponse()

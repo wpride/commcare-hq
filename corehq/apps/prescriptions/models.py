@@ -34,7 +34,6 @@ class Prescription(Document):
             ):
                 raise PrescriptionUnauthorized()
 
-
     @classmethod
     def all(cls):
         return cls.view('prescriptions/all', include_docs=True)

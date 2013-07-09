@@ -111,12 +111,12 @@ def cloudcare_main(request, domain, urlPath):
         }
 
     context = {
-       "domain": domain,
-       "language": language,
-       "apps": json.dumps(apps),
-       "apps_raw": apps,
-       "preview": preview,
-       "maps_api_key": settings.GMAPS_API_KEY
+        "domain": domain,
+        "language": language,
+        "apps": json.dumps(apps),
+        "apps_raw": apps,
+        "preview": preview,
+        "maps_api_key": settings.GMAPS_API_KEY
     }
     context.update(_url_context())
     return render(request, "cloudcare/cloudcare_home.html", context)

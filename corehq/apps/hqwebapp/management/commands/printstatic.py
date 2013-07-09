@@ -24,7 +24,6 @@ class Command(LabelCommand):
         print r'FILEPATH="%s"; filename="%s"; url="%s"' % (filepath, filename, url)
         print r"""cd $FILEPATH; git log -n 1 --format=format:"    \"$url\": \"%h\"," $filename; echo"""
 
-
     def generate_output_for_dir(self, directory, prefix):
         for out_file in os.listdir(directory):
             exact_location = os.path.join(directory, out_file)

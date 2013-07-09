@@ -144,7 +144,6 @@ class Date(FormattedDetailColumn):
     SORT_XPATH_FUNCTION = u"{xpath}"
 
 
-
 @register_format_type('time-ago')
 class TimeAgo(FormattedDetailColumn):
     XPATH_FUNCTION = u"if({xpath} = '', '', string(int((today() - date({xpath})) div {column.time_ago_interval})))"
@@ -176,7 +175,7 @@ class Enum(FormattedDetailColumn):
         variables = {}
         for key in self.column.enum:
             v_key = u"k{key}".format(key=key)
-            v_val= self.id_strings.detail_column_enum_variable(self.module, self.detail, self.column, key)
+            v_val = self.id_strings.detail_column_enum_variable(self.module, self.detail, self.column, key)
             variables[v_key] = v_val
         return variables
 

@@ -57,7 +57,6 @@ class SuccessMessageTest(TestCase):
             }, **kwargs)
             return response
 
-
         self.num_forms_today = 0
         self.num_forms_this_week = 0
         now = datetime.utcnow()

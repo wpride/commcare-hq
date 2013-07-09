@@ -22,4 +22,3 @@ def require_cloudcare_access_ex():
     return decorator
 
 require_cloudcare_access = require_cloudcare_access_ex()
-

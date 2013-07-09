@@ -141,4 +141,3 @@ def _compute_consumption(transactions, window_start, get_base_action, params={})
         return None
 
     return total_consumption / float(total_length) if total_length else None
-

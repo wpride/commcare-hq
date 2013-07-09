@@ -89,13 +89,13 @@ class FormsByApplicationFilter(BaseDrilldownOptionFilter):
         labels = self.get_labels()
         if self.drilldown_map and self.drilldown_map[0]['val'] == 'active':
             labels = [
-                 (_('Application Type'),
+                (_('Application Type'),
                   _("Select an Application Type") if self.use_only_last else _("Show all Application Types"),
                   'status'),
-                 (_('Application'),
+                (_('Application'),
                   _("Select Application...") if self.use_only_last else _("Show all Forms of this Application Type..."),
                   'app_id'),
-             ] + labels[1:]
+            ] + labels[1:]
         return labels
 
     @property
@@ -147,7 +147,6 @@ class FormsByApplicationFilter(BaseDrilldownOptionFilter):
                         form_name = self.get_translated_value(app_langs, form_map['form']['names'])
                         module['next'].append(self._map_structure(form_map['xmlns'], form_name))
                     app['next'].append(module)
-
 
             if is_remote:
                 map_remote.append(app)

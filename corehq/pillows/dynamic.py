@@ -38,8 +38,6 @@ conservative_types = {
 }
 
 
-
-
 def type_exact_match_string(prop_name, dual=True):
     """
     Mapping for fields that may want prefixes (based upon the default tokenizer which splits by -'s)
@@ -58,7 +56,7 @@ def type_exact_match_string(prop_name, dual=True):
 
 
 default_special_types = {
-    "domain":type_exact_match_string("domain", dual=True),
+    "domain": type_exact_match_string("domain", dual=True),
     #to extend, use this and add special formats here...
 }
 
@@ -72,7 +70,7 @@ case_special_types = {
 
     "referrals": {"enabled": False, "type": "object"},
     "computed_": {"enabled": False, "type": "object"},
-    "type":type_exact_match_string("type", dual=True),
+    "type": type_exact_match_string("type", dual=True),
     #to extend, use this and add special date formats here...
 }
 
@@ -108,7 +106,6 @@ def set_properties(schema_class, custom_types=default_special_types, init_dict=N
     return props_dict
 
 
-
 #A conservative mapping - don't detect datestring we don't know about
 #but try to always add to mapping additional properties of dicts we didn't expect (from DictProperties)
 DEFAULT_MAPPING_WRAPPER = {
@@ -122,6 +119,6 @@ DEFAULT_MAPPING_WRAPPER = {
 def case_mapping_generator():
     #todo: need to ensure that domain is always mapped
     m = DEFAULT_MAPPING_WRAPPER
-    doc_class=CommCareCase
+    doc_class = CommCareCase
     m['properties'] = set_properties(doc_class, custom_types=case_special_types)
     return m

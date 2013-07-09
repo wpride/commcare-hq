@@ -18,8 +18,6 @@ class Command(PtopReindexer):
     pillow_class = FullXFormPillow
     file_prefix = "ptop_fast_reindex_Full"
 
-
-
     def load_from_view(self):
         """
         Loads entire view, saves to file, set pillowtop checkpoint

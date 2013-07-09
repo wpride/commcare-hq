@@ -80,4 +80,3 @@ class SyncCommCareUserTestCase(TestCase):
 
     def tearDown(self):
         CommCareUser.get_by_user_id(self.commcare_user.user_id).delete()
-

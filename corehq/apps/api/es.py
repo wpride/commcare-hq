@@ -47,7 +47,7 @@ class ESView(View):
     http_method_names = ['get', 'post', 'head', ]
 
     def __init__(self, domain):
-        self.domain=domain.lower()
+        self.domain = domain.lower()
         self.es = get_es()
 
     def head(self, *args, **kwargs):
@@ -189,7 +189,6 @@ class FullCaseES(ESView):
     index = "full_cases"
 
 
-
 class XFormES(ESView):
     index = "xforms"
 
@@ -203,7 +202,6 @@ class XFormES(ESView):
             #let the terms override the kwarg - the query terms trump the magic
             new_terms['doc_type'] = doc_type
         return super(XFormES, self).base_query(terms=new_terms, fields=fields, start=start, size=size)
-
 
     def run_query(self, es_query):
         es_results = super(XFormES, self).run_query(es_query)
@@ -233,10 +231,6 @@ class XFormES(ESView):
 
                 res['_source']['es_readable_name'] = name
         return es_results
-
-
-
-
 
     @classmethod
     def by_case_id_query(cls, domain, case_id, terms={}, doc_type='xforminstance', date_field=None, startdate=None, enddate=None, date_format='%Y-%m-%d'):
@@ -385,13 +379,13 @@ class ESQuerySet(object):
         else:
             raise TypeError('Unsupported type: %s', type(idx))
 
-RESERVED_QUERY_PARAMS=set(['limit', 'offset', 'q', '_search'])
+RESERVED_QUERY_PARAMS = set(['limit', 'offset', 'q', '_search'])
 
 # Note that dates are already in a string format when they arrive as query params
 query_param_transforms = {
-    'xmlns': lambda v: {'term':{'xmlns.exact':v}},
-    'received_on_start': lambda v: {'range':{'received_on': {'from': v}}},
-    'received_on_end': lambda v: {'range':{'received_on': {'to': v}}},
+    'xmlns': lambda v: {'term': {'xmlns.exact': v}},
+    'received_on_start': lambda v: {'range': {'received_on': {'from': v}}},
+    'received_on_end': lambda v: {'range': {'received_on': {'to': v}}},
 }
 
 def es_search(request, domain):
@@ -422,7 +416,8 @@ def es_search(request, domain):
 
     # filters are actually going to be a more common case
     for key in set(request.GET.keys()) - RESERVED_QUERY_PARAMS:
-        if key.endswith('__full'): continue
+        if key.endswith('__full'):
+            continue
         
         value = request.GET[key]
 
@@ -430,6 +425,5 @@ def es_search(request, domain):
             payload["filter"]["and"].append(query_param_transforms[key](value))
         else:
             payload["filter"]["and"].append({"term": {key: value}})
-
 
     return payload

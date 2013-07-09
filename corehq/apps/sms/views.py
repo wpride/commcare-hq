@@ -60,7 +60,7 @@ def post(request, domain):
     password = request.REQUEST.get('password', '')
     if not text or not to or not username or not password:
         error_msg = 'ERROR missing parameters. Received: %(1)s, %(2)s, %(3)s, %(4)s' % \
-                     ( text, to, username, password )
+            (text, to, username, password)
         logging.error(error_msg)
         return HttpResponseBadRequest(error_msg)
     user = authenticate(username=username, password=password)
@@ -71,8 +71,8 @@ def post(request, domain):
                  #couch_recipient=id, 
                  phone_number=to,
                  direction=INCOMING,
-                 date = datetime.now(),
-                 text = text)
+                 date=datetime.now(),
+                 text=text)
     msg.save()
     return HttpResponse('OK')     
 
@@ -163,7 +163,6 @@ def send_to_recipients(request, domain):
             else:
                 unknown_usernames.append(recipient)
 
-
         login_ids = dict([(r['key'], r['id']) for r in get_db().view("users/by_username", keys=usernames).all()])
         for username in usernames:
             if username not in login_ids:
@@ -199,9 +198,9 @@ def send_to_recipients(request, domain):
 
         if empty_groups or failed_numbers or unknown_usernames or no_numbers:
             if empty_groups:
-                messages.error(request, "The following groups don't exist: %s"  % (', '.join(empty_groups)))
+                messages.error(request, "The following groups don't exist: %s" % (', '.join(empty_groups)))
             if no_numbers:
-                messages.error(request, "The following users don't have phone numbers: %s"  % (', '.join(no_numbers)))
+                messages.error(request, "The following users don't have phone numbers: %s" % (', '.join(no_numbers)))
             if failed_numbers:
                 messages.error(request, "Couldn't send to the following number(s): %s" % (', '.join(failed_numbers)))
             if unknown_usernames:
@@ -258,8 +257,8 @@ def list_forwarding_rules(request, domain):
     forwarding_rules = ForwardingRule.view("sms/forwarding_rule", key=[domain], include_docs=True).all()
     
     context = {
-        "domain" : domain,
-        "forwarding_rules" : forwarding_rules,
+        "domain": domain,
+        "forwarding_rules": forwarding_rules,
     }
     return render(request, "sms/list_forwarding_rules.html", context)
 
@@ -291,9 +290,9 @@ def add_forwarding_rule(request, domain, forwarding_rule_id=None):
         form = ForwardingRuleForm(initial=initial)
     
     context = {
-        "domain" : domain,
-        "form" : form,
-        "forwarding_rule_id" : forwarding_rule_id,
+        "domain": domain,
+        "form": form,
+        "forwarding_rule_id": forwarding_rule_id,
     }
     return render(request, "sms/add_forwarding_rule.html", context)
 
@@ -305,4 +304,3 @@ def delete_forwarding_rule(request, domain, forwarding_rule_id):
         raise Http404
     forwarding_rule.retire()
     return HttpResponseRedirect(reverse("list_forwarding_rules", args=[domain]))
-

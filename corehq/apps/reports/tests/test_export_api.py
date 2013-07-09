@@ -76,7 +76,6 @@ class ExportTest(TestCase):
         prev_checkpoint = ExportSchema.get(prev_token)
         assert prev_checkpoint.timestamp
 
-
     def testExportTokens(self):
         c = Client()
         c.login(**{'username': 'test', 'password': 'foobar'})
@@ -139,5 +138,3 @@ class ExportTest(TestCase):
         resp = get_export_response(c, include_errors=True)
         self.assertEqual(200, resp.status_code)
         self.assertTrue(len(resp.content) > len(initial_content))
-        
-        

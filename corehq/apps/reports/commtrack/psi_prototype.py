@@ -487,9 +487,7 @@ class CumulativeSalesAndConsumptionReport(GenericTabularReport, CommtrackReportM
     emailable = True
     is_cacheable = True
 
-
     # TODO support aggregation by 'N-levels down' (the locations at which might have varying loc types) as well as by subloc type?
-
     @memoized
     def _descendants(self, loc_type=None):
         locs = self.active_location.descendants if self.active_location else all_locations(self.domain)
@@ -593,7 +591,6 @@ class CumulativeSalesAndConsumptionReport(GenericTabularReport, CommtrackReportM
                         ) for site in locs]
 
 
-
 class StockOutReport(GenericTabularReport, CommtrackReportMixin, DatespanMixin):
     name = 'Stock-out Report'
     slug = 'stockouts'
@@ -688,4 +685,3 @@ class StockOutReport(GenericTabularReport, CommtrackReportMixin, DatespanMixin):
             return data
 
         return filter(None, (row(site) for site in self.outlets))
-

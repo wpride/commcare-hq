@@ -15,5 +15,3 @@ class IndicatorAdminInterfaceDispatcher(ReportDispatcher):
     @cls_require_edit_indicators
     def dispatch(self, request, *args, **kwargs):
         return super(IndicatorAdminInterfaceDispatcher, self).dispatch(request, *args, **kwargs)
-
-

@@ -30,7 +30,8 @@ def activate_new_user(form, is_domain_admin=True, domain=None, ip=None):
     new_user.eula.signed = True
     new_user.eula.date = now
     new_user.eula.type = 'End User License Agreement'
-    if ip: new_user.eula.user_ip = ip
+    if ip:
+        new_user.eula.user_ip = ip
 
     new_user.is_staff = False # Can't log in to admin site
     new_user.is_active = True
@@ -97,7 +98,7 @@ def request_new_domain(request, form, org, domain_type=None, new_user=True):
     send_new_request_update_email(request.user, get_ip(request), new_domain.name, is_new_user=new_user)
 
 def send_domain_registration_email(recipient, domain_name, guid):
-    DNS_name = Site.objects.get(id = settings.SITE_ID).domain
+    DNS_name = Site.objects.get(id=settings.SITE_ID).domain
     activation_link = 'http://' + DNS_name + reverse('registration_confirm_domain') + guid + '/'
     wiki_link = 'http://wiki.commcarehq.org/display/commcarepublic/Home'
     users_link = 'http://groups.google.com/group/commcare-users'
@@ -154,7 +155,7 @@ The CommCareHQ Team
 
 
 def send_global_domain_registration_email(requesting_user, domain_name):
-    DNS_name = Site.objects.get(id = settings.SITE_ID).domain
+    DNS_name = Site.objects.get(id=settings.SITE_ID).domain
     domain_link = 'http://' + DNS_name + reverse("domain_homepage", args=[domain_name])
     wiki_link = 'http://wiki.commcarehq.org/display/commcarepublic/Home'
     users_link = 'http://groups.google.com/group/commcare-users'
@@ -232,4 +233,3 @@ You can view the %s here: %s""" % (
         send_mail("New %s: %s" % (entity_texts[0], entity_name), message, settings.SERVER_EMAIL, recipients)
     except Exception:
         logging.warning("Can't send email, but the message was:\n%s" % message)
-

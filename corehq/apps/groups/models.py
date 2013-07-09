@@ -37,7 +37,7 @@ class Group(UndoableDocument):
         if not isinstance(couch_user_id, basestring):
             couch_user_id = couch_user_id.user_id
         if couch_user_id in self.users:
-            for i in range(0,len(self.users)):
+            for i in range(0, len(self.users)):
                 if self.users[i] == couch_user_id:
                     del self.users[i]
                     if save:
@@ -84,7 +84,7 @@ class Group(UndoableDocument):
                 group_id
             ))
         index = 0
-        for i in range(0,len(self.path)):
+        for i in range(0, len(self.path)):
             if self.path[i] == group_id:
                 index = i
                 break
@@ -114,7 +114,6 @@ class Group(UndoableDocument):
     @memoized
     def get_static_users(self, is_active=True):
         return self.get_users()
-
 
     @classmethod
     def by_domain(cls, domain):
@@ -175,7 +174,6 @@ class Group(UndoableDocument):
             return view(key=key + [owner_name])
         else:
             return view(startkey=key, endkey=key + [{}])
-    
     
     @classmethod
     def get_hierarchy(cls, domain, user_types, validate_types=False):

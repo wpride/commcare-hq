@@ -3,7 +3,7 @@ import sys
 from dimagi.utils.modules import to_function
 
 class MappingOutputCommand(BaseCommand):
-    help="Generate mapping JSON of our ES indexed types. Generic"
+    help = "Generate mapping JSON of our ES indexed types. Generic"
     option_list = NoArgsCommand.option_list + (
         )
 
@@ -22,6 +22,3 @@ class MappingOutputCommand(BaseCommand):
             self.doc_class_str = args[0].split('.')[-1]
             self.doc_class = to_function(args[0])
         self.finish_handle()
-
-
-

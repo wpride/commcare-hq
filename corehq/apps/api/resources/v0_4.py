@@ -48,8 +48,8 @@ class XFormInstanceResource(v0_3.XFormInstanceResource, DomainSpecificResourceMi
         es_query = es_search(bundle.request, domain)
         es_query['filter']['and'].append({'term': {'doc_type': 'xforminstance'}})
 
-        return ESQuerySet(payload = es_query,
-                          model = XFormInstance, 
+        return ESQuerySet(payload=es_query,
+                          model=XFormInstance, 
                           es_client=self.xform_es(domain)) # Not that XFormES is used only as an ES client, for `run_query` against the proper index
 
     class Meta(v0_3.XFormInstanceResource.Meta):
@@ -116,10 +116,10 @@ class CommCareCaseResource(v0_3.CommCareCaseResource, DomainSpecificResourceMixi
                                                  attribute=lambda case: case.get_forms()))
 
     child_cases = UseIfRequested(ToManyDictField('corehq.apps.api.resources.v0_4.CommCareCaseResource',
-                                                 attribute=lambda case: dict([ (index.identifier, CommCareCase.get(index.referenced_id)) for index in case.indices])))
+                                                 attribute=lambda case: dict([(index.identifier, CommCareCase.get(index.referenced_id)) for index in case.indices])))
 
     parent_cases = UseIfRequested(ToManyDictField('corehq.apps.api.resources.v0_4.CommCareCaseResource',
-                                                  attribute=lambda case: dict([ (index.identifier, CommCareCase.get(index.referenced_id)) for index in case.reverse_indices])))
+                                                  attribute=lambda case: dict([(index.identifier, CommCareCase.get(index.referenced_id)) for index in case.reverse_indices])))
 
     # Fields that v0.2 assumed were pre-transformed but we are now operating on straight CommCareCase objects again
     date_modified = fields.CharField(attribute='modified_on', default="1900-01-01")
@@ -140,9 +140,9 @@ class CommCareCaseResource(v0_3.CommCareCaseResource, DomainSpecificResourceMixi
         if 'size' in query:
             del query['size']
         
-        return ESQuerySet(payload = query,
-                          model = CommCareCase, #lambda jvalue: dict_object(CommCareCase.wrap(jvalue).get_json()),
-                          es_client = self.case_es(domain)) # Not that XFormES is used only as an ES client, for `run_query` against the proper index
+        return ESQuerySet(payload=query,
+                          model=CommCareCase, #lambda jvalue: dict_object(CommCareCase.wrap(jvalue).get_json()),
+                          es_client=self.case_es(domain)) # Not that XFormES is used only as an ES client, for `run_query` against the proper index
 
     class Meta(v0_3.CommCareCaseResource.Meta):
         max_limit = 100 # Today, takes ~25 seconds for some domains

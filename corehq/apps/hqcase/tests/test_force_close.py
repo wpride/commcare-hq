@@ -75,7 +75,7 @@ class ForceCloseCaseTest(TestCase):
             domain=domain,
         )
         case.save()
-        referral_indexes=[]
+        referral_indexes = []
         case = CommCareCase.get(case_id)
         for i in referral_indexes:
             case.force_close_referral(case.referrals[i])

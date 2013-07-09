@@ -69,6 +69,5 @@ class Command(BaseCommand):
         else:
             self.stderr.write('sanity check failed (%s)!\n' % id)
         
-
     def println(self, msg):
         self.stdout.write(msg + '\n')

@@ -54,6 +54,6 @@ class XMLTag(XMLObject):
                 return u"<%s%s />" % (self.name, options)
             else:
                 return u"<%(name)s%(options)s>%(children)s</%(name)s>" % {
-                    'name':self.name, 'options':options, 'children':children}
+                    'name': self.name, 'options': options, 'children': children}
         else:
             return children

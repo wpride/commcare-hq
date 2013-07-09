@@ -15,4 +15,3 @@ def sms_in(request):
     else:
         incoming_sms(sender, msgdata, "SISLOG")
         return HttpResponse()
-

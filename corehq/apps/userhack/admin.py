@@ -12,8 +12,8 @@ class HackedUserChangeForm(UserChangeForm):
     Support > 30 character length usernames in the admin
     """
     username = forms.RegexField(label=_("Username"), max_length=128, regex=r'^[\w.@+-]+$',
-        help_text = _("Required. 128 characters or fewer. Letters, digits and @/./+/-/_ only."),
-        error_messages = {'invalid': _("This value may contain only letters, numbers and @/./+/-/_ characters.")})
+        help_text=_("Required. 128 characters or fewer. Letters, digits and @/./+/-/_ only."),
+        error_messages={'invalid': _("This value may contain only letters, numbers and @/./+/-/_ characters.")})
 
     def _get_validation_exclusions(self):
         # this is super, super dirty. Don't tell anyone.

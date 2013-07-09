@@ -19,4 +19,3 @@ for requirement in requirements:
 
 for job in jobs:
     job.wait()
-

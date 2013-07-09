@@ -24,7 +24,6 @@ class Command(PtopReindexer):
 
         dynamic_domains = getattr(settings, 'ES_CASE_FULL_INDEX_DOMAINS', [])
 
-
         def full_view_iter():
             for domain in dynamic_domains:
                 print "View iter for domain: %s" % domain
@@ -58,4 +57,3 @@ class Command(PtopReindexer):
             fout.write(','.join(simplejson.dumps(row) for row in full_view_iter()))
             fout.write("]")
         print "View and sequence written to disk: %s" % datetime.utcnow().isoformat()
-

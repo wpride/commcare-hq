@@ -69,4 +69,3 @@ class request_cache(object):
                 report.set_in_cache(self.tag, ret, self.expiry)
                 return ret
         return decorated
-

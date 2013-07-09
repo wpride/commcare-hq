@@ -222,7 +222,6 @@ class BaseDrilldownOptionFilter(BaseReportFilter):
         """
         return {}
 
-
     @property
     @memoized
     def GET_values(self):
@@ -243,7 +242,6 @@ class BaseDrilldownOptionFilter(BaseReportFilter):
             'next': next,
             }
 
-
     @classmethod
     def _get_label_value(cls, request, label):
         slug = str(label[2])
@@ -257,5 +255,3 @@ class BaseDrilldownOptionFilter(BaseReportFilter):
     def get_value(cls, request, domain):
         instance = cls(request, domain)
         return instance.GET_values, instance
-
-

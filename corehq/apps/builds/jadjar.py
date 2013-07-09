@@ -43,18 +43,18 @@ def sign_jar(jad, jar):
         jad = JadDict.from_jad(jad)
 
     ''' run jadTool on the newly created JAR '''
-    key_store   = settings.JAR_SIGN['key_store']
-    key_alias   = settings.JAR_SIGN['key_alias']
-    store_pass  = settings.JAR_SIGN['store_pass']
-    key_pass    = settings.JAR_SIGN['key_pass']
-    jad_tool    = os.path.join(os.path.abspath(os.path.dirname(__file__)),'JadTool.jar')
+    key_store = settings.JAR_SIGN['key_store']
+    key_alias = settings.JAR_SIGN['key_alias']
+    store_pass = settings.JAR_SIGN['store_pass']
+    key_pass = settings.JAR_SIGN['key_pass']
+    jad_tool = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'JadTool.jar')
     # remove traces of former jar signings, if any
     jad.update({
-        "MIDlet-Certificate-1-1" : None,
-        "MIDlet-Certificate-1-2" : None,
-        "MIDlet-Certificate-1-3" : None,
-        "MIDlet-Jar-RSA-SHA1" : None,
-        "MIDlet-Permissions" : None
+        "MIDlet-Certificate-1-1": None,
+        "MIDlet-Certificate-1-2": None,
+        "MIDlet-Certificate-1-3": None,
+        "MIDlet-Jar-RSA-SHA1": None,
+        "MIDlet-Permissions": None
     })
     line_ending = jad.line_ending
     # save jad and jar to actual files
@@ -76,7 +76,8 @@ def sign_jar(jad, jar):
             for step in (step_one, step_two):
                 p = Popen(shlex.split(step), stdout=PIPE, stderr=PIPE, shell=False)
                 err = p.stderr.read().strip()
-                if err != '': raise Exception(err)
+                if err != '':
+                    raise Exception(err)
 
             with open(jad_file.name) as f:
                 txt = f.read()
@@ -89,7 +90,7 @@ def sign_jar(jad, jar):
                 pass
     
     jad.update({
-        "MIDlet-Permissions" :
+        "MIDlet-Permissions":
             "javax.microedition.io.Connector.file.read,"
             "javax.microedition.io.Connector.ssl,"
             "javax.microedition.io.Connector.file.write,"

@@ -17,4 +17,3 @@ class Command(BaseCommand):
             user=options['user']
         )
         deploy.save()
-        

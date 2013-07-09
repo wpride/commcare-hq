@@ -45,7 +45,8 @@ class ReportField(CacheableRequestMixIn):
         self.parent_report = parent_report
 
     def render(self):
-        if not self.template: return ""
+        if not self.template:
+            return ""
         self.context["slug"] = self.slug
         self.update_context()
         return render_to_string(self.template, self.context)
@@ -257,7 +258,7 @@ class SelectApplicationField(ReportSelectField):
                                     'name': app['value']['name'], 
                                     'version': app['value']['version']})
                           for app in apps_for_domain]
-        self.selected = self.request.GET.get(self.slug,'')
+        self.selected = self.request.GET.get(self.slug, '')
         self.options = available_apps
 
 class SelectOrganizationField(ReportSelectField):
@@ -269,7 +270,7 @@ class SelectOrganizationField(ReportSelectField):
 
     def update_params(self):
         available_orgs = [{'val': o.name, 'text': o.title} for o in  Organization.get_all()]
-        self.selected = self.request.GET.get(self.slug,'')
+        self.selected = self.request.GET.get(self.slug, '')
         self.options = available_orgs
 
 class SelectCategoryField(ReportSelectField):
@@ -284,7 +285,7 @@ class SelectCategoryField(ReportSelectField):
             available_categories = [{'val': d.replace(' ', '+'), 'text': d} for d in Domain.categories()]
         else:
             available_categories = []
-        self.selected = self.request.GET.get(self.slug,'')
+        self.selected = self.request.GET.get(self.slug, '')
         self.options = available_categories
 
 class SelectLicenseField(ReportSelectField):
@@ -296,7 +297,7 @@ class SelectLicenseField(ReportSelectField):
 
     def update_params(self):
         available_licenses = [{'val': code, 'text': license} for code, license in LICENSES.items()]
-        self.selected = self.request.GET.get(self.slug,'')
+        self.selected = self.request.GET.get(self.slug, '')
         self.options = available_licenses
 
 class SelectRegionField(ReportSelectField):
@@ -311,7 +312,7 @@ class SelectRegionField(ReportSelectField):
             available_regions = [{'val': d.replace(' ', '+'), 'text': d} for d in Domain.regions()]
         else:
             available_regions = []
-        self.selected = self.request.GET.get(self.slug,'')
+        self.selected = self.request.GET.get(self.slug, '')
         self.options = available_regions
 
 
@@ -484,7 +485,8 @@ class AsyncDrillableField(BaseReportFilter):
 
         lineage = [leaf_fdi]
         for i, h in enumerate(self.full_hierarchy[::-1]):
-            if i < index or i >= len(self.hierarchy)-1: continue
+            if i < index or i >= len(self.hierarchy)-1:
+                continue
             real_index = len(self.hierarchy) - (i+1)
             lineage.insert(0, FixtureDataItem.by_field_value(self.domain, self.data_types(real_index - 1),
                 h["references"], lineage[0].fields[h["parent_ref"]]).one())
@@ -553,8 +555,8 @@ class DeviceLogFilterField(ReportField):
         self.context['default_on'] = show_all
 
         data = get_db().view(self.view,
-            startkey = [self.domain],
-            endkey = [self.domain, {}],
+            startkey=[self.domain],
+            endkey=[self.domain, {}],
             group=True,
             stale=settings.COUCH_STALE_QUERY,
         )

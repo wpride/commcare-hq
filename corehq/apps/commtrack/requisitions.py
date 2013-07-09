@@ -51,7 +51,7 @@ class RequisitionState(object):
             version=V2,
             user_id=self.user_id,
             case_type=const.REQUISITION_CASE_TYPE,
-            update = copy(self.custom_fields),
+            update=copy(self.custom_fields),
             close=self.close,
             **extras
         )

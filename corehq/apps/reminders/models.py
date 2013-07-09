@@ -65,7 +65,7 @@ CASE_CRITERIA = "CASE_CRITERIA"
 ON_DATETIME = "ON_DATETIME"
 START_CONDITION_TYPES = [CASE_CRITERIA, ON_DATETIME]
 
-SURVEY_METHOD_LIST = ["SMS","CATI"]
+SURVEY_METHOD_LIST = ["SMS", "CATI"]
 
 UI_FREQUENCY_ADVANCED = "ADVANCED"
 UI_FREQUENCY_CHOICES = [UI_FREQUENCY_ADVANCED]
@@ -115,7 +115,8 @@ class MessageVariable(object):
 
     @property
     def days_until(self):
-        try: variable = string_to_datetime(self.variable)
+        try:
+            variable = string_to_datetime(self.variable)
         except Exception:
             return "(?)"
         else:
@@ -392,7 +393,7 @@ class CaseReminderHandler(Document):
             fire_time = DEFAULT_REMINDER_TIME
         
         day_offset = self.start_offset + (self.schedule_length * (reminder.schedule_iteration_num - 1)) + event.day_num
-        timestamp = datetime.combine(reminder.start_date, fire_time) + timedelta(days = day_offset)
+        timestamp = datetime.combine(reminder.start_date, fire_time) + timedelta(days=day_offset)
         return CaseReminderHandler.timestamp_to_utc(recipient, timestamp)
     
     def spawn_reminder(self, case, now, recipient=None):
@@ -423,7 +424,7 @@ class CaseReminderHandler(Document):
             user_id=user_id,
             method=self.method,
             active=True,
-            start_date=date(now.year, now.month, now.day) if (now.hour == 0 and now.minute == 0 and now.second == 0 and now.microsecond == 0) else date(local_now.year,local_now.month,local_now.day),
+            start_date=date(now.year, now.month, now.day) if (now.hour == 0 and now.minute == 0 and now.second == 0 and now.microsecond == 0) else date(local_now.year, local_now.month, local_now.day),
             schedule_iteration_num=1,
             current_event_sequence_num=0,
             callback_try_count=0,
@@ -534,7 +535,7 @@ class CaseReminderHandler(Document):
                         for session_id in reminder.xforms_session_ids:
                             submit_unfinished_form(session_id, self.include_case_side_effects)
                 else:
-                    reminder.next_fire = reminder.next_fire + timedelta(minutes = reminder.current_event.callback_timeout_intervals[reminder.callback_try_count])
+                    reminder.next_fire = reminder.next_fire + timedelta(minutes=reminder.current_event.callback_timeout_intervals[reminder.callback_try_count])
                     reminder.callback_try_count += 1
                     continue
             
@@ -640,7 +641,7 @@ class CaseReminderHandler(Document):
         if isinstance(condition, datetime):
             pass
         elif isinstance(condition, date):
-            condition = datetime.combine(condition, time(0,0))
+            condition = datetime.combine(condition, time(0, 0))
         elif looks_like_timestamp(condition):
             try:
                 condition = parse(condition)
@@ -958,7 +959,7 @@ class SurveyKeyword(Document):
     @classmethod
     def get_keyword(cls, domain, keyword):
         return cls.view("reminders/survey_keywords",
-            key = [domain, keyword.upper()],
+            key=[domain, keyword.upper()],
             include_docs=True
         ).one()
 
@@ -1026,9 +1027,9 @@ class Survey(Document):
             if sample_json["method"] == "CATI":
                 sample_id = sample_json["sample_id"]
                 cati_sample_data[sample_id] = {
-                    "sample_object" : SurveySample.get(sample_id),
-                    "incentive" : sample_json["incentive"],
-                    "cati_operator" : sample_json["cati_operator"],
+                    "sample_object": SurveySample.get(sample_id),
+                    "incentive": sample_json["incentive"],
+                    "cati_operator": sample_json["cati_operator"],
                 }
         
         for wave in self.waves:

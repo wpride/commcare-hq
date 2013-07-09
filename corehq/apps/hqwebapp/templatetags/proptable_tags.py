@@ -77,7 +77,7 @@ def to_html(key, val, dt_format="%b %d, %Y %H:%M %Z", timezone=pytz.utc,
             ["<dl %s>" % ("class='well'" if level == 0 else '')] + 
             ["<dt>%s</dt><dd>%s</dd>" % (
                 _key_format(k, v), recurse(k, v)
-             ) for k, v in val.items()] +
+            ) for k, v in val.items()] +
             ["</dl>"])
 
     elif is_list(val):
@@ -236,6 +236,3 @@ def get_definition(keys, num_columns=1, name=None):
             "layout": layout
         }
     ]
-
-
-

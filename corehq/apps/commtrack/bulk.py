@@ -234,4 +234,3 @@ def annotate_csv(data, columns):
     writer.writerow(dict((h, 'STATUS' if h == 'error' else h) for h in headers))
     writer.writerows(data)
     return f.getvalue()
-

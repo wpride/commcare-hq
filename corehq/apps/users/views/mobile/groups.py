@@ -67,5 +67,5 @@ def group_membership(request, domain, couch_user_id, template="groups/groups.htm
     context.update({"domain": domain,
                     "groups": my_groups,
                     "other_groups": other_groups,
-                    "couch_user":couch_user })
+                    "couch_user": couch_user})
     return render(request, template, context)

@@ -325,7 +325,6 @@ class StockTransaction(DocumentSchema):
         return [StockTransaction.wrap(row['value']) for row in q]
 
 
-
 def _get_single_index(case, identifier, type, wrapper=None):
     matching = filter(lambda i: i.identifier == identifier, case.indices)
     if matching:
@@ -699,7 +698,6 @@ class RequisitionCase(CommCareCase):
     def get_requester(self):
         return CommCareUser.get(self.requested_by)
 
-
     def get_default_value(self):
         """get how much the default is. this is dependent on state."""
         property_map = {
@@ -730,7 +728,6 @@ class RequisitionCase(CommCareCase):
             descending=True,
         )
         return [r['id'] for r in results]
-
 
     @classmethod
     def open_for_product_case(cls, domain, location, product_case_id):
@@ -876,7 +873,7 @@ class StockReport(object):
         start = datespan.startdate if datespan else datetime(1900, 1, 1)
         end = datespan.end_of_end_day if datespan else datetime.max
         timestamp_start = dateparse.json_format_datetime(start)
-        timestamp_end =  dateparse.json_format_datetime(end)
+        timestamp_end = dateparse.json_format_datetime(end)
         loc_id = location._id if location else None
         startkey = [domain, loc_id, timestamp_start]
         endkey = [domain, loc_id, timestamp_end]

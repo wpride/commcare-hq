@@ -71,7 +71,3 @@ class ManageReportAnnouncementsInterface(BaseHQAnnouncementsAdminInterface):
     form_class = ReportAnnouncementForm
 
     crud_item_type = "Report Announcement"
-
-
-
-

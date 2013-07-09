@@ -14,7 +14,6 @@ class FormDeidentificationTestCase(TestCase):
         for item in XFormInstance.view("couchforms/by_xmlns", include_docs=True, reduce=False).all():
             item.delete()
         
-        
     def testCRSReg(self):
         file_path = os.path.join(os.path.dirname(__file__), "data", "crs_reg.xml")
         with open(file_path, "rb") as f:
@@ -48,4 +47,3 @@ class FormDeidentificationTestCase(TestCase):
         self.assertTrue("IDENTIFIER" not in deidentified.attachments["form.xml"])
         self.assertTrue("YESNO" not in json.dumps(deidentified.doc))
         self.assertTrue("YESNO" not in deidentified.attachments["form.xml"])
-        

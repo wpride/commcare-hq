@@ -23,4 +23,3 @@ urlpatterns = patterns('corehq.apps.hqadmin.views',
     url(r'^phone/restore/$', 'admin_restore', name="admin_restore"),
     AdminReportDispatcher.url_pattern(),
 )
-

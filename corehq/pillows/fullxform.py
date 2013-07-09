@@ -54,7 +54,7 @@ class FullXFormPillow(XFormPillow):
 
         ui_version = doc_dict.get('form', {}).get('@uiVersion', UNKNOWN_UIVERSION)
         version = doc_dict.get('form', {}).get('@version', UNKNOWN_VERSION)
-        xmlns = doc_dict.get('xmlns', 'http://%s' % UNKNOWN_TYPE )
+        xmlns = doc_dict.get('xmlns', 'http://%s' % UNKNOWN_TYPE)
         if xmlns is None:
             xmlns_str = UNKNOWN_TYPE
         else:
@@ -91,6 +91,3 @@ class FullXFormPillow(XFormPillow):
                 #it's not in our custom handlers. return NOne
                 doc_ret = None
         return doc_ret
-
-
-

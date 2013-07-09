@@ -9,4 +9,3 @@ def send(msg, *args, **kwargs):
         print "Message To:      " + msg.phone_number
         print "Message Content: " + msg.text
         print "***************************************************"
-

@@ -83,7 +83,7 @@ class CommCareMultimedia(SafeSaveDocument):
                 license.attribution_notes = attribution_notes or license.attribution_notes
                 break
         else:
-            license = HQMediaLicense(   domain=domain, type=type, author=author,
+            license = HQMediaLicense(domain=domain, type=type, author=author,
                                         attribution_notes=attribution_notes, organization=org)
             self.licenses.append(license)
 
@@ -384,7 +384,7 @@ class HQMediaMapItem(DocumentSchema):
         # todo cleanup references to this method
         return {
             "path": path,
-            "uid": path.replace('jr://','').replace('/', '_').replace('.', '_'),
+            "uid": path.replace('jr://', '').replace('/', '_').replace('.', '_'),
             "m_id": media_id if media_id else "",
             "url": reverse("hqmedia_download", args=[media_type, media_id]) if media_id else "",
             "upload_path": upload_path
@@ -498,7 +498,6 @@ class HQMediaMixin(Document):
                 media.append(ApplicationMediaReference(item.media_audio,
                                                        media_class=CommCareAudio,
                                                        is_menu_media=True, **kwargs))
-
 
         for m, module in enumerate(self.get_modules()):
             media_kwargs = {

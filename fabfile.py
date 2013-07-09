@@ -176,7 +176,6 @@ def production():
         'django_monolith': [] # fab complains if this doesn't exist
     }
 
-
     env.server_name = 'commcare-hq-production'
     env.settings = '%(project)s.localsettings' % env
     env.host_os_map = None # e.g. 'ubuntu' or 'redhat'.  Gets autopopulated by what_os() if you don't know what it is or don't want to specify.
@@ -197,7 +196,6 @@ def realstaging():
     env.environment = 'staging'
     env.django_port = '9010'
 
-
     #env.hosts = None
     env.roledefs = {
         'couch': ['hqdb0-staging.internal.commcarehq.org'],
@@ -205,7 +203,7 @@ def realstaging():
         'rabbitmq': ['hqdb0-staging.internal.commcarehq.org'],
         'sofabed': ['hqdb0-staging.internal.commcarehq.org'], #todo, right now group it with celery
         'django_celery': ['hqdb0-staging.internal.commcarehq.org'],
-        'django_app': ['hqdjango0-staging.internal.commcarehq.org','hqdjango1-staging.internal.commcarehq.org'],
+        'django_app': ['hqdjango0-staging.internal.commcarehq.org', 'hqdjango1-staging.internal.commcarehq.org'],
         'django_pillowtop': ['hqdb0-staging.internal.commcarehq.org'],
 
         'formsplayer': ['hqdjango1-staging.internal.commcarehq.org'],
@@ -225,9 +223,8 @@ def realstaging():
     _setup_path()
     
     
-
 @task
-@roles('django_app','django_celery','staticfiles')
+@roles('django_app', 'django_celery', 'staticfiles')
 def install_packages():
     """Install packages, given a list of package names"""
     require('environment', provided_by=('staging', 'production'))
@@ -247,7 +244,7 @@ def install_packages():
 
 
 @task
-@roles('django_app','django_celery','staticfiles')
+@roles('django_app', 'django_celery', 'staticfiles')
 @parallel
 def upgrade_packages():
     """
@@ -266,16 +263,16 @@ def upgrade_packages():
 @task
 def what_os():
     with settings(warn_only=True):
-        require('environment', provided_by=('staging','production'))
+        require('environment', provided_by=('staging', 'production'))
         if getattr(env, 'host_os_map', None) is None:
             #prior use case of setting a env.remote_os did not work when doing multiple hosts with different os! Need to keep state per host!
             env.host_os_map = defaultdict(lambda: '')
         if env.host_os_map[env.host_string] == '':
             print 'Testing operating system type...'
-            if(files.exists('/etc/lsb-release',verbose=True) and files.contains(text='DISTRIB_ID=Ubuntu', filename='/etc/lsb-release')):
+            if(files.exists('/etc/lsb-release', verbose=True) and files.contains(text='DISTRIB_ID=Ubuntu', filename='/etc/lsb-release')):
                 remote_os = 'ubuntu'
                 print 'Found lsb-release and contains "DISTRIB_ID=Ubuntu", this is an Ubuntu System.'
-            elif(files.exists('/etc/redhat-release',verbose=True)):
+            elif(files.exists('/etc/redhat-release', verbose=True)):
                 remote_os = 'redhat'
                 print 'Found /etc/redhat-release, this is a RedHat system.'
             else:
@@ -285,7 +282,7 @@ def what_os():
         return env.host_os_map[env.host_string]
 
 #@parallel
-@roles('pg','django_celery','django_app','staticfiles', 'django_monolith')
+@roles('pg', 'django_celery', 'django_app', 'staticfiles', 'django_monolith')
 @task
 def setup_server():
     """Set up a server for the first time in preparation for deployments."""
@@ -386,7 +383,7 @@ def preindex_views():
              preindex_everything 8 %(user)s" --mail | at -t `date -d "5 seconds" \
              +%%m%%d%%H%%M.%%S`' % env, user=env.sudo_user)
 
-@roles('django_app','django_celery', 'staticfiles', 'django_monolith')
+@roles('django_app', 'django_celery', 'staticfiles', 'django_monolith')
 @parallel
 def update_code(preindex=False):
     if preindex:
@@ -409,8 +406,8 @@ def mail_admins(subject, message):
     with cd(env.code_root):
         sudo('%(virtualenv_root)s/bin/python manage.py mail_admins --subject "%(subject)s" "%(message)s"' % \
                 {'virtualenv_root': env.virtualenv_root,
-                 'subject':subject,
-                 'message':message },
+                 'subject': subject,
+                 'message': message},
              user=env.sudo_user)
 
 @roles('pg', 'django_monolith')
@@ -418,7 +415,7 @@ def record_successful_deploy():
     with cd(env.code_root):
         sudo('%(virtualenv_root)s/bin/python manage.py record_deploy_success --user "%(user)s"' % \
              {'virtualenv_root': env.virtualenv_root,
-              'user': env.user },
+              'user': env.user},
         user=env.sudo_user)
 
 @task
@@ -451,9 +448,8 @@ def deploy():
         execute(services_restart)
 
 
-
 @task
-@roles('django_app','django_celery','staticfiles', 'django_monolith')#,'formsplayer')
+@roles('django_app', 'django_celery', 'staticfiles', 'django_monolith')#,'formsplayer')
 @parallel
 def update_virtualenv(preindex=False):
     """ update external dependencies on remote host assumes you've done a code update"""
@@ -481,7 +477,6 @@ def touch_apache():
     sudo('touch %s' % apache_path, user=env.sudo_user)
 
 
-
 @roles('django_celery', 'django_app', 'django_monolith')
 def touch_supervisor():
     """
@@ -499,7 +494,7 @@ def touch_supervisor():
 @parallel
 def clear_services_dir():
     #remove old confs from directory first
-    services_dir =  posixpath.join(env.services, u'supervisor', 'supervisor_*.conf')
+    services_dir = posixpath.join(env.services, u'supervisor', 'supervisor_*.conf')
     sudo('rm -f %s' % services_dir, user=env.sudo_user)
 
 @roles('lb')
@@ -534,7 +529,7 @@ def netstat_plnt():
 ############################################################3
 #Start service functions
 
-@roles('django_app', 'django_celery','django_monolith')# 'formsplayer'
+@roles('django_app', 'django_celery', 'django_monolith')# 'formsplayer'
 def services_start():
     ''' Start the gunicorn servers '''
     require('environment', provided_by=('staging', 'demo', 'production'))
@@ -563,7 +558,7 @@ def services_restart():
     _supervisor_command('reload')
     _supervisor_command('start  all')
 #
-@roles('django_celery','django_monolith')
+@roles('django_celery', 'django_monolith')
 def migrate():
     """ run south migration on remote environment """
     require('code_root', provided_by=('production', 'demo', 'staging', "india"))
@@ -573,7 +568,7 @@ def migrate():
         sudo('%(virtualenv_root)s/bin/python manage.py migrate --noinput' % env, user=env.sudo_user)
 
 
-@roles('django_celery','django_monolith')
+@roles('django_celery', 'django_monolith')
 def flip_es_aliases():
     """Flip elasticsearch aliases to the lastest version """
     require('code_root', provided_by=('production', 'demo', 'staging', "india"))
@@ -599,7 +594,6 @@ def version_static():
     with cd(env.code_root):
         sudo('rm -f tmp.sh resource_versions.py; %(virtualenv_root)s/bin/python manage.py   \
              printstatic > tmp.sh; bash tmp.sh > resource_versions.py' % env, user=env.sudo_user)
-
 
 
 @task
@@ -652,9 +646,9 @@ def _upload_supervisor_conf_file(filename):
     upload_dict = {}
     upload_dict["template"] = posixpath.join(os.path.dirname(__file__), 'services', 'templates', filename)
     upload_dict["destination"] = '/tmp/%s.blah' % filename
-    upload_dict["enabled"] =  posixpath.join(env.services, u'supervisor/%s' % filename)
+    upload_dict["enabled"] = posixpath.join(env.services, u'supervisor/%s' % filename)
 
-    sudo ('rm -f /tmp/%s' % filename, shell=False)
+    sudo('rm -f /tmp/%s' % filename, shell=False)
     files.upload_template(upload_dict["template"], upload_dict["destination"], context=env, use_sudo=False, backup=False)
     sudo('chown -R %s %s' % (env.sudo_user, upload_dict["destination"]), shell=False)
     #sudo('chgrp -R %s %s' % (env.apache_user, upload_dict["destination"]))
@@ -674,8 +668,6 @@ def upload_celery_supervisorconf():
 
     #in reality this also should be another machine if the number of listeners gets too high
     _upload_supervisor_conf_file('supervisor_pillowtop.conf')
-
-
 
 
 @roles('django_celery', 'django_monolith')
@@ -706,7 +698,6 @@ def upload_and_set_supervisor_config():
 
     #if needing tunneled ES setup, comment this back in
     #execute(upload_elasticsearch_supervisorconf)
-
 
 
 def _supervisor_command(command):
@@ -746,4 +737,3 @@ def selenium_test():
     url = env.selenium_url % {"token": "foobar", "environment": env.environment}
     local("curl --user %(user)s:%(pass)s '%(url)s'" % \
           {'user': env.jenkins_user, 'pass': env.jenkins_password, 'url': url})
-    

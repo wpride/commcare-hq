@@ -21,7 +21,6 @@ class SuccessMessage(object):
         if domain:
             self.domain = domain
 
-
     def render(self, quash=True):
         template = Template(self.message)
         try:
@@ -55,7 +54,6 @@ class SuccessMessage(object):
             return "%s %s" % (self.couch_user.first_name, self.couch_user.last_name)
         except Exception:
             return "(?)"
-
 
     def get_num_forms_since(self, time):
         if not hasattr(self, 'domain'):

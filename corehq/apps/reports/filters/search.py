@@ -14,7 +14,6 @@ class SearchFilter(BaseReportFilter):
     #inline help text, should be noop'ed
     search_help_inline = None
 
-
     @property
     def filter_context(self):
         return {

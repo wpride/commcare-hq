@@ -35,7 +35,7 @@ def urlencode(parser, token):
     return URLEncodeNode(path_var, params_var, params, delete)
 
 class URLEncodeNode(template.Node):
-    def __init__(self, path_var,  params_var, extra_params, delete_params):
+    def __init__(self, path_var, params_var, extra_params, delete_params):
         self.path_var = template.Variable(path_var)
         self.params_var = template.Variable(params_var)
         self.extra_params = extra_params
@@ -44,10 +44,10 @@ class URLEncodeNode(template.Node):
     def render(self, context):
         path = self.path_var.resolve(context)
         params = {}
-        for key,val in self.params_var.resolve(context).lists():
+        for key, val in self.params_var.resolve(context).lists():
             params[key] = val
 
-        for key,val in self.extra_params.items():
+        for key, val in self.extra_params.items():
             key = template.Variable(key).resolve(context)
             val = template.Variable(val).resolve(context)
             params[key] = val

@@ -36,7 +36,6 @@ class SessionDataHelper(object):
             assert self.case_type == DELEGATION_STUB_CASE_TYPE
         return self._delegation
 
-
     def get_session_data(self, device_id=CLOUDCARE_DEVICE_ID):
         """
         Get session data used by touchforms.
@@ -94,7 +93,6 @@ class SessionDataHelper(object):
             "session_data": session_data,
             "xform_url": reverse("xform_player_proxy")
         }
-
 
 
 def get_session_data(domain, couch_user, case_id=None, device_id=CLOUDCARE_DEVICE_ID, delegation=False):

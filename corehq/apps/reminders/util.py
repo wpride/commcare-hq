@@ -16,7 +16,7 @@ def get_form_list(domain):
                         form_name = f.name[lang]
                     except Exception:
                         form_name = f.name.items()[0][1]
-                    form_list.append({"code" :  f.unique_id, "name" : app.name + "/" + module_name + "/" + form_name})
+                    form_list.append({"code": f.unique_id, "name": app.name + "/" + module_name + "/" + form_name})
     return form_list
 
 def get_sample_list(domain):
@@ -25,7 +25,7 @@ def get_sample_list(domain):
     
     sample_list = []
     for sample in SurveySample.view("reminders/sample_by_domain", startkey=[domain], endkey=[domain, {}], include_docs=True):
-        sample_list.append({"code" : sample._id, "name" : sample.name})
+        sample_list.append({"code": sample._id, "name": sample.name})
     return sample_list
 
 def get_form_name(form_unique_id):
@@ -77,5 +77,3 @@ def get_recipient_name(recipient, include_desc=True):
         return "%s '%s'" % (desc, name)
     else:
         return name
-
-

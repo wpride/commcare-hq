@@ -9,10 +9,8 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         pass
 
-
     def backwards(self, orm):
         pass
-
 
     models = {
         

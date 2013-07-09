@@ -56,7 +56,6 @@ class AppGroup(DocumentSchema):
             '_id': self.group.get_id,
             }
 
-
     @property
     @memoized
     def app(self):
@@ -114,7 +113,6 @@ class ApplicationAccess(Document):
             return Group.user_in_group(user_id, app_group.group_id)
         else:
             return False
-
 
     @classmethod
     def get_template_json(cls, domain, apps):

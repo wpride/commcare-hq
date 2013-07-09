@@ -4,4 +4,3 @@ class MigrationUser(Document):
     username = StringProperty()
     user_id = StringProperty()
     domain = StringProperty()
-    

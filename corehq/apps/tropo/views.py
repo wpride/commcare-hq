@@ -24,7 +24,7 @@ def sms_in(request):
                 numberToDial = params["numberToDial"]
                 msg = params["msg"]
                 t = Tropo()
-                t.call(to = numberToDial, network = "SMS")
+                t.call(to=numberToDial, network="SMS")
                 t.say(msg)
                 return HttpResponse(t.RenderJson())
         # Handle incoming SMS
@@ -75,10 +75,10 @@ def ivr_in(request):
         
         # Save the call entry
         msg = CallLog(
-            phone_number    = cleaned_number,
-            direction       = INCOMING,
-            date            = datetime.utcnow(),
-            backend_api     = TROPO_BACKEND_API_ID
+            phone_number=cleaned_number,
+            direction=INCOMING,
+            date=datetime.utcnow(),
+            backend_api=TROPO_BACKEND_API_ID
         )
         if v is not None:
             msg.domain = v.domain
@@ -92,5 +92,3 @@ def ivr_in(request):
         return HttpResponse(t.RenderJson())
     else:
         return HttpResponseBadRequest("Bad Request")
-
-

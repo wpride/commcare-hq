@@ -22,11 +22,11 @@ class StockStatusMapReport(CommtrackReportMixin, BaseMapReport):
                         "display_name": "Stock Status",
                         "type": "enum",
                         "values": [
-                            {"label": "Stock-out",      "value": "stockout",   "color": "#f00"},
-                            {"label": "Understocked",   "value": "understock", "color": "#ff0"},
-                            {"label": "Adequate Stock", "value": "adequate",   "color": "#0f0"},
-                            {"label": "Overstocked",    "value": "overstock",  "color": "#80f"},
-                            {"label": "No data",        "value": "nodata",     "color": "#888"},
+                            {"label": "Stock-out", "value": "stockout", "color": "#f00"},
+                            {"label": "Understocked", "value": "understock", "color": "#ff0"},
+                            {"label": "Adequate Stock", "value": "adequate", "color": "#0f0"},
+                            {"label": "Overstocked", "value": "overstock", "color": "#80f"},
+                            {"label": "No data", "value": "nodata", "color": "#888"},
                         ],
                     },
                 ]

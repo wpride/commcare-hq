@@ -83,11 +83,11 @@ def initiate_outbound_call(call_log_entry, *args, **kwargs):
     url_base = get_url_base()
     
     params = urlencode({
-        "phone_no" : phone_number,
-        "api_key" : kwargs["api_key"],
-        "outbound_version" : "2",
-        "url" : url_base + reverse("corehq.apps.kookoo.views.ivr"),
-        "callback_url" : url_base + reverse("corehq.apps.kookoo.views.ivr_finished"),
+        "phone_no": phone_number,
+        "api_key": kwargs["api_key"],
+        "outbound_version": "2",
+        "url": url_base + reverse("corehq.apps.kookoo.views.ivr"),
+        "callback_url": url_base + reverse("corehq.apps.kookoo.views.ivr_finished"),
     })
     url = "http://www.kookoo.in/outbound/outbound.php?%s" % params
     response = urlopen(url).read()
@@ -117,4 +117,3 @@ def initiate_outbound_call(call_log_entry, *args, **kwargs):
     
     call_log_entry.save()
     return not call_log_entry.error
-

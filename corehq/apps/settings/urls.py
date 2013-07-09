@@ -28,4 +28,3 @@ users_redirect = patterns('corehq.apps.settings.views',
 domain_redirect = patterns('corehq.apps.settings.views',
     (r'^$', 'redirect_domain_settings'),
     (r'^(?P<old_url>[\w_\\\/\-]+)/$', 'redirect_domain_settings'))
-

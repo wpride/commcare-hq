@@ -79,7 +79,6 @@ class OldPermissions(object):
         return cls.old_to_new[old_permission]
 
 
-
 class OldRoles(object):
     ROLES = (
         ('edit-apps', 'App Editor', set([OldPermissions.EDIT_APPS])),
@@ -232,7 +231,7 @@ class UserRole(Document):
 
     @classmethod
     def commcareuser_role_choices(cls, domain):
-        return [('none','(none)')] + [(role.get_qualified_id(), role.name or '(No Name)') for role in list(cls.by_domain(domain))]
+        return [('none', '(none)')] + [(role.get_qualified_id(), role.name or '(No Name)') for role in list(cls.by_domain(domain))]
 
 PERMISSIONS_PRESETS = {
     'edit-apps': {'name': 'App Editor', 'permissions': Permissions(edit_apps=True, view_reports=True)},
@@ -306,7 +305,6 @@ class DomainMembership(Membership):
                 else:
                     custom_permissions['view_report_list'] = view_report_list
 
-
                 self = super(DomainMembership, cls).wrap(data)
                 self.role_id = UserRole.get_or_create_with_permissions(self.domain, custom_permissions).get_id
                 return self
@@ -371,7 +369,6 @@ class IsMemberOfMixin(DocumentSchema):
         except Exception:
             domain = domain_qs
         return self._is_member_of(domain)
-
 
     def is_global_admin(self):
         # subclasses to override if they want this functionality
@@ -568,7 +565,6 @@ class LowercaseStringProperty(StringProperty):
         return super(LowercaseStringProperty, self).to_json(self._adjust_value(value))
 
 
-
 class DjangoUserMixin(DocumentSchema):
     username = LowercaseStringProperty()
     first_name = StringProperty()
@@ -707,7 +703,7 @@ class CouchUser(Document, DjangoUserMixin, IsMemberOfMixin, UnicodeMixIn):
         super(CouchUser, self).delete() # Call the "real" delete() method.
 
     def delete_phone_number(self, phone_number):
-        for i in range(0,len(self.phone_numbers)):
+        for i in range(0, len(self.phone_numbers)):
             if self.phone_numbers[i] == phone_number:
                 del self.phone_numbers[i]
                 break
@@ -781,7 +777,6 @@ class CouchUser(Document, DjangoUserMixin, IsMemberOfMixin, UnicodeMixIn):
             return extended_info
         return [extend_phone(phone) for phone in self.phone_numbers]
 
-
     @property
     def couch_id(self):
         return self._id
@@ -828,7 +823,6 @@ class CouchUser(Document, DjangoUserMixin, IsMemberOfMixin, UnicodeMixIn):
             include_docs=True,
         )
 
-
     def is_previewer(self):
         try:
             from django.conf.settings import PREVIEWER_RE
@@ -860,7 +854,7 @@ class CouchUser(Document, DjangoUserMixin, IsMemberOfMixin, UnicodeMixIn):
             if attr == 'first_name' or attr == 'last_name':
                 attr_val = attr_val[:30]
             setattr(django_user, attr, attr_val)
-        django_user.DO_NOT_SAVE_COUCH_USER= True
+        django_user.DO_NOT_SAVE_COUCH_USER = True
         return django_user
 
     def sync_from_old_couch_user(self, old_couch_user):
@@ -1118,9 +1112,9 @@ class CommCareUser(CouchUser, SingleMembershipMixin, CommCareMobileContactMixin)
 
     def sync_from_old_couch_user(self, old_couch_user):
         super(CommCareUser, self).sync_from_old_couch_user(old_couch_user)
-        self.domain                 = normalize_domain_name(old_couch_user.default_account.domain)
-        self.registering_device_id  = old_couch_user.default_account.registering_device_id
-        self.user_data              = old_couch_user.default_account.user_data
+        self.domain = normalize_domain_name(old_couch_user.default_account.domain)
+        self.registering_device_id = old_couch_user.default_account.registering_device_id
+        self.user_data = old_couch_user.default_account.user_data
 
     @classmethod
     def create(cls, domain, username, password, email=None, uuid='', date='', **kwargs):
@@ -1199,8 +1193,8 @@ class CommCareUser(CouchUser, SingleMembershipMixin, CommCareMobileContactMixin)
                         saved = True
                     except CouchUser.Inconsistent:
                         username = "%(pref)s%(count)s@%(suff)s" % {
-                                     "pref": prefix, "count": to_append,
-                                     "suff": suffix}
+                            "pref": prefix, "count": to_append,
+                            "suff": suffix}
                         to_append = to_append + 1
                 if not saved:
                     raise Exception("There are over 1,000,000 users with that base name in your domain. REALLY?!? REALLY?!?!")
@@ -1472,24 +1466,24 @@ class CommCareUser(CouchUser, SingleMembershipMixin, CommCareMobileContactMixin)
 
         if found:
             caseblock = CaseBlock(
-                create = False,
-                case_id = case._id,
-                version = V2,
-                owner_id = domain.call_center_config.case_owner_id,
-                case_type = domain.call_center_config.case_type,
-                close = close,
-                update = fields
+                create=False,
+                case_id=case._id,
+                version=V2,
+                owner_id=domain.call_center_config.case_owner_id,
+                case_type=domain.call_center_config.case_type,
+                close=close,
+                update=fields
             )
         else:
             fields['hq_user_id'] = commcare_user._id
             caseblock = CaseBlock(
-                create = True,
-                case_id = uuid.uuid4().hex,
-                owner_id = domain.call_center_config.case_owner_id,
-                user_id = commcare_user._id,
-                version = V2,
-                case_type = domain.call_center_config.case_type,
-                update = fields
+                create=True,
+                case_id=uuid.uuid4().hex,
+                owner_id=domain.call_center_config.case_owner_id,
+                user_id=commcare_user._id,
+                version=V2,
+                case_type=domain.call_center_config.case_type,
+                update=fields
             )
 
         casexml = ElementTree.tostring(caseblock.as_xml())
@@ -1539,7 +1533,7 @@ class OrgMembershipMixin(DocumentSchema):
         for i, om in enumerate(self.org_memberships):
             if om.organization == org:
                 if create_record:
-                    record = OrgRemovalRecord(org_membership = om, user_id=self.user_id)
+                    record = OrgRemovalRecord(org_membership=om, user_id=self.user_id)
                 del self.org_memberships[i]
                 break
         if create_record:

@@ -31,9 +31,9 @@ def start_session(domain, contact, app, module, form, case_id=None, yield_respon
     # since the API user is a superuser, force touchforms to query only
     # the contact's cases by specifying it as an additional filterp
     if contact.doc_type == "CommCareCase":
-        session_data["additional_filters"] = { "case_id": contact.get_id }
+        session_data["additional_filters"] = {"case_id": contact.get_id}
     else:
-        session_data["additional_filters"] = { "user_id": contact.get_id }
+        session_data["additional_filters"] = {"user_id": contact.get_id}
     
     language = contact.get_language_code()
     config = XFormsConfig(form_content=form.render_xform(),
@@ -41,13 +41,12 @@ def start_session(domain, contact, app, module, form, case_id=None, yield_respon
                           session_data=session_data,
                           auth=AUTH)
     
-    
     now = datetime.utcnow()
     # just use the contact id as the connection id. may need to revisit this
     connection_id = contact.get_id
     session_id, responses = tfsms.start_session(config)
     session = XFormsSession(connection_id=connection_id,
-                            session_id = session_id,
+                            session_id=session_id,
                             start_time=now, modified_time=now, 
                             form_xmlns=form.xmlns,
                             completed=False, domain=domain,
@@ -138,5 +137,3 @@ def submit_unfinished_form(session_id, include_case_side_effects=False):
         xform.partial_submission = True
         xform.survey_incentive = session.survey_incentive
         xform.save()
-
-

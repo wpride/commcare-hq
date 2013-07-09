@@ -119,7 +119,6 @@ class CaseCountADMColumnForm(ConfigurableADMColumnForm, CaseFilterFormMixin):
         self.fields['case_status'].help_text = "If you use 'Inactivity Milestone' below, you likely " \
                                                 "want to select only 'Open Cases'."
 
-
     def clean(self):
         cleaned_data = super(CaseCountADMColumnForm, self).clean()
         case_types = cleaned_data.get('case_types', [])

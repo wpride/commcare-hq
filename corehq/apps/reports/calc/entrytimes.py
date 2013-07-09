@@ -40,4 +40,3 @@ def get_data(domain, user=None, datespan=None):
         for key, val in thisrow.items():
             data[date][key] = data[date][key] + thisrow[key]
     return all_data
-

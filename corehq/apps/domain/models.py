@@ -98,8 +98,8 @@ class HQBillingAddress(DocumentSchema):
         return mark_safe(address)
 
     def update_billing_address(self, **kwargs):
-        self.country = kwargs.get('country','')
-        self.postal_code = kwargs.get('postal_code','')
+        self.country = kwargs.get('country', '')
+        self.postal_code = kwargs.get('postal_code', '')
         self.state_province = kwargs.get('state_province', '')
         self.city = kwargs.get('city', '')
         self.address = kwargs.get('address', [''])
@@ -118,7 +118,7 @@ class HQBillingDomainMixin(DocumentSchema):
     billable_client = StringProperty()
 
     def update_billing_info(self, **kwargs):
-        self.billing_number = kwargs.get('phone_number','')
+        self.billing_number = kwargs.get('phone_number', '')
         self.billing_address.update_billing_address(**kwargs)
         self.currency_code = kwargs.get('currency_code', settings.DEFAULT_CURRENCY)
 
@@ -345,7 +345,7 @@ class Domain(Document, HQBillingDomainMixin, SnapshotMixin):
 
     @staticmethod
     def all_for_user(user):
-        if not hasattr(user,'get_profile'):
+        if not hasattr(user, 'get_profile'):
             # this had better be an anonymous user
             return []
         from corehq.apps.users.models import CouchUser
@@ -859,14 +859,14 @@ class DomainCounter(Document):
     def get_or_create(cls, domain, name):
         #TODO: Need to make this atomic
         counter = cls.view("domain/counter",
-            key = [domain, name],
+            key=[domain, name],
             include_docs=True
         ).one()
         if counter is None:
-            counter = DomainCounter (
-                domain = domain,
-                name = name,
-                count = 0
+            counter = DomainCounter(
+                domain=domain,
+                name=name,
+                count=0
             )
             counter.save()
         return counter
@@ -887,4 +887,3 @@ class DomainCounter(Document):
                 if num_tries >= 500:
                     raise
         return (range_start, range_end)
-

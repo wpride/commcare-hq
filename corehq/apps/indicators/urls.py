@@ -4,9 +4,8 @@ from corehq.apps.indicators.views import IndicatorAdminCRUDFormView, BulkCopyInd
 
 urlpatterns = patterns('corehq.apps.indicators.views',
    url(r'^$', 'default_admin', name="default_indicator_admin"),
-   url(r'^copy/(?P<indicator_type>[\w_]+)/$', BulkCopyIndicatorsView.as_view(), name="indicator_bulk_copy"),
-   url(r'^form/(?P<form_type>[\w_]+)/(?P<action>[(update)|(new)|(delete)]+)/((?P<item_id>[\w_]+)/)?$',
+    url(r'^copy/(?P<indicator_type>[\w_]+)/$', BulkCopyIndicatorsView.as_view(), name="indicator_bulk_copy"),
+    url(r'^form/(?P<form_type>[\w_]+)/(?P<action>[(update)|(new)|(delete)]+)/((?P<item_id>[\w_]+)/)?$',
        IndicatorAdminCRUDFormView.as_view(), name="indicator_def_form"),
-   IndicatorAdminInterfaceDispatcher.url_pattern(),
+    IndicatorAdminInterfaceDispatcher.url_pattern(),
 )
-

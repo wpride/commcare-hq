@@ -19,7 +19,8 @@ def login_url():
 
 # this is necessary to make the runner happy
 class Transaction(object):
-    def run(self): return
+    def run(self):
+        return
 
 class HQTransaction(object):
     """

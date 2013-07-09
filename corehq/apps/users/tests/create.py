@@ -17,10 +17,10 @@ class CreateTestCase(TestCase):
             user.delete()
         self.xform = XFormInstance()
         self.xform.form = {}
-        self.xform.form['username'] = self.username     = 'test_reg'
-        self.xform.form['password'] = self.password     = '1982'
-        self.xform.form['uuid']     = self.uuid         = 'BXPKZLP49P3DDTJH3W0BRM2HV'
-        self.xform.form['date']     = self.date_string  = '2010-03-23'
+        self.xform.form['username'] = self.username = 'test_reg'
+        self.xform.form['password'] = self.password = '1982'
+        self.xform.form['uuid'] = self.uuid = 'BXPKZLP49P3DDTJH3W0BRM2HV'
+        self.xform.form['date'] = self.date_string = '2010-03-23'
         self.xform.form['registering_phone_id'] = self.registering_device_id = '67QQ86GVH8CCDNSCL0VQVKF7A'
         self.xform.form['user_data'] = {'data': [{'@key': 'user_type', '#text': 'normal'}]}
         self.xform.domain = self.domain = 'mock'
@@ -43,7 +43,6 @@ class CreateTestCase(TestCase):
         django_user = couch_user.get_django_user()
         self.assertEqual(django_user.email, email)
         self.assertEqual(django_user.username, username)
-
 
     def testCreateCompleteWebUser(self):
         """ 
@@ -86,7 +85,7 @@ class CreateTestCase(TestCase):
         self.assertEquals(ccuser.has_permission(domain, permission_to), False)
         webuser.set_role(domain, "field-implementer")
         ccuser.set_role(domain, "field-implementer")
-        self.assertEquals(  webuser.get_domain_membership(domain).role_id,
+        self.assertEquals(webuser.get_domain_membership(domain).role_id,
                             ccuser.get_domain_membership(domain).role_id)
         self.assertEquals(webuser.role_label(), ccuser.role_label())
         self.assertEquals(webuser.has_permission(domain, permission_to), True)
@@ -107,7 +106,6 @@ class CreateTestCase(TestCase):
         self.assertEquals(ccuser.is_member_of(domain), True)
         self.assertEquals(ccuser.get_domain_membership(domain).domain, domain)
 
-
     def _runCreateUserFromRegistrationTest(self):
         """ 
         test creating of couch user from a registration xmlns.
@@ -124,14 +122,13 @@ class CreateTestCase(TestCase):
         self.assertEqual(couch_user.username, format_username(self.username, self.domain))
         self.assertEqual(couch_user.domain, self.domain)
         self.assertEqual(couch_user.user_id, self.uuid)
-        date = datetime.date(datetime.strptime(self.date_string,'%Y-%m-%d'))
+        date = datetime.date(datetime.strptime(self.date_string, '%Y-%m-%d'))
         self.assertEqual(couch_user.created_on, force_to_datetime(date))
         self.assertEqual(couch_user.device_ids[0], self.registering_device_id)
 
         django_user = couch_user.get_django_user()
         self.assertEqual(couch_user.user_id, CouchUser.from_django_user(django_user).user_id)
 
-        
     def testCreateUserFromRegistration(self):
         self._runCreateUserFromRegistrationTest()
     
@@ -154,7 +151,6 @@ class CreateTestCase(TestCase):
         # make sure they got different usernames
         self.assertEqual("test_reg", first_user.username.split("@")[0])
         self.assertEqual("test_reg2", second_user.username.split("@")[0])
-        
         
     def testEditUserFromRegistration(self):
         """
@@ -211,4 +207,3 @@ class CreateTestCase(TestCase):
         updated_user, created = CommCareUser.create_or_update_from_xform(xform) 
         self.assertEqual(second_user.get_id, updated_user.get_id)
         self.assertEqual("new_user", updated_user.username.split("@")[0])
-                

@@ -76,7 +76,8 @@ class RepeaterTest(TestCase):
         )
 
     def clear_log(self):
-        for i in range(len(self.log)): self.log.pop()
+        for i in range(len(self.log)):
+            self.log.pop()
 
     def make_post_fn(self, status_codes):
         status_codes = iter(status_codes)
@@ -95,7 +96,6 @@ class RepeaterTest(TestCase):
         for repeat_record in repeat_records:
             repeat_record.delete()
 
-
     def test_repeater(self):
 
         CommCareCase.get(case_id)
@@ -103,12 +103,10 @@ class RepeaterTest(TestCase):
         def now():
             return datetime.utcnow()
 
-
         repeat_records = RepeatRecord.all(domain=self.domain, due_before=now())
         self.assertEqual(len(repeat_records), 2)
 
         self.clear_log()
-
 
         for repeat_record in repeat_records:
             repeat_record.fire(post_fn=self.make_post_fn([404, 404, 404]))
@@ -144,7 +142,6 @@ class RepeaterTest(TestCase):
             self.assertEqual(repeat_record.succeeded, True)
             self.assertEqual(repeat_record.next_check, None)
 
-
         repeat_records = RepeatRecord.all(domain=self.domain, due_before=now())
         self.assertEqual(len(repeat_records), 0)
 
@@ -167,4 +164,3 @@ class RepeaterLockTest(TestCase):
         r.release_lock()
         r4 = RepeatRecord.get(r._id)
         self.assertTrue(r4.acquire_lock(datetime.utcnow()))
-        

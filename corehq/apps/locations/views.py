@@ -118,4 +118,3 @@ def sync_facilities(request, domain):
             r.delete()
 
     return HttpResponse('OK')
-

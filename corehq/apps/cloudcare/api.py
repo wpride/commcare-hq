@@ -130,7 +130,7 @@ class CaseAPIHelper(object):
 
     def get_all(self, domain):
         key = [domain, self.case_type or {}, {}]
-        view_name = 'hqcase/open_cases' if self.status==CASE_STATUS_OPEN else 'hqcase/all_cases'
+        view_name = 'hqcase/open_cases' if self.status == CASE_STATUS_OPEN else 'hqcase/all_cases'
         view_results = CommCareCase.get_db().view(
             view_name,
             startkey=key,
@@ -227,7 +227,7 @@ class ElasticCaseQuery(object):
         
     @property
     def date_modified_start(self):
-        return self._date_modified_start or datetime(1970,1,1).strftime("%Y-%m-%d")
+        return self._date_modified_start or datetime(1970, 1, 1).strftime("%Y-%m-%d")
         
     @property
     def date_modified_end(self):
@@ -235,7 +235,7 @@ class ElasticCaseQuery(object):
         
     @property
     def server_date_modified_start(self):
-        return self._server_date_modified_start or datetime(1970,1,1).strftime("%Y-%m-%d")
+        return self._server_date_modified_start or datetime(1970, 1, 1).strftime("%Y-%m-%d")
         
     @property
     def server_date_modified_end(self):
@@ -243,8 +243,8 @@ class ElasticCaseQuery(object):
         
     @property
     def scrubbed_filters(self):
-        return dict( (k, v) for k, v in self.filters.items()
-                     if k not in self.RESERVED_KEYS and not k.endswith('__full') )
+        return dict((k, v) for k, v in self.filters.items()
+                     if k not in self.RESERVED_KEYS and not k.endswith('__full'))
         
     def _modified_params(self, key, start, end):
         return {
@@ -299,7 +299,6 @@ def es_filter_cases(domain, filters=None):
     (Domain, Filters?) -> [CommCareCase]
     """
     
-    
     q = ElasticCaseQuery(domain, filters)
     res = get_es().get('hqcases/_search', data=q.get_query())
     # this is ugly, but for consistency / ease of deployment just
@@ -338,5 +337,3 @@ def get_app(domain, app_id):
     app = Application.get(app_id)
     assert(app.domain == domain)
     return app._doc
-
-

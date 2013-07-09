@@ -163,6 +163,6 @@ class SummingTabularReport(BasicTabularReport):
         for i in range(num_cols):
             colrows = [cr[i] for cr in ret if isinstance(cr[i], dict)]
             colnums = [r.get('sort_key') for r in colrows if isinstance(r.get('sort_key'), (int, long))]
-            total_row.append(reduce(lambda x, y: x+ y, colnums, 0))
+            total_row.append(reduce(lambda x, y: x + y, colnums, 0))
         self.total_row = total_row
         return ret

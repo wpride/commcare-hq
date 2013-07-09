@@ -40,4 +40,3 @@ class Command(LabelCommand):
                 print submission._id, username, userID
             else:
                 print "skipped: %s" % submission._id
-

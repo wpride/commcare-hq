@@ -32,7 +32,7 @@ class Command(BaseCommand):
             print "%s\t%s\t%s\t%s\t%s" % (form._id, form.received_on,
                               form.xmlns,
                               form.xpath('form/meta/username'),
-                              form.problem.strip())
+                form.problem.strip())
             if not options["dryrun"]:
                 try:
                     reprocess_form_cases(form)

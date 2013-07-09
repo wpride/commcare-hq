@@ -192,7 +192,6 @@ class testPillowTopProcessing(TestCase):
         self.assertIsNone(changed['form']['case']['@date_modified'])
         self.assertIsNotNone(xform['form']['case']['@date_modified'])
 
-
     def testXFormPillowListCaseProcess(self):
         """
         Test that xform pillow can process and cleanup a single xform with a list of cases in it
@@ -201,11 +200,8 @@ class testPillowTopProcessing(TestCase):
         pillow = XFormPillow(create_index=False, online=False)
         changed = pillow.change_transform(xform)
 
-
         changed_cases = extract_case_blocks(changed)
         orig_cases = extract_case_blocks(xform)
 
-
         [self.assertIsNotNone(x['@date_modified']) for x in orig_cases]
         [self.assertIsNone(x['@date_modified']) for x in changed_cases]
-

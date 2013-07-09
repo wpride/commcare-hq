@@ -15,7 +15,7 @@ from couchexport.tasks import cache_file_to_be_served
 
 logging = get_task_logger(__name__)
 
-@periodic_task(run_every=crontab(hour=[8,14], minute="0", day_of_week="*"))
+@periodic_task(run_every=crontab(hour=[8, 14], minute="0", day_of_week="*"))
 def check_es_index():
     """
     Verify that the Case and soon to be added XForm Elastic indices are up to date with what's in couch
@@ -32,12 +32,12 @@ def check_es_index():
     do_notify = False
     message = []
     if es_status[CLUSTER_HEALTH] == 'red':
-        do_notify=True
+        do_notify = True
         message.append("Cluster health is red - something is up with the ES machine")
 
-    for prefix in ['hqcases', 'xforms','cc_exchange']:
+    for prefix in ['hqcases', 'xforms', 'cc_exchange']:
         if es_status.get('%s_status' % prefix, False) == False:
-            do_notify=True
+            do_notify = True
             message.append("Elasticsearch %s Index Issue: %s" % (prefix, es_status['%s_message' % prefix]))
 
     if do_notify:
@@ -88,7 +88,7 @@ def weekly_reports():
     for rep in reps:
         send_report.delay(rep._id)
 
-@periodic_task(run_every=crontab(hour=[0,12], minute="0", day_of_week="*"))
+@periodic_task(run_every=crontab(hour=[0, 12], minute="0", day_of_week="*"))
 def saved_exports():    
     for row in HQGroupExportConfiguration.view("groupexport/by_domain", reduce=False).all():
         export_for_group(row["id"], "couch")

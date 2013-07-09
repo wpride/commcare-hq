@@ -12,10 +12,9 @@ class Command(BaseCommand):
         (make_option('--cleanup', action='store_true', dest='cleanup', default=False,
             help="Cleanup any forms matched to a single domain by reprocessing them."),)
 
-
     def handle(self, *args, **options):
         forms = all_forms_without_domains()
-        headers = ['id','xmlns','username','received_on','domain','# matched domains']
+        headers = ['id', 'xmlns', 'username', 'received_on', 'domain', '# matched domains']
         if not options["cleanup"]:
             print ','.join(headers)
         for f in forms:
@@ -40,4 +39,3 @@ def all_forms_without_domains():
         endkey=["completion", None, {}],
         include_docs=True,
     )
-

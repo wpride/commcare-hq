@@ -7,4 +7,3 @@ def sms_in(request):
     message = request.GET.get("message")
     incoming_sms(sender, message, "YO")
     return HttpResponse("OK")
-

@@ -21,7 +21,7 @@ def open_cases_json(request, domain):
 
     cases = CommCareCase.view('hqcase/open_cases', startkey=[domain], endkey=[domain, {}], reduce=False, include_docs=True)
 
-    user_id_to_type_to_cases = defaultdict(lambda:defaultdict(list))
+    user_id_to_type_to_cases = defaultdict(lambda: defaultdict(list))
     for case in cases:
         case_json = deepcopy(case.to_json())
         user_id_to_type_to_cases[case.user_id][case.type].append(case_json)
@@ -38,7 +38,7 @@ def open_cases_json(request, domain):
 
     usercases = [{
         "username": user_id_to_username(user_id),
-        "cases": [{"type": type, "cases":cases} for (type, cases) in type_to_cases.items()]
+        "cases": [{"type": type, "cases": cases} for (type, cases) in type_to_cases.items()]
     } for (user_id, type_to_cases) in user_id_to_type_to_cases.items()]
     usercases.sort(key=lambda x: x['username'])
     return HttpResponse(json.dumps(usercases))

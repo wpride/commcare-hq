@@ -9,4 +9,3 @@ def deidentify_app(doctransform):
         if doctransform.doc["name"] in settings.DOMAIN_SYNC_APP_NAME_MAP:
             doctransform.doc["name"] = settings.DOMAIN_SYNC_APP_NAME_MAP[doctransform.doc["name"]]
     return doctransform
-    
