@@ -98,7 +98,7 @@ def get_group_params(domain, group='', users=None, user_id_only=False, **kwargs)
     return group, users
 
 
-def get_all_users_by_domain(domain=None, group=None, individual=None,
+def get_all_users_by_domain(domain=None, group=None, user_ids=None,
                             user_filter=None, simplified=False, CommCareUser=None):
     """
         WHEN THERE ARE A LOT OF USERS, THIS IS AN EXPENSIVE OPERATION.
@@ -113,9 +113,9 @@ def get_all_users_by_domain(domain=None, group=None, individual=None,
         if not isinstance(group, Group):
             group = Group.get(group)
         users = group.get_users(only_commcare=True)
-    elif individual:
+    elif user_ids is not None:
         try:
-            users = [CommCareUser.get_by_user_id(individual)]
+            users = [CommCareUser.get_by_user_id(id) for id in user_ids]
         except Exception:
             users = []
         if users and users[0] is None:
@@ -157,7 +157,6 @@ def get_all_userids_submitted(domain):
         startkey=[domain],
         endkey=[domain, {}],
         group=True,
-        stale='ok',
     ).all()
     return [user['key'][1] for user in submitted]
 
@@ -176,8 +175,7 @@ def get_username_from_forms(domain, user_id):
         'reports_forms/all_forms',
         startkey=key,
         limit=1,
-        reduce=False,
-        stale='ok',
+        reduce=False
     ).one()
     username = HQUserType.human_readable[HQUserType.ADMIN]
     try:
