@@ -11,12 +11,6 @@ CHILD_FOLLOWUP_XMLNS = 'http://openrosa.org/formdesigner/d2401a55c30432c0881f8a2
 def _default_date(form):
     return form.received_on
 
-def _is_child_registration(form):
-    return form.xmlns == CHILD_REGISTRATION_XMLNS
-
-def is_adult_registration(form):
-    return form.xmlns == ADULT_REGISTRATION_XMLNS
-
 # operators
 EQUAL = lambda expected, reference: expected == reference
 NOT_EQUAL = lambda expected, reference: expected != reference
