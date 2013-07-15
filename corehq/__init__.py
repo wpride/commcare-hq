@@ -5,6 +5,7 @@ import phonelog.reports as phonelog
 from corehq.apps.reports.commtrack import psi_prototype
 from corehq.apps.reports.commtrack import standard as commtrack_reports
 from corehq.apps.reports.commtrack import maps as commtrack_maps
+from corehq.apps.reminders import reports as reminders_reports
 
 from django.utils.translation import ugettext_noop as _
 
@@ -55,6 +56,7 @@ def REPORTS(project):
         sms.MessageLogReport,
         ivr.CallLogReport,
         ivr.ExpectedCallbackReport,
+        reminders_reports.RemindersInErrorReport,
     ))
     if project.commconnect_only:
         reports.insert(0, messaging)
