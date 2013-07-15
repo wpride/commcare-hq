@@ -112,21 +112,22 @@ class MalariaConsortiumFluff(fluff.IndicatorDocument):
     diagnosed_diarrhea = calculators.ORCalculator(
          [internal_diagnosed_diarrhea_child, internal_diagnosed_diarrhea_adult]
     )
-    internal_diagnosed_resp_inf_child = calculators.FilteredFormPropertyCalculator(
+    internal_diagnosed_ari_child = calculators.FilteredFormPropertyCalculator(
         xmlns=calculators.CHILD_REGISTRATION_XMLNS,
         property_path='form/self_report/diagnosis_given',
         property_value='3',
     )
-    internal_diagnosed_resp_inf_adult  = calculators.FilteredFormPropertyCalculator(
+    # ari = acute resperatory infection
+    internal_diagnosed_ari_adult  = calculators.FilteredFormPropertyCalculator(
         xmlns=calculators.ADULT_REGISTRATION_XMLNS,
         property_path='form/self_report/diagnosis_given',
         property_value='pneumonia',
     )
-    diagnosed_resp_inf = calculators.ORCalculator(
-         [internal_diagnosed_resp_inf_child, internal_diagnosed_resp_inf_adult]
+    diagnosed_ari = calculators.ORCalculator(
+         [internal_diagnosed_ari_child, internal_diagnosed_ari_adult]
     )
     diagnosed_total = calculators.ORCalculator(
-        [diagnosed_malaria_child, diagnosed_malaria_adult, diagnosed_diarrhea, diagnosed_resp_inf]
+        [diagnosed_malaria_child, diagnosed_malaria_adult, diagnosed_diarrhea, diagnosed_ari]
     )
 
     # treated cases
@@ -171,13 +172,133 @@ class MalariaConsortiumFluff(fluff.IndicatorDocument):
     treated_diarrhea = calculators.ORCalculator(
          [internal_diagnosed_and_treated_diarrhea_child, internal_diagnosed_and_treated_diarrhea_adult]
     )
+    internal_treated_ari_child= calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.CHILD_REGISTRATION_XMLNS,
+        property_path='form/self_report/treatment_given',
+        property_value=set(['1', '2']),
+        operator=calculators.IN,
+    )
+    internal_diagnosed_and_treated_ari_child = calculators.ANDCalculator(
+         [internal_diagnosed_ari_child, internal_treated_ari_child]
+    )
+    internal_treated_ari_adult = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.ADULT_REGISTRATION_XMLNS,
+        property_path='form/self_report/treatment_given',
+        property_value=set(['1', '2']),
+        operator=calculators.IN,
+    )
+    internal_diagnosed_and_treated_ari_adult = calculators.ANDCalculator(
+         [internal_diagnosed_ari_adult, internal_treated_ari_adult]
+    )
+    treated_ari = calculators.ORCalculator(
+        [internal_diagnosed_and_treated_ari_child, internal_diagnosed_and_treated_ari_adult]
+    )
+    treated_total = calculators.ORCalculator(
+        [treated_malaria, treated_diarrhea, treated_ari]
+    )
 
     # transfers
-    transfer_to_prenatal_consult = calculators.FilteredFormPropertyCalculator(
+    internal_transfer_malnutrition_child = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.CHILD_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='5',
+    )
+    internal_transfer_malnutrition_adult = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.ADULT_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='5',
+    )
+    transfer_malnutrition = calculators.ORCalculator(
+        [internal_transfer_malnutrition_child, internal_transfer_malnutrition_adult]
+    )
+    internal_transfer_incomplete_vaccination_child = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.CHILD_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='3',
+    )
+    internal_transfer_incomplete_vaccination_newborn = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.NEWBORN_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='3',
+    )
+    internal_transfer_incomplete_vaccination_adult = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.ADULT_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='3',
+    )
+    transfer_incomplete_vaccination = calculators.ORCalculator([
+        internal_transfer_incomplete_vaccination_child,
+        internal_transfer_incomplete_vaccination_newborn,
+        internal_transfer_incomplete_vaccination_adult,
+    ])
+    internal_transfer_danger_signs_child = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.CHILD_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='1',
+    )
+    internal_transfer_danger_signs_newborn = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.NEWBORN_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='1',
+    )
+    internal_transfer_danger_signs_adult = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.ADULT_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='1',
+    )
+    transfer_danger_signs = calculators.ORCalculator([
+        internal_transfer_danger_signs_child,
+        internal_transfer_danger_signs_newborn,
+        internal_transfer_danger_signs_adult,
+    ])
+    transfer_prenatal_consult = calculators.FilteredFormPropertyCalculator(
         xmlns=calculators.ADULT_REGISTRATION_XMLNS,
         property_path='form/self_report/referral_given_reason',
         property_value='6',
     )
+    internal_transfer_missing_malaria_meds_child = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.CHILD_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='7',
+    )
+    internal_transfer_missing_malaria_meds_adult = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.ADULT_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='7',
+    )
+    transfer_missing_malaria_meds = calculators.ORCalculator(
+        [internal_transfer_missing_malaria_meds_child, internal_transfer_missing_malaria_meds_adult]
+    )
+    internal_transfer_other_child = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.CHILD_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value=set(['0', '6']),
+        operator=calculators.IN,
+    )
+    internal_transfer_other_newborn = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.NEWBORN_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value=set(['0', '2', '4']),
+        operator=calculators.IN,
+    )
+    internal_transfer_other_adult = calculators.FilteredFormPropertyCalculator(
+        xmlns=calculators.ADULT_REGISTRATION_XMLNS,
+        property_path='form/self_report/referral_given_reason',
+        property_value='0',
+    )
+    transfer_other = calculators.ORCalculator([
+        internal_transfer_other_child,
+        internal_transfer_other_newborn,
+        internal_transfer_other_adult,
+    ])
+    transfer_total = calculators.ORCalculator([
+        transfer_malnutrition,
+        transfer_incomplete_vaccination,
+        transfer_danger_signs,
+        transfer_prenatal_consult,
+        transfer_missing_malaria_meds,
+        transfer_other,
+    ])
 
     class Meta:
         app_label = 'mc'
