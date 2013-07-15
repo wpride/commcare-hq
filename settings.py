@@ -234,6 +234,7 @@ HQ_APPS = (
     'a5288',
     'benin',
     'bihar',
+    'mc',
     'dca',
     'hsph',
     'mvp',
@@ -647,6 +648,8 @@ COUCHDB_DATABASES = [make_couchdb_tuple(app_label, COUCH_DATABASE) for app_label
 COUCHDB_DATABASES += [
     ('bihar', COUCH_DATABASE + '__fluff-bihar'),
     ('fluff', COUCH_DATABASE + '__fluff-bihar'),
+    ('mc', COUCH_DATABASE + '__fluff-mc'),
+    ('fluff', COUCH_DATABASE + '__fluff-mc'),
 ]
 
 INSTALLED_APPS += LOCAL_APPS
@@ -726,16 +729,17 @@ INDICATOR_CONFIG = {
 CASE_WRAPPER = 'corehq.apps.hqcase.utils.get_case_wrapper'
 
 PILLOWTOPS = [
-                 'corehq.pillows.case.CasePillow',
-                 'corehq.pillows.fullcase.FullCasePillow',
-                 'corehq.pillows.xform.XFormPillow',
-                 'corehq.pillows.fullxform.FullXFormPillow',
-                 'corehq.pillows.domain.DomainPillow',
-                 'corehq.pillows.user.UserPillow',
-                 'corehq.pillows.commtrack.ConsumptionRatePillow',
+                 # 'corehq.pillows.case.CasePillow',
+                 # 'corehq.pillows.fullcase.FullCasePillow',
+                 # 'corehq.pillows.xform.XFormPillow',
+                 # 'corehq.pillows.fullxform.FullXFormPillow',
+                 # 'corehq.pillows.domain.DomainPillow',
+                 # 'corehq.pillows.user.UserPillow',
+                 # 'corehq.pillows.commtrack.ConsumptionRatePillow',
 
                  # fluff
-                 'bihar.models.CareBiharFluffPillow',
+                 # 'bihar.models.CareBiharFluffPillow',
+                 'mc.models.MalariaConsortiumFluffPillow',
              ] + LOCAL_PILLOWTOPS
 
 
