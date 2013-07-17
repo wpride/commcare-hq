@@ -1,3 +1,4 @@
+from corehq.fluff.calculators.xform import IntegerPropertyReference
 from couchforms.models import XFormInstance
 import fluff
 from corehq.fluff.calculators import xform as xcalculators
@@ -32,25 +33,25 @@ class MalariaConsortiumFluff(fluff.IndicatorDocument):
         property_path='form/post_partum',
         property_value='1',
     )
-    internal_home_visits_newborn_reg = xcalculators.FilteredFormPropertyCalculator(
+    home_visits_newborn_reg = xcalculators.FilteredFormPropertyCalculator(
         xmlns=NEWBORN_REGISTRATION_XMLNS,
     )
     internal_home_visits_newborn_followup = xcalculators.FilteredFormPropertyCalculator(
         xmlns=NEWBORN_FOLLOWUP_XMLNS,
     )
     home_visits_newborn = xcalculators.FormORCalculator(
-         [internal_home_visits_newborn_reg, internal_home_visits_newborn_followup]
+         [home_visits_newborn_reg, internal_home_visits_newborn_followup]
     )
-    internal_home_visits_child_reg = xcalculators.FilteredFormPropertyCalculator(
+    home_visits_child_reg = xcalculators.FilteredFormPropertyCalculator(
         xmlns=CHILD_REGISTRATION_XMLNS,
     )
     internal_home_visits_child_followup = xcalculators.FilteredFormPropertyCalculator(
         xmlns=CHILD_FOLLOWUP_XMLNS,
     )
     home_visits_children = xcalculators.FormORCalculator(
-         [internal_home_visits_child_reg, internal_home_visits_child_followup]
+         [home_visits_child_reg, internal_home_visits_child_followup]
     )
-    internal_home_visits_non_pregnant = xcalculators.FilteredFormPropertyCalculator(
+    home_visits_non_pregnant = xcalculators.FilteredFormPropertyCalculator(
         xmlns=ADULT_REGISTRATION_XMLNS,
         property_path='form/pregnant',
         property_value='1',
@@ -60,7 +61,7 @@ class MalariaConsortiumFluff(fluff.IndicatorDocument):
         xmlns=ADULT_FOLLOWUP_XMLNS,
     )
     home_visits_other = xcalculators.FormORCalculator(
-         [internal_home_visits_non_pregnant, internal_home_visits_adult_followup]
+         [home_visits_non_pregnant, internal_home_visits_adult_followup]
     )
     home_visits_total = xcalculators.FormORCalculator(
         [home_visits_pregnant, home_visits_postpartem, home_visits_newborn, home_visits_children, home_visits_other]
@@ -307,6 +308,35 @@ class MalariaConsortiumFluff(fluff.IndicatorDocument):
         transfer_missing_malaria_meds,
         transfer_other,
     ])
+
+    # deaths
+    deaths_newborn = xcalculators.FilteredFormPropertyCalculator(
+        xmlns=WEEKLY_SUMMARY_XMLNS,
+        indicator_calculator=IntegerPropertyReference('form/deaths/deaths_newborns'),
+    )
+    deaths_children = xcalculators.FilteredFormPropertyCalculator(
+        xmlns=WEEKLY_SUMMARY_XMLNS,
+        indicator_calculator=IntegerPropertyReference('form/deaths/deaths_children'),
+    )
+    deaths_mothers = xcalculators.FilteredFormPropertyCalculator(
+        xmlns=WEEKLY_SUMMARY_XMLNS,
+        indicator_calculator=IntegerPropertyReference('form/deaths/deaths_mothers'),
+    )
+    deaths_other = xcalculators.FilteredFormPropertyCalculator(
+        xmlns=WEEKLY_SUMMARY_XMLNS,
+        indicator_calculator=IntegerPropertyReference('form/deaths/deaths_others'),
+    )
+    deaths_total = xcalculators.FormSUMCalculator([
+        deaths_newborn, deaths_children, deaths_mothers, deaths_other
+    ])
+    heath_ed_talks = xcalculators.FilteredFormPropertyCalculator(
+        xmlns=WEEKLY_SUMMARY_XMLNS,
+        indicator_calculator=IntegerPropertyReference('form/he/he_number'),
+    )
+    heath_ed_participants = xcalculators.FilteredFormPropertyCalculator(
+        xmlns=WEEKLY_SUMMARY_XMLNS,
+        indicator_calculator=IntegerPropertyReference('form/he/he_number_participants'),
+    )
 
     class Meta:
         app_label = 'mc'
