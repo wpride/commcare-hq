@@ -778,6 +778,7 @@ DOMAIN_MODULE_MAP = {
     'eagles-fahu': 'dca',
     'hsph-dev': 'hsph',
     'hsph-betterbirth-pilot-2': 'hsph',
+    'mc-inscale': 'mc',
     'mvp-potou': 'mvp',
     'mvp-sauri': 'mvp',
     'mvp-bonsaaso': 'mvp',
