@@ -1,7 +1,6 @@
 {% extends "reports/async/tabular.html" %}
 {% load i18n %}
 {% block tabular-body %}
-<h1>foo</h1>
 {% if report_table.pagination.is_on %}
     <tr>
         <td colspan="{{ report_table.headers.header|length }}" class="dataTables_empty">
