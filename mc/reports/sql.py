@@ -85,7 +85,7 @@ HF_MONTHLY_REPORT = [
 
 def transpose(columns, data):
     return [[column.data_tables_column.html] + [r[i] for r in data] \
-            for i, column in enumerate(columns) if i != 0]
+            for i, column in enumerate(columns)]
 
 class Section(SqlData):
     """
