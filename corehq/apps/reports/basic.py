@@ -148,7 +148,6 @@ class BasicTabularReport(GenericTabularReport):
 
         for key in self.keys:
             row = self.View.get_result(key, **kwargs)
-
             yield [format_datatables_data(row[c], row[c]) if c in self.View.key_views
                           else self.function_views[c].view(key, self)
                    for c in self.default_column_order]
