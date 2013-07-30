@@ -106,7 +106,7 @@ class Section(SqlData):
     @property
     @memoized
     def columns(self):
-        return [DatabaseColumn(slug, '%s_total' % slug) for slug in self.section_def['columns']]
+        return [DatabaseColumn(slug, SumColumn('%s_total' % slug)) for slug in self.section_def['columns']]
 
     @property
     @memoized
@@ -148,7 +148,7 @@ class HeathFacilityMonthly(SqlTabularReport, CustomProjectReport, DatespanMixin)
 
     @property
     def columns(self):
-        user = DatabaseColumn("User", "user_id", column_type=SimpleColumn)
+        user = DatabaseColumn("User", SimpleColumn("user_id"))
         columns = [user]
         for section in self.sections:
             columns.extend(section.columns)
