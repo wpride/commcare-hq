@@ -553,6 +553,10 @@ class AsyncDrillableField(BaseReportFilter):
         return lineage
 
     @property
+    def api_metadata(self):
+        raise NotImplementedError()
+
+    @property
     def filter_context(self):
         root_fdis = [self.fdi_to_json(f) for f in FixtureDataItem.by_data_type(self.domain, self.data_types(0).get_id)]
 

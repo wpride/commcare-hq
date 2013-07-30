@@ -9,6 +9,9 @@ from corehq.apps.api.resources.v0_1 import CustomResourceMeta
 from corehq.apps.reports.datatables import DataTablesColumnGroup
 from corehq.apps.reports.filters.base import BaseReportFilter, BaseSingleOptionFilter
 
+CONFIG_DATA_TYPES = ['boolean', 'string', 'integer', 'date', 'datetime',
+                     'singleselect', 'multiselect', 'drilldown']
+
 
 class BaseModel(object):
     """
@@ -24,11 +27,13 @@ class BaseModel(object):
         if not len(args) == len(self.fields):
             raise Exception("Unexpected fields. Expected '%s', got '%s'" % (self.fields, args))
 
-        self._attrs = dict(zip(self.fields, args))
-        for f in self.optional_fields:
-            v = kwargs.get(f, None)
-            if v:
-                self._attrs[f] = v
+        for field, value in dict(zip(self.fields, args)).items():
+            setattr(self, field, value)
+
+        for field in self.optional_fields:
+            value = kwargs.get(field, None)
+            if value:
+                setattr(self, field, value)
 
         self.validate()
 
@@ -36,7 +41,16 @@ class BaseModel(object):
         pass
 
     def to_json(self):
-        return self._attrs
+        d = dict()
+        for f in self.fields:
+            d[f] = getattr(self, f)
+
+        for f in self.optional_fields:
+            val = getattr(self, f, None)
+            if val:
+                d[f] = val
+
+        return d
 
 
 class BaseReportResourceModel(object):
@@ -74,8 +88,8 @@ class ConfigItem(BaseModel):
     optional_fields = ['options', 'default', 'description']
 
     def validate(self):
-        if self._attrs['data_type'] not in ['string', 'integer', 'date', 'datetime', 'select']:
-            return False
+        if self.data_type not in CONFIG_DATA_TYPES:
+            raise ValueError('Unexpected value for data_type: %s' % self.data_type)
 
 
 class Indicator(BaseModel):
@@ -114,19 +128,23 @@ class ReportResource(DetailURIResource, JsonResource):
     name = fields.CharField(attribute='name', readonly=True)
     config = fields.ListField(attribute='config', readonly=True)
     indicators = fields.ListField(attribute='indicators', readonly=True)
-    groups = fields.ListField(attribute='indicator_groups', readonly=True, null=True)
+    indicator_groups = fields.ListField(attribute='indicator_groups', readonly=True, null=True)
     results = fields.ListField(attribute='results', readonly=True, null=True)
 
     def dehydrate(self, bundle):
         full = bundle.request.GET.get('full')
-        if full or not bundle.obj.results:
+        has_results = bool(bundle.obj.results)
+        if full or not has_results:
             for f in self.meta_fields:
-                v = getattr(bundle.obj, f) or []
+                v = getattr(bundle.obj, f, None) or []
                 bundle.data[f] = [a.to_json() for a in v]
 
-        if not full and bundle.obj.results:
+        if not full and has_results:
             for f in self.meta_fields:
                 del bundle.data[f]
+
+        if not has_results:
+            del bundle.data['results']
 
         return bundle
 
@@ -150,6 +168,8 @@ class ReportResource(DetailURIResource, JsonResource):
         object_class = BaseReportResourceModel
         resource_name = 'report'
         detail_uri_name = 'slug'
+        allowed_methods = ['get']
+        collection_name = 'reports'
 
 
 class GenericTabularReportAPIMixin(BaseReportResourceModel):
@@ -213,7 +233,7 @@ class GenericTabularReportAPIMixin(BaseReportResourceModel):
             for i, ind in enumerate(self.indicators):
                 value = r[i].get('sort_key') if isinstance(r[i], dict) else r[i]
                 if value not in self.value_excludes:
-                    row[ind._attrs['slug']] = value
+                    row[ind.slug] = value
 
             results.append(row)
 

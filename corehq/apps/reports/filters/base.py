@@ -1,6 +1,7 @@
 import pytz
 from django.template.loader import render_to_string
 #from corehq.apps.reports.cache import CacheableRequestMixIn, request_cache
+from corehq.apps.reports.api import ConfigItemMeta, CONFIG_TYPE_SINGLE_SELECT
 from dimagi.utils.decorators.memoized import memoized
 # For translations
 from django.utils.translation import ugettext as _
@@ -13,12 +14,14 @@ class BaseReportFilter(object):   # (CacheableRequestMixIn):
         slug => the parameter you get back from the request
         template => the template to render this filter
         label => the filter's label
+        data_type => the data type of the parameter value. See corehq.apps.reports.api.CONFIG_DATA_TYPES
     """
     slug = None
     template = None
     label = None
     css_class = "span4"
     help_text = None
+    data_type = None
 
     def __init__(self, request, domain=None, timezone=pytz.utc, parent_report=None):
         if self.slug is None:
@@ -48,6 +51,13 @@ class BaseReportFilter(object):   # (CacheableRequestMixIn):
         """
         raise NotImplementedError("filter_context must be overridden")
 
+    @property
+    def api_metadata(self):
+        """
+        Metadata for the Report API. See corehq.apps.reports.api.ConfigItemMeta
+        """
+        return [dict(slug=self.slug, name=self.label, data_type=self.data_type, help_text=self.help_text)]
+
     def render(self):
         if self.is_disabled:
             return ""
@@ -75,6 +85,7 @@ class BaseSingleOptionFilter(BaseReportFilter):
     """
     template = "reports/filters/single_option.html"
     default_text = ugettext_noop("Filter by...")
+    data_type = CONFIG_TYPE_SINGLE_SELECT
 
     @property
     def options(self):
@@ -114,6 +125,16 @@ class BaseSingleOptionFilter(BaseReportFilter):
         if value in valid_options:
             return value
         return None
+
+    @property
+    def api_metadata(self):
+        meta = super(BaseSingleOptionFilter, self).api_metadata[0]
+
+        options = map(lambda o: dict(value=o[0], display=o[1]), self.options)
+        meta['options'] = options
+        meta['default'] = self.selected
+
+        return [meta]
 
 
 class BaseSingleOptionTypeaheadFilter(BaseSingleOptionFilter):
@@ -257,5 +278,9 @@ class BaseDrilldownOptionFilter(BaseReportFilter):
     def get_value(cls, request, domain):
         instance = cls(request, domain)
         return instance.GET_values, instance
+
+    @property
+    def api_metadata(self):
+        raise NotImplementedError()
 
 

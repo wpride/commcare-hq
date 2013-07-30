@@ -1,11 +1,13 @@
 # coding=utf-8
+from django.template.defaultfilters import slugify
 from sqlagg.columns import SimpleColumn
 import sqlalchemy
 import sqlagg
+from corehq.apps.reports.api import ApiCompatibleReport, IndicatorMeta, IndicatorGroupMeta
 
 from corehq.apps.reports.basic import GenericTabularReport
 from corehq.apps.reports.datatables import DataTablesHeader, \
-    DataTablesColumn, DTSortType
+    DataTablesColumn, DTSortType, DataTablesColumnGroup
 from dimagi.utils.decorators.memoized import memoized
 from django.conf import settings
 from corehq.apps.reports.util import format_datatables_data
@@ -45,9 +47,23 @@ class Column(object):
         """
         raise NotImplementedError()
 
+    @property
+    def name(self):
+        """
+        Display name for this column.
+        """
+        pass
+
+    @property
+    def slug(self):
+        """
+        Unique ID for this column.
+        """
+        pass
+
 
 class DatabaseColumn(Column):
-    def __init__(self, header, name, column_type=sqlagg.SumColumn, format_fn=None, *args, **kwargs):
+    def __init__(self, header, name, column_type=sqlagg.SumColumn, format_fn=None, slug=None, *args, **kwargs):
         """
         Args:
             :param header:
@@ -70,6 +86,8 @@ class DatabaseColumn(Column):
             :param format_fn=None:
                 Function to apply to value before display. Useful for formatting and sorting.
                 See corehq.apps.reports.util.format_datatables_data
+            :param slug=None:
+                Unique ID for the column. If not supplied assumed to be 'name'.
             :param alias=None:
                 The alias to use for the column (optional). Should only contain a-z, A-Z, 0-9 and '_' characters.
                 This is useful if you want to select data from the same table column more than once in a single report.
@@ -97,6 +115,9 @@ class DatabaseColumn(Column):
                 column_kwargs[arg] = kwargs.pop(arg)
             except KeyError:
                 pass
+
+        self.name = header
+        self.slug = slug or name
 
         if 'sortable' not in kwargs:
             kwargs['sortable'] = True
@@ -137,6 +158,8 @@ class AggregateColumn(Column):
             :param format_fn=None:
                 Function to apply to value before display. Useful for formatting and sorting.
                 See corehq.apps.reports.util.format_datatables_data
+            :param slug=None:
+                Unique ID for the column. If not supplied assumed to be slugify(header).
             :param sortable:
                 Indicates if the column should be sortable. If true and no format_fn is provided then
                 the default datatables format function is used. Defaults to True.
@@ -153,6 +176,10 @@ class AggregateColumn(Column):
             kwargs['sort_type'] = DTSortType.NUMERIC
             format_fn = format_fn or format_data
 
+        self.name = header
+        self.slug = kwargs.pop('slug', None) or slugify(header)
+
+        self.header = header
         self.header_group = kwargs.pop('header_group', None)
         self.data_tables_column = DataTablesColumn(header, **kwargs)
         if self.header_group:
@@ -231,6 +258,49 @@ class SqlData(object):
             conn.close()
 
         return data
+
+
+class SqlDataApi(SqlData, ApiCompatibleReport):
+    @property
+    def filter_values(self):
+        if not self.config:
+            return super(SqlDataApi, self).filter_values
+
+        return dict([(item.slug, self.config.get(item.slug, None)) for item in self.config_meta])
+
+    @property
+    def indicators_meta(self):
+        meta = []
+        for col in self.columns:
+            if not isinstance(col.view, SimpleColumn):
+                help_text = col.data_tables_column.help_text
+                group = slugify(col.header_group.html) if col.header_group else None
+                meta.append(IndicatorMeta(col.slug, col.name, group=group, help_text=help_text))
+        return meta
+
+    @property
+    def indicator_groups_meta(self):
+        """
+        Return a list of IndicatorGroupMeta instances.
+        """
+        groups = []
+        meta = []
+        for col in self.columns:
+            name = col.header_group.html if col.header_group else None
+            if name and name not in groups:
+                groups.append(name)
+                meta.append(IndicatorGroupMeta(slugify(name), name))
+
+        return meta
+
+    def get_results(self, indicators=None):
+        results = []
+        data = self.data
+        for k, v in data.items():
+            row = dict([(c.slug, c.get_raw_value(v)) for c in self.columns])
+            results.append(row)
+
+        return results
 
 
 class SqlTabularReport(SqlData, GenericTabularReport):
