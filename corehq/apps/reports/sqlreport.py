@@ -3,7 +3,7 @@ from django.template.defaultfilters import slugify
 from sqlagg.columns import SimpleColumn
 import sqlalchemy
 import sqlagg
-from corehq.apps.reports.api import ApiCompatibleReport, IndicatorMeta, IndicatorGroupMeta
+from corehq.apps.reports.api import ReportApiSource, IndicatorMeta, IndicatorGroupMeta
 
 from corehq.apps.reports.basic import GenericTabularReport
 from corehq.apps.reports.datatables import DataTablesHeader, \
@@ -52,14 +52,14 @@ class Column(object):
         """
         Display name for this column.
         """
-        pass
+        return self._name
 
     @property
     def slug(self):
         """
         Unique ID for this column.
         """
-        pass
+        return self._slug
 
 
 class DatabaseColumn(Column):
@@ -116,8 +116,8 @@ class DatabaseColumn(Column):
             except KeyError:
                 pass
 
-        self.name = header
-        self.slug = slug or name
+        self._name = header
+        self._slug = slug or name
 
         if 'sortable' not in kwargs:
             kwargs['sortable'] = True
@@ -176,8 +176,8 @@ class AggregateColumn(Column):
             kwargs['sort_type'] = DTSortType.NUMERIC
             format_fn = format_fn or format_data
 
-        self.name = header
-        self.slug = kwargs.pop('slug', None) or slugify(header)
+        self._name = header
+        self._slug = kwargs.pop('slug', None) or slugify(header)
 
         self.header = header
         self.header_group = kwargs.pop('header_group', None)
@@ -195,6 +195,13 @@ class AggregateColumn(Column):
 
 class SqlData(object):
     table_name = None
+
+    def __init__(self, config=None):
+        self.config = config
+
+        for slug, value in self.config.items():
+            if not hasattr(self, slug):
+                setattr(self, slug, value)
 
     @property
     def columns(self):
@@ -260,18 +267,16 @@ class SqlData(object):
         return data
 
 
-class SqlDataApi(SqlData, ApiCompatibleReport):
-    @property
-    def filter_values(self):
-        if not self.config:
-            return super(SqlDataApi, self).filter_values
+class SqlDataApi(ReportApiSource):
+    sqldata_class = None
 
-        return dict([(item.slug, self.config.get(item.slug, None)) for item in self.config_meta])
+    def post_init(self):
+        self.sqldata = self.sqldata_class(self.config)
 
     @property
     def indicators_meta(self):
         meta = []
-        for col in self.columns:
+        for col in self.sqldata.columns:
             if not isinstance(col.view, SimpleColumn):
                 help_text = col.data_tables_column.help_text
                 group = slugify(col.header_group.html) if col.header_group else None
@@ -285,7 +290,7 @@ class SqlDataApi(SqlData, ApiCompatibleReport):
         """
         groups = []
         meta = []
-        for col in self.columns:
+        for col in self.sqldata.columns:
             name = col.header_group.html if col.header_group else None
             if name and name not in groups:
                 groups.append(name)
@@ -293,11 +298,14 @@ class SqlDataApi(SqlData, ApiCompatibleReport):
 
         return meta
 
-    def get_results(self, indicators=None):
+    def get_results(self, indicator_slugs=None):
+        self.sqldata.config = self.config
+
         results = []
-        data = self.data
+        data = self.sqldata.data
         for k, v in data.items():
-            row = dict([(c.slug, c.get_raw_value(v)) for c in self.columns])
+            row = dict([(c.slug, c.get_raw_value(v)) for c in self.sqldata.columns
+                        if not indicator_slugs or c.slug in indicator_slugs])
             results.append(row)
 
         return results

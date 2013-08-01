@@ -1,17 +1,11 @@
-from corehq.apps.reports.filters.base import BaseReportFilter
-from dimagi.utils.decorators.memoized import memoized
-
 CONFIG_TYPE_BOOLEAN = 'boolean'
 CONFIG_TYPE_STRING = 'string'
 CONFIG_TYPE_INTEGER = 'integer'
 CONFIG_TYPE_DATE = 'date'
 CONFIG_TYPE_DATETIME = 'datetime'
-CONFIG_TYPE_SINGLE_SELECT = 'single_select'
-CONFIG_TYPE_MULTI_SELECT = 'multi_select'
 
 CONFIG_DATA_TYPES = [CONFIG_TYPE_BOOLEAN, CONFIG_TYPE_STRING, CONFIG_TYPE_INTEGER,
-                     CONFIG_TYPE_DATE, CONFIG_TYPE_DATETIME, CONFIG_TYPE_SINGLE_SELECT,
-                     CONFIG_TYPE_MULTI_SELECT]
+                     CONFIG_TYPE_DATE, CONFIG_TYPE_DATETIME]
 
 
 class BaseModel(object):
@@ -19,7 +13,7 @@ class BaseModel(object):
     Assumes class will be instantiated with ``fields`` as 'args' and
     ``optional_fields`` as 'kwargs'.
 
-    Ordering of args must be correct.
+    Ordering of args must match ordering in ``fields`` attribute.
     """
     fields = []
     optional_fields = []
@@ -62,7 +56,6 @@ class ConfigItemMeta(BaseModel):
         if self.data_type not in CONFIG_DATA_TYPES:
             raise ValueError('Unexpected value for data_type: %s' % self.data_type)
 
-    def check_value
 
 class IndicatorMeta(BaseModel):
     fields = ['slug', 'name']
@@ -74,7 +67,7 @@ class IndicatorGroupMeta(BaseModel):
     optional_fields = ['help_text']
 
 
-class ApiCompatibleReport(object):
+class ReportApiSource(object):
     _meta_fields = ['config', 'indicators', 'indicator_groups']
     slug = ''
     name = ''
@@ -86,6 +79,11 @@ class ApiCompatibleReport(object):
 
         if self.request:
             self._build_config_from_request()
+
+        self.post_init()
+
+    def post_init(self):
+        pass
 
     @property
     def config_meta(self):
@@ -108,7 +106,7 @@ class ApiCompatibleReport(object):
         """
         raise NotImplementedError()
 
-    def get_results(self, indicators=None):
+    def get_results(self, indicator_slugs=None):
         """
         Return a list of dicts mapping indicator slugs to values.
 
@@ -142,9 +140,9 @@ class ApiCompatibleReport(object):
         self.config = dict(conf)
 
 
-def get_report_results(klass, domain, config, indicators=None, include_meta=False, meta_full=False):
+def get_report_results(klass, domain, config, indicator_slugs=None, include_meta=False, meta_full=False):
     report = klass(domain=domain, config=config)
-    data = report.get_results(indicators)
+    data = report.get_results(indicator_slugs)
 
     ret = dict(results=data)
     if include_meta:

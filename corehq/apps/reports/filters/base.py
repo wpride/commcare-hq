@@ -1,7 +1,6 @@
 import pytz
 from django.template.loader import render_to_string
 #from corehq.apps.reports.cache import CacheableRequestMixIn, request_cache
-from corehq.apps.reports.api import ConfigItemMeta, CONFIG_TYPE_SINGLE_SELECT
 from dimagi.utils.decorators.memoized import memoized
 # For translations
 from django.utils.translation import ugettext as _
@@ -85,7 +84,6 @@ class BaseSingleOptionFilter(BaseReportFilter):
     """
     template = "reports/filters/single_option.html"
     default_text = ugettext_noop("Filter by...")
-    data_type = CONFIG_TYPE_SINGLE_SELECT
 
     @property
     def options(self):
