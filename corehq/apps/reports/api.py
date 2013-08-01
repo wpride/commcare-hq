@@ -53,6 +53,9 @@ class ConfigItemMeta(BaseModel):
     optional_fields = ['group_by', 'options', 'default', 'help_text']
 
     def validate(self):
+        if not hasattr(self, 'default'):
+            self.default = None
+
         if self.data_type not in CONFIG_DATA_TYPES:
             raise ValueError('Unexpected value for data_type: %s' % self.data_type)
 
@@ -104,7 +107,7 @@ class ReportApiSource(object):
         """
         Return a list of IndicatorGroupMeta instances.
         """
-        raise NotImplementedError()
+        pass
 
     def get_results(self, indicator_slugs=None):
         """
