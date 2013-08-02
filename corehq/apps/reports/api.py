@@ -1,14 +1,18 @@
+from datetime import datetime, date, time
+from dimagi.utils.dates import DateSpan
+
 CONFIG_TYPE_BOOLEAN = 'boolean'
 CONFIG_TYPE_STRING = 'string'
 CONFIG_TYPE_INTEGER = 'integer'
 CONFIG_TYPE_DATE = 'date'
-CONFIG_TYPE_DATETIME = 'datetime'
 
-CONFIG_DATA_TYPES = [CONFIG_TYPE_BOOLEAN, CONFIG_TYPE_STRING, CONFIG_TYPE_INTEGER,
-                     CONFIG_TYPE_DATE, CONFIG_TYPE_DATETIME]
+CONFIG_DATA_TYPES = [CONFIG_TYPE_BOOLEAN, CONFIG_TYPE_STRING,
+                     CONFIG_TYPE_INTEGER, CONFIG_TYPE_DATE]
+
+DATE_FORMAT = "%Y-%m-%d"
 
 
-class BaseModel(object):
+class BaseMetaModel(object):
     """
     Assumes class will be instantiated with ``fields`` as 'args' and
     ``optional_fields`` as 'kwargs'.
@@ -26,9 +30,11 @@ class BaseModel(object):
             setattr(self, field, value)
 
         for field in self.optional_fields:
-            value = kwargs.get(field, None)
-            if value:
-                setattr(self, field, value)
+            value = kwargs.pop(field, None)
+            setattr(self, field, value)
+
+        if kwargs:
+            raise Exception("Unexpected kwargs %s" % kwargs)
 
         self.validate()
 
@@ -42,30 +48,27 @@ class BaseModel(object):
 
         for f in self.optional_fields:
             val = getattr(self, f, None)
-            if val:
+            if val is not None:
                 d[f] = val
 
         return d
 
 
-class ConfigItemMeta(BaseModel):
+class ConfigItemMeta(BaseMetaModel):
     fields = ['slug', 'name', 'data_type']
-    optional_fields = ['group_by', 'options', 'default', 'help_text']
+    optional_fields = ['required', 'group_by', 'options', 'default', 'help_text']
 
     def validate(self):
-        if not hasattr(self, 'default'):
-            self.default = None
-
         if self.data_type not in CONFIG_DATA_TYPES:
             raise ValueError('Unexpected value for data_type: %s' % self.data_type)
 
 
-class IndicatorMeta(BaseModel):
+class IndicatorMeta(BaseMetaModel):
     fields = ['slug', 'name']
     optional_fields = ['group', 'help_text']
 
 
-class IndicatorGroupMeta(BaseModel):
+class IndicatorGroupMeta(BaseMetaModel):
     fields = ['slug', 'name']
     optional_fields = ['help_text']
 
@@ -75,18 +78,24 @@ class ReportApiSource(object):
     slug = ''
     name = ''
 
-    def __init__(self, domain=None, request=None, config=None):
+    def __init__(self, domain=None, request=None, config=None, meta_only=False):
         self.domain = domain
         self.config = config
         self.request = request
-
-        if self.request:
-            self._build_config_from_request()
+        self.meta_only = meta_only
 
         self.post_init()
 
     def post_init(self):
-        pass
+        if self.request:
+            self._build_config_from_request()
+        else:
+            for item in self.config_meta:
+                if item.slug not in self.config and item.default:
+                    self.config[item.slug] = item.default
+
+        self._convert_types()
+        self._build_datespan()
 
     @property
     def config_meta(self):
@@ -109,7 +118,24 @@ class ReportApiSource(object):
         """
         pass
 
-    def get_results(self, indicator_slugs=None):
+    @property
+    def config_complete(self):
+        return not self.meta_only and self.config \
+            and all([self.config.get(item.slug) for item in self.config_meta if item.required])
+
+    def get_missing_params(self):
+        if self.config_complete:
+            return []
+
+        return [item.slug for item in self.config_meta if item.required and item.slug not in self.config]
+
+    def get_results(self):
+        if self.config_complete:
+            return self.results()
+        else:
+            return None
+
+    def results(self):
         """
         Return a list of dicts mapping indicator slugs to values.
 
@@ -134,18 +160,60 @@ class ReportApiSource(object):
         if full:
             for field in self._meta_fields:
                 value = getattr(self, '%s_meta' % field) or []
-                meta[field] = [item.to_json() if isinstance(item, BaseModel) else item for item in value]
+                meta[field] = [item.to_json() if isinstance(item, BaseMetaModel) else item for item in value]
 
         return meta
 
     def _build_config_from_request(self):
-        conf = [(item.slug, self.request.GET.get(item.slug, item.default)) for item in self.config_meta]
+        conf = dict([(item.slug, self.request.GET.get(item.slug, item.default)) for item in self.config_meta])
+        indicators_param = self.request.GET.get('indicators')
+        indicators = indicators_param.split(',') if indicators_param else None
+        conf['indicator_slugs'] = indicators
+        conf['domain'] = self.domain
+        
         self.config = dict(conf)
+
+    def _build_datespan(self):
+        def date_or_nothing(param):
+            if param in self.config and self.config[param]:
+                val = self.config[param]
+                if isinstance(val, date):
+                    return datetime.combine(val, time())
+                elif isinstance(val, datetime):
+                    return val
+                else:
+                    return datetime.strptime(val, DATE_FORMAT)
+
+        startdate = date_or_nothing('startdate')
+        enddate = date_or_nothing('enddate')
+
+        if startdate or enddate:
+            self.config['datespan'] = DateSpan(startdate, enddate, DATE_FORMAT)
+
+    def _convert_types(self):
+        for item in self.config_meta:
+            self.config[item.slug] = self._convert_type(item.data_type, self.config.get(item.slug, None))
+
+    def _convert_type(self, data_type, param):
+        if param is None:
+            return param
+        else:
+            if data_type == CONFIG_TYPE_DATE:
+                return datetime.strptime(param, DATE_FORMAT)
+            elif data_type == CONFIG_TYPE_BOOLEAN:
+                return param in ('True', 'true', 1)
+            elif data_type == CONFIG_TYPE_INTEGER:
+                return int(param)
+            return param
 
 
 def get_report_results(klass, domain, config, indicator_slugs=None, include_meta=False, meta_full=False):
+    config['indicator_slugs'] = indicator_slugs
     report = klass(domain=domain, config=config)
-    data = report.get_results(indicator_slugs)
+    if not report.config_complete:
+        raise ValueError('Report config incomplete. Missing config params: %s' % report.get_missing_params())
+
+    data = report.get_results()
 
     ret = dict(results=data)
     if include_meta:

@@ -172,7 +172,7 @@ class AggregateColumn(Column):
 class SqlData(object):
     table_name = None
 
-    def __init__(self, config=None):
+    def configure(self, config=None):
         self.config = config
 
         for slug, value in self.config.items():
@@ -243,11 +243,13 @@ class SqlData(object):
         return data
 
 
-class SqlDataApi(ReportApiSource):
+class SqlReportApiSource(ReportApiSource):
     sqldata_class = None
 
     def post_init(self):
-        self.sqldata = self.sqldata_class(self.config)
+        super(SqlReportApiSource, self).post_init()
+        self.sqldata = self.sqldata_class()
+        self.sqldata.configure(self.config)
 
     @property
     def indicators_meta(self):
@@ -274,17 +276,26 @@ class SqlDataApi(ReportApiSource):
 
         return meta
 
-    def get_results(self, indicator_slugs=None):
-        self.sqldata.config = self.config
-
+    def results(self):
         results = []
         data = self.sqldata.data
+
+        indicator_slugs = self.config['indicator_slugs']
+        if indicator_slugs:
+            indicator_slugs.extend([item.slug for item in self.config_meta if item.group_by])
+
         for k, v in data.items():
-            row = dict([(c.slug, c.get_raw_value(v)) for c in self.sqldata.columns
+            row = dict([(c.slug, self._unwrap(c.get_value(v))) for c in self.sqldata.columns
                         if not indicator_slugs or c.slug in indicator_slugs])
             results.append(row)
 
         return results
+
+    def _unwrap(self, value):
+        if isinstance(value, dict) and 'sort_key' in value:
+            return value['sort_key']
+
+        return value
 
 
 class SqlTabularReport(SqlData, GenericTabularReport):
